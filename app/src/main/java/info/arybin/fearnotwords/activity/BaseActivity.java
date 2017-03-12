@@ -1,4 +1,4 @@
-package info.arybin.fearnotwords.activities;
+package info.arybin.fearnotwords.activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;

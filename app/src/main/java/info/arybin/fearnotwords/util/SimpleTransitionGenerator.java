@@ -1,4 +1,4 @@
-package info.arybin.fearnotwords.utils;
+package info.arybin.fearnotwords.util;
 
 import android.graphics.*;
 import android.view.animation.LinearInterpolator;

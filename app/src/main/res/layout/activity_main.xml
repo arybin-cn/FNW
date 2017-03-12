@@ -65,7 +65,7 @@
     </RelativeLayout>
 
 
-    <info.arybin.fearnotwords.views.FABRevealLayout
+    <info.arybin.fearnotwords.view.FABRevealLayout
         android:id="@+id/layoutFabReveal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -88,7 +88,7 @@
             android:paddingRight="@dimen/default_padding_wide"
             android:showDividers="middle">
 
-            <info.arybin.fearnotwords.views.SlideLayout
+            <info.arybin.fearnotwords.view.SlideLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/layoutEntranceNew"
@@ -137,9 +137,9 @@
 
                 </RelativeLayout>
 
-            </info.arybin.fearnotwords.views.SlideLayout>
+            </info.arybin.fearnotwords.view.SlideLayout>
 
-            <info.arybin.fearnotwords.views.SlideLayout
+            <info.arybin.fearnotwords.view.SlideLayout
                 android:layout_width="match_parent"
                 android:id="@+id/layoutEntranceOld"
                 android:layout_height="match_parent"
@@ -188,9 +188,9 @@
 
                 </RelativeLayout>
 
-            </info.arybin.fearnotwords.views.SlideLayout>
+            </info.arybin.fearnotwords.view.SlideLayout>
 
-            <info.arybin.fearnotwords.views.SlideLayout
+            <info.arybin.fearnotwords.view.SlideLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/layoutEntranceAll"
@@ -239,7 +239,7 @@
 
                 </RelativeLayout>
 
-            </info.arybin.fearnotwords.views.SlideLayout>
+            </info.arybin.fearnotwords.view.SlideLayout>
 
 
         </LinearLayout>
@@ -256,7 +256,7 @@
                 android:text="secondary view" />
         </RelativeLayout>
 
-    </info.arybin.fearnotwords.views.FABRevealLayout>
+    </info.arybin.fearnotwords.view.FABRevealLayout>
 
 
 </LinearLayout>

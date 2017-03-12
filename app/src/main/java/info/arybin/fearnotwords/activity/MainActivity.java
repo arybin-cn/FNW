@@ -1,25 +1,22 @@
-package info.arybin.fearnotwords.activities;
+package info.arybin.fearnotwords.activity;
 
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.flaviofaria.kenburnsview.Transition;
-import com.flaviofaria.kenburnsview.TransitionGenerator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
-import info.arybin.fearnotwords.utils.SimpleTransitionGenerator;
-import info.arybin.fearnotwords.views.FABRevealLayout;
-import info.arybin.fearnotwords.views.SlideLayout;
+import info.arybin.fearnotwords.util.SimpleTransitionGenerator;
+import info.arybin.fearnotwords.view.FABRevealLayout;
+import info.arybin.fearnotwords.view.SlideLayout;
 
 public class MainActivity extends BaseActivity {
 
@@ -84,25 +81,6 @@ public class MainActivity extends BaseActivity {
 
     private void test() {
 
-        layoutEntranceNew.setOnSlideListener(new SlideLayout.OnSlideListener() {
-            @Override
-            public void onSlideToLeft() {
-
-            }
-
-            @Override
-            public void onSlideToRight() {
-
-            }
-
-            @Override
-            public void onSlide(float rate) {
-
-
-            }
-        });
-
-
     }
 
 
@@ -118,7 +96,7 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.2f, 30));
+        imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.15f, 5));
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override

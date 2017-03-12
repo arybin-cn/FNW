@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.arybin.fearnotwords.utils;
+package info.arybin.fearnotwords.util;
 
-import java.util.ArrayList;
-import java.util.List;
+public class SimplePoint {
 
-public class CurvedAnimator {
+    public float x, y;
 
-    private List<SimplePoint> points = new ArrayList<>();
-
-    public CurvedAnimator(float fromX, float fromY, float toX, float toY) {
-        points.add(new SimplePoint(fromX, fromY));
-        points.add(new SimplePoint(toX, toY));
+    SimplePoint(float x, float y) {
+        this.x = x;
+        this.y = y;
     }
 
-    public Object[] getPoints() {
-        return points.toArray();
+
+    float distanceTo(SimplePoint another) {
+        return (float) Math.sqrt(Math.pow(another.x - x, 2) + Math.pow(another.y - y, 2));
     }
+
 }

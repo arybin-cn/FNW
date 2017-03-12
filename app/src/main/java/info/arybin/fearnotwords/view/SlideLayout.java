@@ -1,7 +1,8 @@
-package info.arybin.fearnotwords.views;
+package info.arybin.fearnotwords.view;
 
 
 import android.content.Context;
+import android.transition.Slide;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
@@ -125,9 +126,9 @@ public class SlideLayout extends RelativeLayout {
         if (mOnSlideListener != null) {
             if (Math.abs(Math.abs(getScrollX()) - mOffsetMax) < 1) {
                 if (getScrollX() > 0) {
-                    mOnSlideListener.onSlideToLeft();
+                    mOnSlideListener.onSlideToLeft(this);
                 } else {
-                    mOnSlideListener.onSlideToRight();
+                    mOnSlideListener.onSlideToRight(this);
                 }
             } else {
                 mOnSlideListener.onSlide(getScrollX() * -1f / mOffsetMax);
@@ -142,9 +143,9 @@ public class SlideLayout extends RelativeLayout {
 
 
     public interface OnSlideListener {
-        void onSlideToLeft();
+        void onSlideToLeft(SlideLayout layout);
 
-        void onSlideToRight();
+        void onSlideToRight(SlideLayout layout);
 
         void onSlide(float rate);
 

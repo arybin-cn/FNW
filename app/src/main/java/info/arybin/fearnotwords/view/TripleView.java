@@ -1,4 +1,4 @@
-package info.arybin.fearnotwords.views;
+package info.arybin.fearnotwords.view;
 
 import android.content.Context;
 import android.util.AttributeSet;

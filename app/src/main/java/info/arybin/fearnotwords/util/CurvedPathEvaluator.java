@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.arybin.fearnotwords.utils;
+package info.arybin.fearnotwords.util;
 
 import android.animation.TypeEvaluator;
 

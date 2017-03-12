@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.arybin.fearnotwords.views;
+package info.arybin.fearnotwords.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -34,9 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import info.arybin.fearnotwords.utils.CurvedAnimator;
-import info.arybin.fearnotwords.utils.CurvedPathEvaluator;
-import info.arybin.fearnotwords.utils.SimplePoint;
+import info.arybin.fearnotwords.util.CurvedAnimator;
+import info.arybin.fearnotwords.util.CurvedPathEvaluator;
+import info.arybin.fearnotwords.util.SimplePoint;
 
 public class FABRevealLayout extends RelativeLayout {
 
