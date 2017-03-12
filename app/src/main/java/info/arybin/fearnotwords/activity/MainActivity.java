@@ -98,24 +98,6 @@ public class MainActivity extends BaseActivity {
 
         imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.15f, 5));
 
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-
-        imageView.setTransitionListener(new KenBurnsView.TransitionListener() {
-            @Override
-            public void onTransitionStart(Transition transition) {
-                RectF dstRect = transition.getDestinyRect();
-            }
-
-            @Override
-            public void onTransitionEnd(Transition transition) {
-            }
-        });
 
     }
 
