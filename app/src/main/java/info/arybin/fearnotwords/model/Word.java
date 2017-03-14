@@ -1,11 +1,14 @@
 package info.arybin.fearnotwords.model;
 
 
-
 public class Word implements Translatable {
 
-    public Word(){
+    private final CharSequence mFromLang;
+    private final CharSequence mToLang;
 
+    public Word(CharSequence fromLang, CharSequence toLang, CharSequence entity) {
+        mFromLang = fromLang;
+        mToLang = toLang;
     }
 
 
