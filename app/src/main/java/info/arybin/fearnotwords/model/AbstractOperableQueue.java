@@ -8,7 +8,7 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
     private ConcurrentLinkedQueue<T> mSkipped;
     private ConcurrentLinkedQueue<T> mPassed;
-    private ConcurrentLinkedQueue<T> mDataSource;
+    private ConcurrentLinkedQueue<T> mSource;
 
     private T mCurrent;
 
@@ -17,10 +17,10 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
                                             ConcurrentLinkedQueue skipped);
 
     protected AbstractOperableQueue(Collection<T> dataSource, Collection<T> skipped) {
-        mDataSource = new ConcurrentLinkedQueue<>(dataSource);
+        mSource = new ConcurrentLinkedQueue<>(dataSource);
         mSkipped = new ConcurrentLinkedQueue<>(skipped);
         mPassed = new ConcurrentLinkedQueue<>();
-        mCurrent = mDataSource.poll();
+        mCurrent = mSource.poll();
     }
 
 
@@ -32,10 +32,10 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
         if (inLoop) {
             mCurrent = mSkipped.poll();
         } else {
-            if (shouldReview(mDataSource, mPassed, mSkipped) || mDataSource.size() == 0) {
+            if (shouldReview(mSource, mPassed, mSkipped) || mSource.size() == 0) {
                 mCurrent = mSkipped.poll();
             } else {
-                mCurrent = mDataSource.poll();
+                mCurrent = mSource.poll();
             }
         }
         return mCurrent;
@@ -74,13 +74,13 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
     @Override
     public Collection<T> source() {
-        return mDataSource;
+        return mSource;
     }
 
 
     @Override
     public String toString() {
-        return String.format("current: %s\npassed: %s\nskipped: %s\nsource: %s\n", mCurrent, mPassed, mSkipped, mDataSource);
+        return String.format("current: %s\npassed: %s\nskipped: %s\nsource: %s\n", mCurrent, mPassed, mSkipped, mSource);
     }
 
 }

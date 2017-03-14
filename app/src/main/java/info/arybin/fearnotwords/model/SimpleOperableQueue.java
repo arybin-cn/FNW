@@ -7,27 +7,28 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class SimpleOperableQueue<T> extends AbstractOperableQueue<T> {
 
 
-    private SimpleOperableQueue(Collection<T> dataSource, Collection<T> skipped) {
-        super(dataSource, skipped);
+    private SimpleOperableQueue(Collection<T> source, Collection<T> skipped) {
+        super(source, skipped);
     }
 
-    public static <S> SimpleOperableQueue buildFrom(Collection<S> dataSource, Collection<S> skipped) {
-        if (null == dataSource || null == skipped || dataSource.size() == 0) {
+    public static <S> SimpleOperableQueue buildFrom(Collection<S> source,
+                                                    Collection<S> skipped) {
+        if (null == source || null == skipped || source.size() == 0) {
             return null;
         }
-        return new SimpleOperableQueue<>(dataSource, skipped);
+        return new SimpleOperableQueue<>(source, skipped);
     }
 
-    public static <S> SimpleOperableQueue buildFrom(Collection<S> dataSource) {
-        if (null == dataSource || dataSource.size() == 0) {
+    public static <S> SimpleOperableQueue buildFrom(Collection<S> source) {
+        if (null == source || source.size() == 0) {
             return null;
         }
-        return new SimpleOperableQueue<>(dataSource, new ConcurrentLinkedQueue());
+        return new SimpleOperableQueue<>(source, new ConcurrentLinkedQueue());
     }
 
 
     @Override
-    protected boolean shouldReview(ConcurrentLinkedQueue dataSource,
+    protected boolean shouldReview(ConcurrentLinkedQueue source,
                                    ConcurrentLinkedQueue passed,
                                    ConcurrentLinkedQueue skipped) {
         //Words' review strategy here
