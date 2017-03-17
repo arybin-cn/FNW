@@ -12,8 +12,6 @@ public interface OperableQueue<T> {
     T loop();
 
     Collection<T> passed();
-
     Collection<T> skipped();
-
     Collection<T> source();
 }

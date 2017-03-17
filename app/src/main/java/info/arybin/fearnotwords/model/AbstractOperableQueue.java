@@ -10,11 +10,10 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
     private ConcurrentLinkedQueue<T> mPassed;
     private ConcurrentLinkedQueue<T> mSource;
 
+    private int mIntervalToLastReview = 0;
     private T mCurrent;
 
-    protected abstract boolean shouldReview(ConcurrentLinkedQueue dataSource,
-                                            ConcurrentLinkedQueue passed,
-                                            ConcurrentLinkedQueue skipped);
+    protected abstract boolean shouldReview(int intervalToLastReview);
 
     protected AbstractOperableQueue(Collection<T> dataSource, Collection<T> skipped) {
         mSource = new ConcurrentLinkedQueue<>(dataSource);
@@ -32,7 +31,8 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
         if (inLoop) {
             mCurrent = mSkipped.poll();
         } else {
-            if (shouldReview(mSource, mPassed, mSkipped) || mSource.size() == 0) {
+            if (mSource.size() == 0 || shouldReview(mIntervalToLastReview++)) {
+                mIntervalToLastReview = 0;
                 mCurrent = mSkipped.poll();
             } else {
                 mCurrent = mSource.poll();
@@ -80,7 +80,8 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
     @Override
     public String toString() {
-        return String.format("current: %s\npassed: %s\nskipped: %s\nsource: %s\n", mCurrent, mPassed, mSkipped, mSource);
+        return String.format("current: %s\npassed: %s\nskipped: %s\nsource: %s\n",
+                mCurrent, mPassed, mSkipped, mSource);
     }
 
 }

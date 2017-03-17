@@ -28,11 +28,9 @@ public class SimpleOperableQueue<T> extends AbstractOperableQueue<T> {
 
 
     @Override
-    protected boolean shouldReview(ConcurrentLinkedQueue source,
-                                   ConcurrentLinkedQueue passed,
-                                   ConcurrentLinkedQueue skipped) {
+    protected boolean shouldReview(int intervalToLastReview) {
         //Words' review strategy here
-        return skipped.size() > 2;
+        return skipped().size() > 5 || intervalToLastReview > 3;
     }
 
 }
