@@ -1,5 +1,7 @@
 package info.arybin.fearnotwords.model;
 
+import java.util.List;
+
 /**
  * Created by AryBin on 2017-3-12.
  */
@@ -22,7 +24,7 @@ public class Phrase implements Translatable {
     }
 
     @Override
-    public CharSequence getExample() {
+    public List<Translatable> getExamples() {
         return null;
     }
 }

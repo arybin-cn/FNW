@@ -1,8 +1,10 @@
 package info.arybin.fearnotwords.model;
 
+import java.util.List;
+
 public interface Translatable {
     CharSequence getExpression();
     CharSequence getPronounce();
     CharSequence getTranslation();
-    CharSequence getExample();
+    List<Translatable> getExamples();
 }
