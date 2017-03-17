@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.arybin.fearnotwords.util;
+package info.arybin.fearnotwords.ui.anim;
 
 import java.util.ArrayList;
 import java.util.List;

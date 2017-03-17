@@ -1,8 +1,7 @@
-package info.arybin.fearnotwords.view;
+package info.arybin.fearnotwords.ui.view;
 
 
 import android.content.Context;
-import android.transition.Slide;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;

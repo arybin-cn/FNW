@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.arybin.fearnotwords.view;
+package info.arybin.fearnotwords.ui.view;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;

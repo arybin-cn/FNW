@@ -1,4 +1,4 @@
-package info.arybin.fearnotwords.model;
+package info.arybin.fearnotwords.core;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;

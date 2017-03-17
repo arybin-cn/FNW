@@ -5,8 +5,9 @@ package info.arybin.fearnotwords.model;
  */
 
 public class Phrase implements Translatable {
+
     @Override
-    public CharSequence getEntity() {
+    public CharSequence getExpression() {
         return null;
     }
 
