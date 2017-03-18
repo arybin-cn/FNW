@@ -24,11 +24,11 @@ public class LocalizedPlan {
     }
 
     public List<Expression> getNew() {
-        return queryPlans(DataSupport.where("body = ? and language = ?", name, language));
+        return queryPlans(DataSupport.where("body = ? and language = ? and progress = ?", name, language, "0"));
     }
 
     public List<Expression> getOld() {
-        return queryPlans(DataSupport.where("body = ? and language = ?", name, language));
+        return queryPlans(DataSupport.where("body = ? and language = ? and progress != ?", name, language, "0"));
     }
 
     private List<Expression> queryPlans(ClusterQuery query) {
