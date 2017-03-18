@@ -21,8 +21,15 @@ public class Expression extends LocalizedORM {
     public List<Pronounce> pronounces;
     public List<Example> examples;
 
+    public long id;
     @Column(defaultValue = "0")
     public int progress;
     public Date updateTime;
 
+    public Expression(){}
+
+    public Expression(int progress, Date updateTime) {
+        this.progress = progress;
+        this.updateTime = updateTime;
+    }
 }

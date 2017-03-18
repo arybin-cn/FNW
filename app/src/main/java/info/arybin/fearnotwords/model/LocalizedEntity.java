@@ -4,6 +4,7 @@ package info.arybin.fearnotwords.model;
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import info.arybin.fearnotwords.model.orm.Example;
@@ -21,10 +22,40 @@ import info.arybin.fearnotwords.model.orm.Translation;
  */
 public class LocalizedEntity implements Translatable, Pronounceable, Exampleable {
 
+    private final long expressionID;
     private final CharSequence body;
     private final CharSequence pronounce;
     private final CharSequence translation;
     private final List<Translatable> examples;
+    private int progress;
+
+    public int save() {
+        Expression expression = new Expression(progress, updateTime);
+        return expression.update(expressionID);
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.setProgress(progress, true);
+    }
+
+    public void setProgress(int progress, boolean updateTime) {
+        this.progress = progress;
+        this.setUpdateTime(new Date());
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    private Date updateTime;
 
 
     public LocalizedEntity(String expressionBody, CharSequence language) {
@@ -32,6 +63,7 @@ public class LocalizedEntity implements Translatable, Pronounceable, Exampleable
     }
 
     public LocalizedEntity(Expression expression, CharSequence language) {
+        this.expressionID = expression.id;
         this.body = expression.body;
         this.pronounce = expression.pronounces.stream().
                 filter(p -> language.equals(p.language)).
@@ -40,7 +72,8 @@ public class LocalizedEntity implements Translatable, Pronounceable, Exampleable
                 filter(t -> language.equals(t.language)).
                 findAny().orElse(new Translation()).body;
         this.examples = buildExamples(expression.examples, language);
-
+        this.progress = expression.progress;
+        this.updateTime = expression.updateTime;
     }
 
     private List<Translatable> buildExamples(List<Example> examples, CharSequence language) {
@@ -95,6 +128,5 @@ public class LocalizedEntity implements Translatable, Pronounceable, Exampleable
         }
 
     }
-
 
 }
