@@ -1,5 +1,6 @@
 package info.arybin.fearnotwords.model.orm;
 
+import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
 import java.util.List;
@@ -12,7 +13,9 @@ import java.util.List;
 //An Expression has many Expression(in different language that describe the same thing)
 //and has many Translation/Pronounce/Example(in different language)
 public class Expression extends DataSupport {
+    @Column(nullable = false)
     public String language;
+    @Column(nullable = false)
     public String body;
 
     public List<Expression> expressions;
