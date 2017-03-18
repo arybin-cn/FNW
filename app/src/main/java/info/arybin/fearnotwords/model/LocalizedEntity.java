@@ -12,26 +12,26 @@ import info.arybin.fearnotwords.model.orm.Pronounce;
 import info.arybin.fearnotwords.model.orm.Translation;
 
 /**
- * An Entity is an abstract concept, it can be word or phrase or
- * any things that are Translatable, Pronounceable and Exampleable.
+ * An LocalizedEntity is an abstract concept, it can be word or phrase or
+ * any things that are Translatable, Pronounceable and Exampleable with specific language.
  * <p>
- * The language of body of the Entity is determined by the language of Expression used to construct.
+ * The language of body of the LocalizedEntity is determined by the language of Expression used to construct.
  * The language of pronounce/translation and the translation of examples are determined by the language
  * used to construct.
  */
-public class Entity implements Translatable, Pronounceable, Exampleable {
+public class LocalizedEntity implements Translatable, Pronounceable, Exampleable {
 
-    private String body;
-    private String pronounce;
-    private String translation;
-    private List<Translatable> examples;
+    private final CharSequence body;
+    private final CharSequence pronounce;
+    private final CharSequence translation;
+    private final List<Translatable> examples;
 
 
-    public Entity(String expressionBody, CharSequence language) {
+    public LocalizedEntity(String expressionBody, CharSequence language) {
         this(DataSupport.where("body = ?", expressionBody).find(Expression.class).get(0), language);
     }
 
-    Entity(Expression expression, CharSequence language) {
+    public LocalizedEntity(Expression expression, CharSequence language) {
         this.body = expression.body;
         this.pronounce = expression.pronounces.stream().
                 filter(p -> language.equals(p.language)).
@@ -40,6 +40,7 @@ public class Entity implements Translatable, Pronounceable, Exampleable {
                 filter(t -> language.equals(t.language)).
                 findAny().orElse(new Translation()).body;
         this.examples = buildExamples(expression.examples, language);
+
     }
 
     private List<Translatable> buildExamples(List<Example> examples, CharSequence language) {
@@ -52,7 +53,7 @@ public class Entity implements Translatable, Pronounceable, Exampleable {
     }
 
 
-    public CharSequence getBody() {
+    public CharSequence getOriginal() {
         return body;
     }
 
@@ -82,7 +83,7 @@ public class Entity implements Translatable, Pronounceable, Exampleable {
         }
 
         @Override
-        public CharSequence getBody() {
+        public CharSequence getOriginal() {
             return example.body;
         }
 
@@ -90,8 +91,9 @@ public class Entity implements Translatable, Pronounceable, Exampleable {
         public CharSequence getTranslation() {
             return example.translations.stream().
                     filter(t -> language.equals(t.language)).
-                    findAny().orElse(new Translation()).body;
+                    findAny().orElse(new Example()).body;
         }
+
     }
 
 

@@ -1,23 +1,18 @@
 package info.arybin.fearnotwords.model.orm;
 
-import org.litepal.annotation.Column;
-import org.litepal.crud.DataSupport;
-
 import java.util.List;
 
 
-//An Expression is an abstract entity which describes things in different language.
-//Eg. An Expression may simply be an English word or a Chinese phrase, both of which
-//describe the same thing.
-
-//An Expression has many Expression(in different language that describe the same thing)
-//and has many Translation/Pronounce/Example(in different language)
-public class Expression extends DataSupport {
-    @Column(nullable = false)
-    public String language;
-    @Column(nullable = false)
-    public String body;
-
+/**
+ * The Expression is an abstract concept which is used to describe something
+ * For example, An Expression may simply be an English word or a Chinese phrase both of which
+ * describe the same thing.
+ * <p>
+ * An Expression has many Expression(in different language that describe the same thing)
+ * An Expression has many Translation/Pronounce(in different language)
+ * An Expression has many Example that has the same language with it
+ */
+public class Expression extends LocalizedORM {
     public List<Expression> expressions;
     public List<Translation> translations;
     public List<Pronounce> pronounces;

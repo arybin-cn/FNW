@@ -1,13 +1,9 @@
 package info.arybin.fearnotwords.model.orm;
 
 import org.litepal.annotation.Column;
-import org.litepal.crud.DataSupport;
 
-
-//A Translation belongs to an Expression or an Example(but no need to build relations)
-public class Translation extends DataSupport {
+//A Translation belongs to an Expression
+public class Translation extends LocalizedORM {
     @Column(nullable = false)
-    public String language;
-    @Column(nullable = false)
-    public String body;
+    public Expression expression;
 }

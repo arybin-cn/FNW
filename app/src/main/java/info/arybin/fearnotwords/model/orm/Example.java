@@ -1,18 +1,17 @@
 package info.arybin.fearnotwords.model.orm;
 
 import org.litepal.annotation.Column;
-import org.litepal.crud.DataSupport;
 
 import java.util.List;
 
 
-//An Example belongs to an Expression and has many Translation(in different language)
-public class Example extends DataSupport {
+/**
+ * An Example belongs to an Expression
+ * <p>
+ * An Example has many translations which in fact are the Examples in different languages
+ */
+public class Example extends LocalizedORM {
+    public List<Example> translations;
     @Column(nullable = false)
-    public String language;
-    @Column(nullable = false)
-    public String body;
-
     public Expression expression;
-    public List<Translation> translations;
 }
