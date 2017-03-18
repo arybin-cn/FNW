@@ -21,7 +21,7 @@ import info.arybin.fearnotwords.model.orm.Translation;
  * used to construct.
  */
 @SuppressWarnings("unused")
-public class LocalizedEntity implements Translatable, Pronounceable, Exampleable {
+public class LocalizedEntity implements Memorable {
 
     private final long expressionID;
     private final CharSequence body;

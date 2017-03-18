@@ -1,8 +1,6 @@
 package info.arybin.fearnotwords.activity;
 
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -85,12 +83,9 @@ public class MainActivity extends BaseActivity {
     protected void initializeViews() {
         super.initializeViews();
         blurView.setupWith((ViewGroup) imageView.getParent()).blurRadius(BLUR_RADIUS);
-        layoutSetting.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                layoutFabReveal.revealMainView();
-                return true;
-            }
+        layoutSetting.setOnTouchListener((v, event) -> {
+            layoutFabReveal.revealMainView();
+            return true;
         });
 
         imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.15f, 5));
