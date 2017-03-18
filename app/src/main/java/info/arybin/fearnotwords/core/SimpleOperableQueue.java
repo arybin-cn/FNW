@@ -11,7 +11,7 @@ public class SimpleOperableQueue<T> extends AbstractOperableQueue<T> {
         super(source, skipped);
     }
 
-    public static <S> SimpleOperableQueue buildFrom(Collection<S> source,
+    public static <S> SimpleOperableQueue<S> buildFrom(Collection<S> source,
                                                     Collection<S> skipped) {
         if (null == source || null == skipped || source.size() == 0) {
             return null;
@@ -19,11 +19,11 @@ public class SimpleOperableQueue<T> extends AbstractOperableQueue<T> {
         return new SimpleOperableQueue<>(source, skipped);
     }
 
-    public static <S> SimpleOperableQueue buildFrom(Collection<S> source) {
+    public static <S> SimpleOperableQueue<S> buildFrom(Collection<S> source) {
         if (null == source || source.size() == 0) {
             return null;
         }
-        return new SimpleOperableQueue<>(source, new ConcurrentLinkedQueue());
+        return new SimpleOperableQueue<>(source, new ConcurrentLinkedQueue<>());
     }
 
 

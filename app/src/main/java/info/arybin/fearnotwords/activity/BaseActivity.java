@@ -19,7 +19,7 @@ import info.arybin.fearnotwords.Constants;
 public abstract class BaseActivity extends AppCompatActivity implements Constants {
     protected WindowManager windowManager;
     protected AssetManager assetManager;
-    protected SharedPreferences sharedPreferences;
+    protected SharedPreferences configs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
     }
 
     protected void initializeTextView(TextView textView) {
-        setTextViewFont(textView, sharedPreferences.getString(KEY_FONT, DEF_FONT));
+        setTextViewFont(textView, configs.getString(KEY_FONT, DEF_FONT));
     }
 
 
@@ -42,7 +42,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         assetManager = getAssets();
-        sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+        configs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
     }
 
 
