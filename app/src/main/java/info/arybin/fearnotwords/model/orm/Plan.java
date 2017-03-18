@@ -20,4 +20,13 @@ public class Plan extends LocalizedORM {
     @Column(defaultValue = "0")
     public int progress;
     public Date updateTime;
+
+    public long id;
+
+    public Plan() {
+    }
+
+    public Plan(int progress, Date updateTime) {
+        super();
+    }
 }

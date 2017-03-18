@@ -9,6 +9,7 @@ import java.util.List;
 
 import info.arybin.fearnotwords.model.orm.Example;
 import info.arybin.fearnotwords.model.orm.Expression;
+import info.arybin.fearnotwords.model.orm.Plan;
 import info.arybin.fearnotwords.model.orm.Pronounce;
 import info.arybin.fearnotwords.model.orm.Translation;
 
@@ -24,6 +25,7 @@ import info.arybin.fearnotwords.model.orm.Translation;
 public class LocalizedEntity implements Memorable {
 
     private final long expressionID;
+    private final long planID;
     private final CharSequence body;
     private final CharSequence pronounce;
     private final CharSequence translation;
@@ -31,15 +33,45 @@ public class LocalizedEntity implements Memorable {
     private int progress;
     private Date updateTime;
 
-    public boolean save() {
+    public int save() {
         Expression expression = DataSupport.find(Expression.class, expressionID);
-        return expression.plans.stream().
-                map(i -> {
-                            i.progress = progress;
-                            i.updateTime = updateTime;
-                            return i.save();
-                        }
-                ).filter(i -> !i).findAny().orElse(true);
+        return new Plan(progress, updateTime).update(planID);
+
+    }
+
+    public static LocalizedEntity create(Expression expression, CharSequence planName, CharSequence language) {
+        if (null == expression || null == planName || null == language) {
+            return null;
+        }
+        Plan plan = expression.plans.stream().filter(p -> planName.equals(p.body)).findAny().orElse(null);
+        if(null == plan){
+            return null;
+        }
+        return new LocalizedEntity(expression, plan, language);
+    }
+
+    private LocalizedEntity(Expression expression, Plan plan, CharSequence language) {
+        this.planID = plan.id;
+        this.expressionID = expression.id;
+        this.body = expression.body;
+        this.pronounce = expression.pronounces.stream().
+                filter(p -> language.equals(p.language)).
+                findAny().orElse(new Pronounce()).body;
+        this.translation = expression.translations.stream().
+                filter(t -> language.equals(t.language)).
+                findAny().orElse(new Translation()).body;
+        this.examples = buildExamples(expression.examples, language);
+        this.progress = expression.plans.get(0).progress;
+        this.updateTime = expression.plans.get(0).updateTime;
+    }
+
+    private List<Translatable> buildExamples(List<Example> examples, CharSequence language) {
+        //Not using Stream#collect here for compatibility.
+        ArrayList<Translatable> results = new ArrayList<>(examples.size());
+        examples.stream().
+                map(i -> new ExampleWrapper(i, language)).
+                forEach(results::add);
+        return results;
     }
 
     public int getProgress() {
@@ -61,34 +93,6 @@ public class LocalizedEntity implements Memorable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
-    }
-
-
-    public LocalizedEntity(String expressionBody, CharSequence language) {
-        this(DataSupport.where("body = ?", expressionBody).find(Expression.class).get(0), language);
-    }
-
-    public LocalizedEntity(Expression expression, CharSequence language) {
-        this.expressionID = expression.id;
-        this.body = expression.body;
-        this.pronounce = expression.pronounces.stream().
-                filter(p -> language.equals(p.language)).
-                findAny().orElse(new Pronounce()).body;
-        this.translation = expression.translations.stream().
-                filter(t -> language.equals(t.language)).
-                findAny().orElse(new Translation()).body;
-        this.examples = buildExamples(expression.examples, language);
-        this.progress = expression.plans.get(0).progress;
-        this.updateTime = expression.plans.get(0).updateTime;
-    }
-
-    private List<Translatable> buildExamples(List<Example> examples, CharSequence language) {
-        //Not using Stream#collect here for compatibility.
-        ArrayList<Translatable> results = new ArrayList<>(examples.size());
-        examples.stream().
-                map(i -> new ExampleWrapper(i, language)).
-                forEach(results::add);
-        return results;
     }
 
 

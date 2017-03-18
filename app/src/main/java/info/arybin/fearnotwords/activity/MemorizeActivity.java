@@ -14,5 +14,6 @@ public class MemorizeActivity extends BaseActivity {
         setContentView(R.layout.activity_memorize);
         ButterKnife.bind(this);
         initializeViews();
+
     }
 }
