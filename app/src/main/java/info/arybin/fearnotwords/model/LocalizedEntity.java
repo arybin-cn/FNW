@@ -20,6 +20,7 @@ import info.arybin.fearnotwords.model.orm.Translation;
  * The language of pronounce/translation and the translation of examples are determined by the language
  * used to construct.
  */
+@SuppressWarnings("unused")
 public class LocalizedEntity implements Translatable, Pronounceable, Exampleable {
 
     private final long expressionID;
@@ -28,10 +29,17 @@ public class LocalizedEntity implements Translatable, Pronounceable, Exampleable
     private final CharSequence translation;
     private final List<Translatable> examples;
     private int progress;
+    private Date updateTime;
 
-    public int save() {
-        Expression expression = new Expression(progress, updateTime);
-        return expression.update(expressionID);
+    public boolean save() {
+        Expression expression = DataSupport.find(Expression.class, expressionID);
+        return expression.plans.stream().
+                map(i -> {
+                            i.progress = progress;
+                            i.updateTime = updateTime;
+                            return i.save();
+                        }
+                ).filter(i -> !i).findAny().orElse(true);
     }
 
     public int getProgress() {
@@ -55,8 +63,6 @@ public class LocalizedEntity implements Translatable, Pronounceable, Exampleable
         this.updateTime = updateTime;
     }
 
-    private Date updateTime;
-
 
     public LocalizedEntity(String expressionBody, CharSequence language) {
         this(DataSupport.where("body = ?", expressionBody).find(Expression.class).get(0), language);
@@ -72,8 +78,8 @@ public class LocalizedEntity implements Translatable, Pronounceable, Exampleable
                 filter(t -> language.equals(t.language)).
                 findAny().orElse(new Translation()).body;
         this.examples = buildExamples(expression.examples, language);
-        this.progress = expression.progress;
-        this.updateTime = expression.updateTime;
+        this.progress = expression.plans.get(0).progress;
+        this.updateTime = expression.plans.get(0).updateTime;
     }
 
     private List<Translatable> buildExamples(List<Example> examples, CharSequence language) {

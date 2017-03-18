@@ -14,22 +14,15 @@ import java.util.List;
  * An Expression has many Expression(in different language that describe the same thing)
  * An Expression has many Translation/Pronounce(in different language)
  * An Expression has many Example that has the same language with it
+ * An Expression has many Plan(eg. "GRE"/"IELTS") which changed synchronously.
  */
 public class Expression extends LocalizedORM {
     public List<Expression> expressions;
     public List<Translation> translations;
     public List<Pronounce> pronounces;
     public List<Example> examples;
+    public List<Plan> plans;
 
     public long id;
-    @Column(defaultValue = "0")
-    public int progress;
-    public Date updateTime;
 
-    public Expression(){}
-
-    public Expression(int progress, Date updateTime) {
-        this.progress = progress;
-        this.updateTime = updateTime;
-    }
 }

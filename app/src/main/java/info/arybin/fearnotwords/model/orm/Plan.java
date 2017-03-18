@@ -2,6 +2,8 @@ package info.arybin.fearnotwords.model.orm;
 
 import org.litepal.annotation.Column;
 
+import java.util.Date;
+
 
 /**
  * A Plan is an aggregation for many Expression(eg. "GRE")
@@ -14,4 +16,8 @@ import org.litepal.annotation.Column;
 public class Plan extends LocalizedORM {
     @Column(nullable = false)
     public Expression expression;
+
+    @Column(defaultValue = "0")
+    public int progress;
+    public Date updateTime;
 }
