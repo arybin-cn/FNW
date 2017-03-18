@@ -37,14 +37,12 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         setTextViewFont(textView, configs.getString(KEY_FONT, DEF_FONT));
     }
 
-
     private void initialize() {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         assetManager = getAssets();
         configs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
     }
-
 
     protected void initializeViews() {
         try {

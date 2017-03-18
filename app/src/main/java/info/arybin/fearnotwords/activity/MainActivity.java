@@ -1,5 +1,6 @@
 package info.arybin.fearnotwords.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -72,7 +73,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initializeViews();
-        test();
+
     }
 
     private void test() {
@@ -82,13 +83,30 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initializeViews() {
         super.initializeViews();
+        imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.15f, 5));
         blurView.setupWith((ViewGroup) imageView.getParent()).blurRadius(BLUR_RADIUS);
         layoutSetting.setOnTouchListener((v, event) -> {
             layoutFabReveal.revealMainView();
             return true;
         });
 
-        imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.15f, 5));
+        layoutEntranceNew.setOnSlideListener(new SlideLayout.OnSlideListener() {
+            @Override
+            public void onSlideToLeft(SlideLayout layout) {
+
+            }
+
+            @Override
+            public void onSlideToRight(SlideLayout layout) {
+                Intent i = new Intent(MainActivity.this, MemorizeActivity.class);
+                startActivity(i);
+            }
+
+            @Override
+            public void onSlide(float rate) {
+
+            }
+        });
 
 
     }
