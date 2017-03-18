@@ -1,5 +1,8 @@
 package info.arybin.fearnotwords.model.orm;
 
+import org.litepal.annotation.Column;
+
+import java.util.Date;
 import java.util.List;
 
 
@@ -17,4 +20,9 @@ public class Expression extends LocalizedORM {
     public List<Translation> translations;
     public List<Pronounce> pronounces;
     public List<Example> examples;
+
+    @Column(defaultValue = "0")
+    public int progress;
+    public Date updateTime;
+
 }
