@@ -1,15 +1,21 @@
 package info.arybin.fearnotwords.activity;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.flaviofaria.kenburnsview.KenBurnsView;
 
+import java.util.Random;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
+import info.arybin.fearnotwords.model.LocalizedEntity;
+import info.arybin.fearnotwords.model.LocalizedPlan;
 import info.arybin.fearnotwords.ui.anim.SimpleTransitionGenerator;
 import info.arybin.fearnotwords.ui.view.FABRevealLayout;
 import info.arybin.fearnotwords.ui.view.SlideLayout;
@@ -72,31 +78,32 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initializeViews();
-
     }
 
-    private void test() {
-
-    }
 
     @Override
     protected void initializeViews() {
         super.initializeViews();
         imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.15f, 5));
         blurView.setupWith((ViewGroup) imageView.getParent()).blurRadius(BLUR_RADIUS);
-        layoutSetting.setOnTouchListener((v, event) -> {
-            layoutFabReveal.revealMainView();
-            return true;
+        layoutSetting.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                layoutFabReveal.revealMainView();
+                return true;
+            }
         });
 
         layoutEntranceNew.setOnSlideListener(new SlideLayout.OnSlideListener() {
             @Override
             public void onSlideToLeft(SlideLayout layout) {
 
+
             }
 
             @Override
             public void onSlideToRight(SlideLayout layout) {
+
             }
 
             @Override

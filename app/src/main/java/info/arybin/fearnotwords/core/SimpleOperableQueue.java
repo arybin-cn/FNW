@@ -12,7 +12,7 @@ public class SimpleOperableQueue<T> extends AbstractOperableQueue<T> {
     }
 
     public static <S> SimpleOperableQueue<S> buildFrom(Collection<S> source,
-                                                    Collection<S> skipped) {
+                                                       Collection<S> skipped) {
         if (null == source || null == skipped || source.size() == 0) {
             return null;
         }
@@ -23,7 +23,7 @@ public class SimpleOperableQueue<T> extends AbstractOperableQueue<T> {
         if (null == source || source.size() == 0) {
             return null;
         }
-        return new SimpleOperableQueue<>(source, new ConcurrentLinkedQueue<>());
+        return new SimpleOperableQueue<>(source, new ConcurrentLinkedQueue<S>());
     }
 
 

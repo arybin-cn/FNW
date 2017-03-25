@@ -14,8 +14,8 @@ public class ExpressionL extends DataSupport {
     private long id;
     @Column(nullable = false)
     private Expression expression;
+    private long expression_id;
     private List<EntityL> entityLs = new ArrayList<>();
-
 
 
     public long getId() {
@@ -27,6 +27,9 @@ public class ExpressionL extends DataSupport {
     }
 
     public Expression getExpression() {
+        if (null == expression) {
+            expression = DataSupport.find(Expression.class, expression_id);
+        }
         return expression;
     }
 

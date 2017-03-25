@@ -97,7 +97,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         releaseDatabase();
     }
 
-    protected boolean initializedDatabase(){
+    protected boolean initializedDatabase() {
         return initializedDatabase;
     }
 
@@ -107,23 +107,26 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
     }
 
     protected final void releaseDatabase() {
-        new Thread(() -> {
-            try {
-                byte[] buf;
-                File dbFile = getDatabasePath(DEF_DB_FILE);
-                dbFile.getParentFile().mkdirs();
-                dbFile.createNewFile();
-                InputStream inputStream = assetManager.open("databases/" + DEF_DB_FILE);
-                buf = new byte[inputStream.available()];
-                FileOutputStream fileOutputStream = new FileOutputStream(dbFile);
-                while (inputStream.read(buf) != -1) {
-                    fileOutputStream.write(buf);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    byte[] buf;
+                    File dbFile = getDatabasePath(DEF_DB_FILE);
+                    dbFile.getParentFile().mkdirs();
+                    dbFile.createNewFile();
+                    InputStream inputStream = assetManager.open("databases/" + DEF_DB_FILE);
+                    buf = new byte[inputStream.available()];
+                    FileOutputStream fileOutputStream = new FileOutputStream(dbFile);
+                    while (inputStream.read(buf) != -1) {
+                        fileOutputStream.write(buf);
+                    }
+                    fileOutputStream.close();
+                    inputStream.close();
+                    handler.sendEmptyMessage(MSG_INITIALIZED_DB);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                fileOutputStream.close();
-                inputStream.close();
-                handler.sendEmptyMessage(MSG_INITIALIZED_DB);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }).start();
     }

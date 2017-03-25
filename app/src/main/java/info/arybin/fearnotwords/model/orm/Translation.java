@@ -12,6 +12,7 @@ public class Translation extends DataSupport {
     private String language;
     @Column(nullable = false)
     private Expression expression;
+    private long expression_id;
 
 
     public long getId() {
@@ -39,6 +40,9 @@ public class Translation extends DataSupport {
     }
 
     public Expression getExpression() {
+        if (null == expression) {
+            expression = DataSupport.find(Expression.class, expression_id);
+        }
         return expression;
     }
 

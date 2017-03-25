@@ -31,6 +31,7 @@ public class Entity extends DataSupport {
     private Date update_at;
     @Column(nullable = false)
     private Expression expression;
+    private long expression_id;
     private List<Plan> plans = new ArrayList<>();
 
     public long getId() {
@@ -74,6 +75,9 @@ public class Entity extends DataSupport {
     }
 
     public Expression getExpression() {
+        if (null == expression) {
+            expression = DataSupport.find(Expression.class, expression_id);
+        }
         return expression;
     }
 

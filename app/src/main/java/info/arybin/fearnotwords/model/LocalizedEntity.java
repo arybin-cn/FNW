@@ -9,6 +9,9 @@ import java.util.List;
 
 import info.arybin.fearnotwords.model.orm.Entity;
 import info.arybin.fearnotwords.model.orm.EntityL;
+import info.arybin.fearnotwords.model.orm.ExpressionL;
+import info.arybin.fearnotwords.model.orm.Pronounce;
+import info.arybin.fearnotwords.model.orm.Translation;
 
 /**
  * An LocalizedEntity is an abstract concept, it can be word or phrase or
@@ -37,36 +40,53 @@ public class LocalizedEntity implements Memorable {
     }
 
     public static LocalizedEntity create(String entityBody, String language) {
-        Entity entity = DataSupport.where("body = ?", entityBody).findFirst(Entity.class);
+        Entity entity = DataSupport.where("body = ?", entityBody).findFirst(Entity.class, true);
         return create(entity, language);
     }
 
 
     private LocalizedEntity(Entity entity, String language) {
+        Pronounce tmpPronounce;
+        Translation tmpTranslation;
+
         entityID = entity.getId();
         body = entity.getBody();
         progress = entity.getProgress();
         updateTime = entity.getUpdateTime();
-        pronounce = entity.getExpression().getPronounce(entity.getLanguage()).getBody();
-        translation = entity.getExpression().getTranslation(language).getBody();
+
+        tmpPronounce = entity.getExpression().getPronounce(entity.getLanguage());
+        if (null != tmpPronounce) {
+            pronounce = tmpPronounce.getBody();
+        } else {
+            pronounce = null;
+        }
+
+        tmpTranslation = entity.getExpression().getTranslation(language);
+        if (null != tmpTranslation) {
+            translation = tmpTranslation.getBody();
+        } else {
+            translation = null;
+        }
+
         examples = new ArrayList<>();
-        entity.getExpression().getExpressionLs().forEach(e -> {
-                    CharSequence original = null;
-                    CharSequence translation = null;
-                    for (EntityL entityL : e.getEntityLs()) {
-                        if (entity.getLanguage().equals(entityL.getLanguage())) {
-                            original = entity.getBody();
-                        }
-                        if (entity.getLanguage().equals(language)) {
-                            translation = entity.getBody();
-                        }
-                        if (original != null && translation != null) {
-                            examples.add(new ExampleWrapper(original, translation));
-                            break;
-                        }
-                    }
+        for (ExpressionL expressionL : entity.getExpression().getExpressionLs()) {
+            CharSequence original = null;
+            CharSequence translation = null;
+            for (EntityL entityL : expressionL.getEntityLs()) {
+                if (entity.getLanguage().equals(entityL.getLanguage())) {
+                    original = entity.getBody();
                 }
-        );
+                if (entity.getLanguage().equals(language)) {
+                    translation = entity.getBody();
+                }
+                if (original != null && translation != null) {
+                    examples.add(new ExampleWrapper(original, translation));
+                    break;
+                }
+            }
+
+        }
+
     }
 
 
@@ -87,18 +107,46 @@ public class LocalizedEntity implements Memorable {
         return progress;
     }
 
-    public int setAsNew() {
-        return setProgress(Entity.PROGRESS_NEW);
+    public void setAsNew(boolean autoSave) {
+        setProgress(Entity.PROGRESS_NEW);
+        if (autoSave) {
+            save();
+        }
     }
 
-    public int setAsSkipped() {
-        return setProgress(Entity.PROGRESS_SKIPPED);
+    public void setAsNew() {
+        setAsNew(true);
     }
 
-    public int setAsOld() {
-        return setProgress(Entity.PROGRESS_OLD);
+    public void setAsSkipped(boolean autoSave) {
+        setProgress(Entity.PROGRESS_SKIPPED);
+        if (autoSave) {
+            save();
+        }
     }
 
+
+    public void setAsSkipped() {
+        setAsSkipped(true);
+    }
+
+    public void setAsOld(boolean autoSave) {
+        setProgress(Entity.PROGRESS_OLD);
+        if (autoSave) {
+            save();
+        }
+    }
+
+    public void setAsOld() {
+        setAsOld(true);
+    }
+
+    public int save() {
+        Entity entity = new Entity();
+        entity.setProgress(progress);
+        entity.setUpdateTime(updateTime);
+        return entity.update(entityID);
+    }
 
     public Date getUpdateTime() {
         return updateTime;
@@ -127,6 +175,7 @@ public class LocalizedEntity implements Memorable {
     public CharSequence getPronounce() {
         return pronounce;
     }
+
 
     private class ExampleWrapper implements Translatable {
         private final CharSequence original;

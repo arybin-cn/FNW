@@ -30,26 +30,34 @@ public class LocalizedPlan {
     }
 
 
-    private List<Entity> queryByProgress(int progress) {
-        ArrayList<Entity> entities = new ArrayList<>();
-        plan.getEntities().stream().filter(i -> i.getProgress() == progress).
-                forEach(e -> entities.add(e));
-        return entities;
+    private List<LocalizedEntity> queryByProgress(int progress) {
+        ArrayList<LocalizedEntity> result = new ArrayList<>();
+        for (Entity entity : plan.getEntities()) {
+            if (entity.getProgress() == progress) {
+                result.add(LocalizedEntity.create(entity, plan.getToLanguage()));
+            }
+
+        }
+        return result;
     }
 
-    public List<Entity> getAll() {
-        return plan.getEntities();
+    public List<LocalizedEntity> getAll() {
+        ArrayList<LocalizedEntity> result = new ArrayList<>();
+        for (Entity entity : plan.getEntities()) {
+            result.add(LocalizedEntity.create(entity, plan.getToLanguage()));
+        }
+        return result;
     }
 
-    public List<Entity> getNew() {
+    public List<LocalizedEntity> getNew() {
         return queryByProgress(Entity.PROGRESS_NEW);
     }
 
-    public List<Entity> getSkipped() {
+    public List<LocalizedEntity> getSkipped() {
         return queryByProgress(Entity.PROGRESS_SKIPPED);
     }
 
-    public List<Entity> getOld() {
+    public List<LocalizedEntity> getOld() {
         return queryByProgress(Entity.PROGRESS_OLD);
     }
 

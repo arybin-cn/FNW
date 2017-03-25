@@ -20,11 +20,6 @@ public class Expression extends DataSupport {
     private List<ExpressionL> expressionLs = new ArrayList<>();
 
 
-    private <S> S localizedAssoc(Class<S> klass, String language) {
-        S s = DataSupport.where("expression_id = ? and language = ?", String.valueOf(id), language).find(klass).get(0);
-        return s;
-    }
-
     public long getId() {
         return id;
     }
@@ -35,7 +30,12 @@ public class Expression extends DataSupport {
 
 
     public Entity getEntity(String language) {
-        return localizedAssoc(Entity.class, language);
+        for (Entity entity : getEntities()) {
+            if (language.equals(entity.getLanguage())) {
+                return entity;
+            }
+        }
+        return null;
     }
 
     public List<Entity> getEntities() {
@@ -44,7 +44,12 @@ public class Expression extends DataSupport {
     }
 
     public Translation getTranslation(String language) {
-        return localizedAssoc(Translation.class, language);
+        for (Translation translation : getTranslations()) {
+            if (language.equals(translation.getLanguage())) {
+                return translation;
+            }
+        }
+        return null;
     }
 
     public List<Translation> getTranslations() {
@@ -53,7 +58,12 @@ public class Expression extends DataSupport {
     }
 
     public Pronounce getPronounce(String language) {
-        return localizedAssoc(Pronounce.class, language);
+        for (Pronounce pronounce : getPronounces()) {
+            if (language.equals(pronounce.getLanguage())) {
+                return pronounce;
+            }
+        }
+        return null;
     }
 
     public List<Pronounce> getPronounces() {
