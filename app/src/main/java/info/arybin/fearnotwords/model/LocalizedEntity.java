@@ -7,11 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import info.arybin.fearnotwords.model.orm.Example;
-import info.arybin.fearnotwords.model.orm.Expression;
-import info.arybin.fearnotwords.model.orm.Plan;
-import info.arybin.fearnotwords.model.orm.Pronounce;
-import info.arybin.fearnotwords.model.orm.Translation;
+import info.arybin.fearnotwords.model.orm.Entity;
+import info.arybin.fearnotwords.model.orm.EntityL;
 
 /**
  * An LocalizedEntity is an abstract concept, it can be word or phrase or
@@ -24,8 +21,12 @@ import info.arybin.fearnotwords.model.orm.Translation;
 @SuppressWarnings("unused")
 public class LocalizedEntity implements Memorable {
 
-    private final long expressionID;
-    private final long planID;
+    public static int PROGRESS_NEW = 0;
+    public static int PROGRESS_SKIPPED = 1;
+    public static int PROGRESS_OLD = 2;
+
+
+    private final long entityID;
     private final CharSequence body;
     private final CharSequence pronounce;
     private final CharSequence translation;
@@ -33,59 +34,63 @@ public class LocalizedEntity implements Memorable {
     private int progress;
     private Date updateTime;
 
-    public int save() {
-        Expression expression = DataSupport.find(Expression.class, expressionID);
-        return new Plan(progress, updateTime).update(planID);
-
-    }
-
-    public static LocalizedEntity create(Expression expression, CharSequence planName, CharSequence language) {
-        if (null == expression || null == planName || null == language) {
-            return null;
+    public LocalizedEntity create(Entity entity, String language) {
+        if (null != entity && null != language) {
+            return new LocalizedEntity(entity, language);
         }
-        Plan plan = expression.plans.stream().filter(p -> planName.equals(p.body)).findAny().orElse(null);
-        if(null == plan){
-            return null;
+        return null;
+    }
+
+    public LocalizedEntity create(String entityBody, String language) {
+        List<Entity> entities = DataSupport.where("body = ?", entityBody).find(Entity.class);
+        if (entities.size() > 0) {
+            return create(entities.get(0), language);
         }
-        return new LocalizedEntity(expression, plan, language);
+        return null;
     }
 
-    private LocalizedEntity(Expression expression, Plan plan, CharSequence language) {
-        this.planID = plan.id;
-        this.expressionID = expression.id;
-        this.body = expression.body;
-        this.pronounce = expression.pronounces.stream().
-                filter(p -> language.equals(p.language)).
-                findAny().orElse(new Pronounce()).body;
-        this.translation = expression.translations.stream().
-                filter(t -> language.equals(t.language)).
-                findAny().orElse(new Translation()).body;
-        this.examples = buildExamples(expression.examples, language);
-        this.progress = expression.plans.get(0).progress;
-        this.updateTime = expression.plans.get(0).updateTime;
+
+    private LocalizedEntity(Entity entity, String language) {
+        entityID = entity.getId();
+        body = entity.getBody();
+        progress = entity.getProgress();
+        updateTime = entity.getUpdateTime();
+        pronounce = entity.getExpression().getPronounce(entity.getLanguage()).getBody();
+        translation = entity.getExpression().getTranslation(language).getBody();
+        examples = new ArrayList<>();
+        entity.getExamples().forEach(e -> examples.add(new ExampleWrapper(e, language)));
     }
 
-    private List<Translatable> buildExamples(List<Example> examples, CharSequence language) {
-        //Not using Stream#collect here for compatibility.
-        ArrayList<Translatable> results = new ArrayList<>(examples.size());
-        examples.stream().
-                map(i -> new ExampleWrapper(i, language)).
-                forEach(results::add);
-        return results;
-    }
 
     public int getProgress() {
         return progress;
     }
 
-    public void setProgress(int progress) {
-        this.setProgress(progress, true);
+    public int setProgress(int progress) {
+        return setProgress(progress, true);
     }
 
-    public void setProgress(int progress, boolean updateTime) {
+
+    public int setProgress(int progress, boolean updateTime) {
         this.progress = progress;
-        this.setUpdateTime(new Date());
+        if (updateTime) {
+            setUpdateTime(new Date());
+        }
+        return progress;
     }
+
+    public int setAsNew() {
+        return setProgress(PROGRESS_NEW);
+    }
+
+    public int setAsSkipped() {
+        return setProgress(PROGRESS_SKIPPED);
+    }
+
+    public int setAsOld() {
+        return setProgress(PROGRESS_OLD);
+    }
+
 
     public Date getUpdateTime() {
         return updateTime;
@@ -95,14 +100,9 @@ public class LocalizedEntity implements Memorable {
         this.updateTime = updateTime;
     }
 
-
+    @Override
     public CharSequence getOriginal() {
         return body;
-    }
-
-    @Override
-    public CharSequence getPronounce() {
-        return pronounce;
     }
 
     @Override
@@ -115,26 +115,30 @@ public class LocalizedEntity implements Memorable {
         return examples;
     }
 
+    @Override
+    public CharSequence getPronounce() {
+        return pronounce;
+    }
 
     private class ExampleWrapper implements Translatable {
-        private final Example example;
+        private final EntityL entityL;
         private final CharSequence language;
 
-        ExampleWrapper(Example example, CharSequence language) {
-            this.example = example;
+        ExampleWrapper(EntityL entityL, CharSequence language) {
+            this.entityL = entityL;
             this.language = language;
         }
 
         @Override
         public CharSequence getOriginal() {
-            return example.body;
+            return entityL.getBody();
         }
 
         @Override
         public CharSequence getTranslation() {
-            return example.translations.stream().
-                    filter(t -> language.equals(t.language)).
-                    findAny().orElse(new Example()).body;
+            return entityL.getExpressionL().getEntityLs().stream().
+                    filter(t -> language.equals(t.getLanguage())).
+                    findAny().orElse(new EntityL()).getBody();
         }
 
     }
