@@ -1,21 +1,15 @@
 package info.arybin.fearnotwords.activity;
 
-import android.content.EntityIterator;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.flaviofaria.kenburnsview.KenBurnsView;
 
-import org.litepal.crud.DataSupport;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
-import info.arybin.fearnotwords.model.LocalizedEntity;
-import info.arybin.fearnotwords.model.orm.Entity;
 import info.arybin.fearnotwords.ui.anim.SimpleTransitionGenerator;
 import info.arybin.fearnotwords.ui.view.FABRevealLayout;
 import info.arybin.fearnotwords.ui.view.SlideLayout;
