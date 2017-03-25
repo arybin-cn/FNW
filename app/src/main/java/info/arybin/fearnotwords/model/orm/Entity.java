@@ -17,11 +17,9 @@ import java.util.List;
  * An Entity has many EntityLs(with the same language)
  */
 public class Entity extends DataSupport {
-
     public static int PROGRESS_NEW = 0;
     public static int PROGRESS_SKIPPED = 1;
     public static int PROGRESS_OLD = 2;
-
 
     private long id;
     @Column(nullable = false)

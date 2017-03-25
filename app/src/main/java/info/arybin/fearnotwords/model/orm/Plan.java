@@ -15,9 +15,12 @@ import java.util.List;
 public class Plan extends DataSupport {
     private long id;
     @Column(nullable = false)
-    private String body;
+    private String name;
     @Column(nullable = false)
-    private String language;
+    private String from;
+    @Column(nullable = false)
+    private String to;
+
     private List<Entity> entities = new ArrayList<>();
 
 
@@ -29,48 +32,33 @@ public class Plan extends DataSupport {
         this.id = id;
     }
 
-    public String getLanguage() {
-        return language;
+    public String getName() {
+        return name;
     }
 
-    public void setLanguage(String language) {
-        this.language = language;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getBody() {
-        return body;
+
+    public String getFrom() {
+        return from;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
     }
 
     public List<Entity> getEntities() {
         return entities;
     }
 
-
-    public List<Entity> getAll() {
-        return DataSupport.where("plan_id == ?",
-                String.valueOf(id)).find(Entity.class);
-    }
-
-    public List<Entity> getSkipped() {
-        return DataSupport.where("plan_id == ? and progress == ?",
-                String.valueOf(id),
-                String.valueOf(Entity.PROGRESS_SKIPPED)).find(Entity.class);
-    }
-
-
-    public List<Entity> getNew() {
-        return DataSupport.where("plan_id == ? and progress == ?",
-                String.valueOf(id),
-                String.valueOf(Entity.PROGRESS_NEW)).find(Entity.class);
-    }
-
-    public List<Entity> getOld() {
-        return DataSupport.where("plan_id == ? and progress == ?",
-                String.valueOf(id),
-                String.valueOf(Entity.PROGRESS_OLD)).find(Entity.class);
-    }
 }
