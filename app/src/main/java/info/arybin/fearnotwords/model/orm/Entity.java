@@ -28,7 +28,7 @@ public class Entity extends DataSupport {
     private String language;
     @Column(defaultValue = "0")
     private int progress;
-    private Date updateTime;
+    private Date update_at;
     @Column(nullable = false)
     private Expression expression;
     private List<Plan> plans = new ArrayList<>();
@@ -66,11 +66,11 @@ public class Entity extends DataSupport {
     }
 
     public Date getUpdateTime() {
-        return updateTime;
+        return update_at;
     }
 
     public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+        this.update_at = updateTime;
     }
 
     public Expression getExpression() {

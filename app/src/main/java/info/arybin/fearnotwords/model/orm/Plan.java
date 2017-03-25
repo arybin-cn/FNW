@@ -17,9 +17,9 @@ public class Plan extends DataSupport {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
-    private String from;
+    private String from_language;
     @Column(nullable = false)
-    private String to;
+    private String to_language;
 
     private List<Entity> entities = new ArrayList<>();
 
@@ -41,20 +41,20 @@ public class Plan extends DataSupport {
     }
 
 
-    public String getFrom() {
-        return from;
+    public String getFromLanguage() {
+        return from_language;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setFromLanguage(String from_language) {
+        this.from_language = from_language;
     }
 
-    public String getTo() {
-        return to;
+    public String getToLanguage() {
+        return to_language;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public void setToLanguage(String to_language) {
+        this.to_language = to_language;
     }
 
     public List<Entity> getEntities() {
