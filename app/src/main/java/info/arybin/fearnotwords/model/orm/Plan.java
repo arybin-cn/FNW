@@ -14,9 +14,6 @@ import java.util.List;
  */
 public class Plan extends LocalizedORM {
     private long id;
-    private int progress;
-    @Column(defaultValue = "0")
-    private Date updateTime;
     private List<Entity> entities = new ArrayList<>();
 
 
@@ -26,22 +23,6 @@ public class Plan extends LocalizedORM {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public int getProgress() {
-        return progress;
-    }
-
-    public void setProgress(int progress) {
-        this.progress = progress;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
     }
 
 }
