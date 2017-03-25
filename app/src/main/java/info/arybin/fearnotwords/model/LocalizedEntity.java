@@ -40,7 +40,7 @@ public class LocalizedEntity implements Memorable {
     }
 
     public static LocalizedEntity create(String entityBody, String language) {
-        Entity entity = DataSupport.where("body = ?", entityBody).findFirst(Entity.class, true);
+        Entity entity = DataSupport.where("body = ?", entityBody).findFirst(Entity.class);
         return create(entity, language);
     }
 

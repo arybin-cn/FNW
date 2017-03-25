@@ -21,6 +21,7 @@ public class EntityL extends DataSupport {
     private String language;
     @Column(nullable = false)
     private ExpressionL expressionL;
+    private long expressionl_id;
 
 
     public long getId() {
@@ -48,6 +49,9 @@ public class EntityL extends DataSupport {
     }
 
     public ExpressionL getExpressionL() {
+        if (null == expressionL) {
+            expressionL = DataSupport.find(ExpressionL.class, expressionl_id);
+        }
         return expressionL;
     }
 
