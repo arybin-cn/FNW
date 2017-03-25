@@ -1,28 +1,53 @@
 package info.arybin.fearnotwords.model.orm;
 
-import org.litepal.annotation.Column;
+import org.litepal.crud.DataSupport;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * The Expression is an abstract concept which is used to describe something
- * For example, An Expression may simply be an English word or a Chinese phrase both of which
- * describe the same thing.
+ * The Expression is an abstract concept of which is used to describe something in different language
+ * An Expression has many Expressions which is specialized in different language
  * <p>
- * An Expression has many Expression(in different language that describe the same thing)
- * An Expression has many Translation/Pronounce(in different language)
- * An Expression has many Example that has the same language with it
- * An Expression has many Plan(eg. "GRE"/"IELTS") which changed synchronously.
+ * An Expression has many Entities/Translation/Pronounce(in different language)
+ * An Expression has many ExpressionLs(with the same language)
  */
-public class Expression extends LocalizedORM {
-    public List<Expression> expressions;
-    public List<Translation> translations;
-    public List<Pronounce> pronounces;
-    public List<Example> examples;
-    public List<Plan> plans;
+public class Expression extends DataSupport {
+    private long id;
+    private List<Entity> entities = new ArrayList<>();
+    private List<Translation> translations = new ArrayList<>();
+    private List<Pronounce> pronounces = new ArrayList<>();
+    private List<ExpressionL> expressionLs = new ArrayList<>();
 
-    public long id;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public List<Entity> getEntities() {
+        entities = DataSupport.where("expression_id = ?", String.valueOf(id)).find(Entity.class);
+        return entities;
+    }
+
+    public List<Translation> getTranslations() {
+        translations = DataSupport.where("expression_id = ?", String.valueOf(id)).find(Translation.class);
+        return translations;
+    }
+
+
+    public List<Pronounce> getPronounces() {
+        pronounces = DataSupport.where("expression_id = ?", String.valueOf(id)).find(Pronounce.class);
+        return pronounces;
+    }
+
+
+    public List<ExpressionL> getExpressionLs() {
+        expressionLs = DataSupport.where("expression_id = ?", String.valueOf(id)).find(ExpressionL.class);
+        return expressionLs;
+    }
 
 }

@@ -25,10 +25,13 @@
         </list>
     -->
     <list>
-        <mapping class="info.arybin.fearnotwords.model.orm.Expression" />
+        <mapping class="info.arybin.fearnotwords.model.orm.Plan"/>
+        <mapping class="info.arybin.fearnotwords.model.orm.Expression"/>
+        <mapping class="info.arybin.fearnotwords.model.orm.Entity" />
         <mapping class="info.arybin.fearnotwords.model.orm.Pronounce" />
         <mapping class="info.arybin.fearnotwords.model.orm.Translation" />
-        <mapping class="info.arybin.fearnotwords.model.orm.Example" />
+        <mapping class="info.arybin.fearnotwords.model.orm.ExpressionL" />
+        <mapping class="info.arybin.fearnotwords.model.orm.EntityL" />
     </list>
 
 

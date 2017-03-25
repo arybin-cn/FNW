@@ -2,31 +2,46 @@ package info.arybin.fearnotwords.model.orm;
 
 import org.litepal.annotation.Column;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 /**
- * A Plan is an aggregation for many Expression(eg. "GRE")
- * Note: We should not build many-to-many relation between Expression and Plan,
- * which will lead to lots of cost in performance due to ORM...
+ * A Plan is an aggregation for many Entity(eg. "GRE")
  * <p>
- * Here we build "one-to-one" relation(in fact a map)
- * between Expression and Plan to avoid the potential issue
+ * A Plan has many Expressions(that have the same language with it)
  */
 public class Plan extends LocalizedORM {
-    @Column(nullable = false)
-    public Expression expression;
-
+    private long id;
+    private int progress;
     @Column(defaultValue = "0")
-    public int progress;
-    public Date updateTime;
+    private Date updateTime;
+    private List<Entity> entities = new ArrayList<>();
 
-    public long id;
 
-    public Plan() {
+    public long getId() {
+        return id;
     }
 
-    public Plan(int progress, Date updateTime) {
-        super();
+    public void setId(long id) {
+        this.id = id;
     }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
 }
