@@ -10,7 +10,7 @@ import java.util.List;
  * An Expression has many Expressions which is specialized in different language
  * <p>
  * An Expression has many Entities/Translation/Pronounce(in different language)
- * An Expression has many ExpressionLs(with the same language)
+ * An Expression has many ExpressionLs
  */
 public class Expression extends DataSupport {
     private long id;
@@ -39,7 +39,7 @@ public class Expression extends DataSupport {
     }
 
     public List<Entity> getEntities() {
-        entities = DataSupport.where("expression_id = ?", String.valueOf(id)).find(Entity.class);
+        entities = DataSupport.where("expression_id == ?", String.valueOf(id)).find(Entity.class);
         return entities;
     }
 
@@ -48,7 +48,7 @@ public class Expression extends DataSupport {
     }
 
     public List<Translation> getTranslations() {
-        translations = DataSupport.where("expression_id = ?", String.valueOf(id)).find(Translation.class);
+        translations = DataSupport.where("expression_id == ?", String.valueOf(id)).find(Translation.class);
         return translations;
     }
 
@@ -57,16 +57,12 @@ public class Expression extends DataSupport {
     }
 
     public List<Pronounce> getPronounces() {
-        pronounces = DataSupport.where("expression_id = ?", String.valueOf(id)).find(Pronounce.class);
+        pronounces = DataSupport.where("expression_id == ?", String.valueOf(id)).find(Pronounce.class);
         return pronounces;
     }
 
-    public ExpressionL getExpressionL(String language) {
-        return localizedAssoc(ExpressionL.class, language);
-    }
-
     public List<ExpressionL> getExpressionLs() {
-        expressionLs = DataSupport.where("expression_id = ?", String.valueOf(id)).find(ExpressionL.class);
+        expressionLs = DataSupport.where("expression_id == ?", String.valueOf(id)).find(ExpressionL.class);
         return expressionLs;
     }
 

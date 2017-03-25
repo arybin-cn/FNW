@@ -7,9 +7,9 @@ import org.litepal.crud.DataSupport;
 public class Pronounce extends DataSupport {
     private long id;
     @Column(nullable = false)
-    private String language;
-    @Column(nullable = false)
     private String body;
+    @Column(nullable = false)
+    private String language;
     @Column(nullable = false)
     private Expression expression;
 

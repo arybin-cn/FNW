@@ -14,20 +14,26 @@ import java.util.List;
  * describe the same thing.
  * <p>
  * An Entity has many Plan(eg. "GRE"/"IELTS")
+ * An Entity has many EntityLs(with the same language)
  */
 public class Entity extends DataSupport {
+
+    public static int PROGRESS_NEW = 0;
+    public static int PROGRESS_SKIPPED = 1;
+    public static int PROGRESS_OLD = 2;
+
+
     private long id;
     @Column(nullable = false)
-    private String language;
-    @Column(nullable = false)
     private String body;
+    @Column(nullable = false)
+    private String language;
     @Column(defaultValue = "0")
     private int progress;
     private Date updateTime;
     @Column(nullable = false)
     private Expression expression;
     private List<Plan> plans = new ArrayList<>();
-    private List<EntityL> examples = new ArrayList<>();
 
     public long getId() {
         return id;
@@ -79,10 +85,6 @@ public class Entity extends DataSupport {
 
     public List<Plan> getPlans() {
         return plans;
-    }
-
-    public List<EntityL> getExamples() {
-        return examples;
     }
 
 }

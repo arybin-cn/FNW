@@ -21,11 +21,6 @@ import info.arybin.fearnotwords.model.orm.EntityL;
 @SuppressWarnings("unused")
 public class LocalizedEntity implements Memorable {
 
-    public static int PROGRESS_NEW = 0;
-    public static int PROGRESS_SKIPPED = 1;
-    public static int PROGRESS_OLD = 2;
-
-
     private final long entityID;
     private final CharSequence body;
     private final CharSequence pronounce;
@@ -42,11 +37,8 @@ public class LocalizedEntity implements Memorable {
     }
 
     public LocalizedEntity create(String entityBody, String language) {
-        List<Entity> entities = DataSupport.where("body = ?", entityBody).find(Entity.class);
-        if (entities.size() > 0) {
-            return create(entities.get(0), language);
-        }
-        return null;
+        Entity entity = DataSupport.where("body = ?", entityBody).findFirst(Entity.class);
+        return create(entity, language);
     }
 
 
@@ -58,7 +50,23 @@ public class LocalizedEntity implements Memorable {
         pronounce = entity.getExpression().getPronounce(entity.getLanguage()).getBody();
         translation = entity.getExpression().getTranslation(language).getBody();
         examples = new ArrayList<>();
-        entity.getExamples().forEach(e -> examples.add(new ExampleWrapper(e, language)));
+        entity.getExpression().getExpressionLs().forEach(e -> {
+                    CharSequence original = null;
+                    CharSequence translation = null;
+                    for (EntityL entityL : e.getEntityLs()) {
+                        if (entity.getLanguage().equals(entityL.getLanguage())) {
+                            original = entity.getBody();
+                        }
+                        if (entity.getLanguage().equals(language)) {
+                            translation = entity.getBody();
+                        }
+                        if (original != null && translation != null) {
+                            examples.add(new ExampleWrapper(original, translation));
+                            break;
+                        }
+                    }
+                }
+        );
     }
 
 
@@ -80,15 +88,15 @@ public class LocalizedEntity implements Memorable {
     }
 
     public int setAsNew() {
-        return setProgress(PROGRESS_NEW);
+        return setProgress(Entity.PROGRESS_NEW);
     }
 
     public int setAsSkipped() {
-        return setProgress(PROGRESS_SKIPPED);
+        return setProgress(Entity.PROGRESS_SKIPPED);
     }
 
     public int setAsOld() {
-        return setProgress(PROGRESS_OLD);
+        return setProgress(Entity.PROGRESS_OLD);
     }
 
 
@@ -121,24 +129,22 @@ public class LocalizedEntity implements Memorable {
     }
 
     private class ExampleWrapper implements Translatable {
-        private final EntityL entityL;
-        private final CharSequence language;
+        private final CharSequence original;
+        private final CharSequence translation;
 
-        ExampleWrapper(EntityL entityL, CharSequence language) {
-            this.entityL = entityL;
-            this.language = language;
+        ExampleWrapper(CharSequence original, CharSequence translation) {
+            this.original = original;
+            this.translation = translation;
         }
 
         @Override
         public CharSequence getOriginal() {
-            return entityL.getBody();
+            return original;
         }
 
         @Override
         public CharSequence getTranslation() {
-            return entityL.getExpressionL().getEntityLs().stream().
-                    filter(t -> language.equals(t.getLanguage())).
-                    findAny().orElse(new EntityL()).getBody();
+            return translation;
         }
 
     }

@@ -16,12 +16,11 @@ import org.litepal.crud.DataSupport;
 public class EntityL extends DataSupport {
     private long id;
     @Column(nullable = false)
-    private String language;
-    @Column(nullable = false)
     private String body;
     @Column(nullable = false)
+    private String language;
+    @Column(nullable = false)
     private ExpressionL expressionL;
-
 
 
     public long getId() {
@@ -32,20 +31,20 @@ public class EntityL extends DataSupport {
         this.id = id;
     }
 
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
     public String getBody() {
         return body;
     }
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public ExpressionL getExpressionL() {
@@ -55,4 +54,5 @@ public class EntityL extends DataSupport {
     public void setExpressionL(ExpressionL expressionL) {
         this.expressionL = expressionL;
     }
+
 }

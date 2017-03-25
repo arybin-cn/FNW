@@ -3,15 +3,15 @@ package info.arybin.fearnotwords.model.orm;
 import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
-//A Translation belongs to an Entity
+//A Translation belongs to an Expression
 public class Translation extends DataSupport {
     private long id;
     @Column(nullable = false)
-    private String language;
-    @Column(nullable = false)
     private String body;
     @Column(nullable = false)
-    private Entity entity;
+    private String language;
+    @Column(nullable = false)
+    private Expression expression;
 
 
     public long getId() {
@@ -38,7 +38,11 @@ public class Translation extends DataSupport {
         this.body = body;
     }
 
-    public Entity getEntity() {
-        return entity;
+    public Expression getExpression() {
+        return expression;
+    }
+
+    public void setExpression(Expression expression) {
+        this.expression = expression;
     }
 }

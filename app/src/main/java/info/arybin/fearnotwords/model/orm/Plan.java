@@ -4,7 +4,6 @@ import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -16,11 +15,10 @@ import java.util.List;
 public class Plan extends DataSupport {
     private long id;
     @Column(nullable = false)
-    private String language;
-    @Column(nullable = false)
     private String body;
+    @Column(nullable = false)
+    private String language;
     private List<Entity> entities = new ArrayList<>();
-
 
 
     public long getId() {
@@ -51,4 +49,28 @@ public class Plan extends DataSupport {
         return entities;
     }
 
+
+    public List<Entity> getAll() {
+        return DataSupport.where("plan_id == ?",
+                String.valueOf(id)).find(Entity.class);
+    }
+
+    public List<Entity> getSkipped() {
+        return DataSupport.where("plan_id == ? and progress == ?",
+                String.valueOf(id),
+                String.valueOf(Entity.PROGRESS_SKIPPED)).find(Entity.class);
+    }
+
+
+    public List<Entity> getNew() {
+        return DataSupport.where("plan_id == ? and progress == ?",
+                String.valueOf(id),
+                String.valueOf(Entity.PROGRESS_NEW)).find(Entity.class);
+    }
+
+    public List<Entity> getOld() {
+        return DataSupport.where("plan_id == ? and progress == ?",
+                String.valueOf(id),
+                String.valueOf(Entity.PROGRESS_OLD)).find(Entity.class);
+    }
 }
