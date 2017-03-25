@@ -29,14 +29,14 @@ public class LocalizedEntity implements Memorable {
     private int progress;
     private Date updateTime;
 
-    public LocalizedEntity create(Entity entity, String language) {
+    public static LocalizedEntity create(Entity entity, String language) {
         if (null != entity && null != language) {
             return new LocalizedEntity(entity, language);
         }
         return null;
     }
 
-    public LocalizedEntity create(String entityBody, String language) {
+    public static LocalizedEntity create(String entityBody, String language) {
         Entity entity = DataSupport.where("body = ?", entityBody).findFirst(Entity.class);
         return create(entity, language);
     }
