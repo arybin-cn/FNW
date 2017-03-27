@@ -1,6 +1,10 @@
 package info.arybin.fearnotwords.activity;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +12,10 @@ import android.widget.TextView;
 
 import com.flaviofaria.kenburnsview.KenBurnsView;
 
-import java.util.Random;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
-import info.arybin.fearnotwords.model.LocalizedEntity;
-import info.arybin.fearnotwords.model.LocalizedPlan;
 import info.arybin.fearnotwords.ui.anim.SimpleTransitionGenerator;
 import info.arybin.fearnotwords.ui.view.FABRevealLayout;
 import info.arybin.fearnotwords.ui.view.SlideLayout;
@@ -94,6 +94,7 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+
         layoutEntranceNew.setOnSlideListener(new SlideLayout.OnSlideListener() {
             @Override
             public void onSlideToLeft(SlideLayout layout) {
@@ -103,6 +104,9 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onSlideToRight(SlideLayout layout) {
+
+                Intent i = new Intent(MainActivity.this, MemorizeActivity.class);
+                startActivity(i);
 
             }
 

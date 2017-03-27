@@ -9,8 +9,8 @@ import info.arybin.fearnotwords.R;
 
 public class MemorizeActivity extends BaseActivity {
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memorize);
         ButterKnife.bind(this);
         initializeViews();

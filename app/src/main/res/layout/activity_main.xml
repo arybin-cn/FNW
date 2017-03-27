@@ -19,7 +19,8 @@
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@mipmap/bg" />
+            android:src="@mipmap/bg"
+            android:transitionName="123" />
 
 
         <eightbitlab.com.blurview.BlurView
@@ -89,9 +90,9 @@
             android:showDividers="middle">
 
             <info.arybin.fearnotwords.ui.view.SlideLayout
+                android:id="@+id/layoutEntranceNew"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/layoutEntranceNew"
                 android:layout_weight="1">
 
                 <RelativeLayout
@@ -140,8 +141,8 @@
             </info.arybin.fearnotwords.ui.view.SlideLayout>
 
             <info.arybin.fearnotwords.ui.view.SlideLayout
-                android:layout_width="match_parent"
                 android:id="@+id/layoutEntranceOld"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1">
 
@@ -191,9 +192,9 @@
             </info.arybin.fearnotwords.ui.view.SlideLayout>
 
             <info.arybin.fearnotwords.ui.view.SlideLayout
+                android:id="@+id/layoutEntranceAll"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/layoutEntranceAll"
                 android:layout_weight="1">
 
                 <RelativeLayout

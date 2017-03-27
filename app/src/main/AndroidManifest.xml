@@ -18,8 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MemorizeActivity" />
-        <activity android:name=".activity.ListActivity" />
+        <activity
+            android:name=".activity.MemorizeActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.ListActivity"
+            android:launchMode="singleTask" />
     </application>
 
 </manifest>
