@@ -1,10 +1,7 @@
 package info.arybin.fearnotwords.activity;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,7 +96,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onSlideToLeft(SlideLayout layout) {
 
-
+                System.out.println("Left");
             }
 
             @Override

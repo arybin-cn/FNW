@@ -108,12 +108,16 @@ public class SlideLayout extends RelativeLayout {
                 break;
 
             case MotionEvent.ACTION_UP:
-                int scrolledX = getScrollX();
-                mScroller.startScroll(scrolledX, 0, -scrolledX, 0, Math.abs(scrolledX) *5);
-                invalidate();
+                scrollToCenter();
                 break;
         }
         return true;
+    }
+
+    public void scrollToCenter(){
+        int scrolledX = getScrollX();
+        mScroller.startScroll(scrolledX, 0, -scrolledX, 0, Math.abs(scrolledX) *5);
+        invalidate();
     }
 
     @Override
@@ -129,6 +133,7 @@ public class SlideLayout extends RelativeLayout {
                 } else {
                     mOnSlideListener.onSlideToRight(this);
                 }
+                scrollToCenter();
             } else {
                 mOnSlideListener.onSlide(getScrollX() * -1f / mOffsetMax);
             }
