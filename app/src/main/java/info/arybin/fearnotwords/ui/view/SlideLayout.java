@@ -89,6 +89,9 @@ public class SlideLayout extends RelativeLayout {
             case MotionEvent.ACTION_MOVE:
                 float deltaX = event.getX() - mPreviousX;
                 if (mState == STATE_IDLE && Math.abs(deltaX) > mTouchSlop) {
+                    if (null != mOnSlideListener) {
+                        mOnSlideListener.onStartSlide();
+                    }
                     mPreviousX = event.getX();
                     mState = STATE_SCROLLING;
                     break;
@@ -108,15 +111,18 @@ public class SlideLayout extends RelativeLayout {
                 break;
 
             case MotionEvent.ACTION_UP:
+                if (null != mOnSlideListener) {
+                    mOnSlideListener.onFinishSlide();
+                }
                 scrollToCenter();
                 break;
         }
         return true;
     }
 
-    public void scrollToCenter(){
+    public void scrollToCenter() {
         int scrolledX = getScrollX();
-        mScroller.startScroll(scrolledX, 0, -scrolledX, 0, Math.abs(scrolledX) *5);
+        mScroller.startScroll(scrolledX, 0, -scrolledX, 0, Math.abs(scrolledX) * 5);
         invalidate();
     }
 
@@ -126,18 +132,22 @@ public class SlideLayout extends RelativeLayout {
             scrollTo(mScroller.getCurrX(), 0);
             postInvalidate();
         }
-        if (mOnSlideListener != null) {
-            if (Math.abs(Math.abs(getScrollX()) - mOffsetMax) < 1) {
+
+        if (Math.abs(Math.abs(getScrollX()) - mOffsetMax) < 1) {
+            scrollToCenter();
+            if (null != mOnSlideListener) {
                 if (getScrollX() > 0) {
                     mOnSlideListener.onSlideToLeft(this);
                 } else {
                     mOnSlideListener.onSlideToRight(this);
                 }
-                scrollToCenter();
-            } else {
+            }
+        } else {
+            if (null != mOnSlideListener && mState == STATE_SCROLLING) {
                 mOnSlideListener.onSlide(getScrollX() * -1f / mOffsetMax);
             }
         }
+
     }
 
 
@@ -152,6 +162,10 @@ public class SlideLayout extends RelativeLayout {
         void onSlideToRight(SlideLayout layout);
 
         void onSlide(float rate);
+
+        void onStartSlide();
+
+        void onFinishSlide();
 
     }
 

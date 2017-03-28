@@ -59,4 +59,10 @@ dependencies {
     //Database orm
     compile 'org.litepal.android:core:1.5.0'
 
+    //BlurKit
+    compile 'com.wonderkiln:blurkit:1.0.0'
+
+    //ExpectAnim
+    compile 'com.github.florent37:expectanim:1.0.1'
+
 }
