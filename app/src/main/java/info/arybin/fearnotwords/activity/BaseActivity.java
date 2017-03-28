@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -23,6 +24,7 @@ import info.arybin.fearnotwords.Constants;
 
 public abstract class BaseActivity extends FragmentActivity implements Constants, Handler.Callback {
 
+    private boolean initialized = false;
     private Handler handler = new Handler(this);
     protected WindowManager windowManager;
     protected AssetManager assetManager;
@@ -31,9 +33,12 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
     private boolean initializedDatabase = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.initialize();
+    protected void onStart() {
+        super.onStart();
+        if (!initialized) {
+            initialized = true;
+            this.initialize();
+        }
     }
 
     @Override
@@ -61,6 +66,7 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         assetManager = getAssets();
         configs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+        initializeViews();
         initializeDatabase();
     }
 

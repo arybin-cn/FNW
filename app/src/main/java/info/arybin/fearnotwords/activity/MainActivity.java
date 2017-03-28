@@ -28,8 +28,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        initializeViews();
-    }
+     }
 
 
     @Override
@@ -38,11 +37,9 @@ public class MainActivity extends BaseActivity {
         imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.25f, 5));
         imageViewBlurred.setupWith((ViewGroup) imageView.getParent()).blurRadius(BLUR_RADIUS);
         imageViewBlurred.setBlurAutoUpdate(false);
-
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.layoutFragment, new EntranceFragment());
         transaction.commit();
-
     }
 
 }
