@@ -20,17 +20,11 @@
         app:blurOverlayColor="?attr/colorBlurOverlay" />
 
     <RelativeLayout
-        android:id="@+id/layoutBlur"
+        android:id="@+id/layoutFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:clipChildren="false">
-
-        <fragment
-            android:id="@+id/fragmentEntrance"
-            android:name="info.arybin.fearnotwords.ui.fragment.EntranceFragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
     </RelativeLayout>
 
