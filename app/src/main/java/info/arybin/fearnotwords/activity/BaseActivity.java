@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -23,7 +24,7 @@ import java.lang.reflect.Field;
 
 import info.arybin.fearnotwords.Constants;
 
-public abstract class BaseActivity extends AppCompatActivity implements Constants, Handler.Callback {
+public abstract class BaseActivity extends FragmentActivity implements Constants, Handler.Callback {
 
     private Handler handler = new Handler(this);
     protected WindowManager windowManager;
@@ -66,20 +67,26 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         initializeDatabase();
     }
 
-    protected void initializeViews() {
+    public void initializeViews() {
+        initializeViews(getClass(), this);
+    }
+
+    public void initializeViews(Class<?> klass, Object instance) {
         try {
-            tryToInitializeViews();
+            tryToInitializeViews(klass, instance);
         } catch (Exception e) {
             //log something
             e.printStackTrace();
         }
     }
 
-    private void tryToInitializeViews() throws Exception {
-        Class<? extends BaseActivity> klass = getClass();
+    private void tryToInitializeViews(Class<?> klass, Object instance) throws Exception {
+
+        System.out.println(klass.getName());
+
         for (Field field : klass.getDeclaredFields()) {
             if (TextView.class.equals(field.getType())) {
-                initializeTextView((TextView) field.get(this));
+                initializeTextView((TextView) field.get(instance));
             }
         }
     }

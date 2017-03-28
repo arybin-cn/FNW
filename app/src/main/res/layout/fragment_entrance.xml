@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eightbitlab.com.blurview.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/blurView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    app:blurOverlayColor="?attr/colorBlurOverlay"
+    tools:showIn="@layout/activity_main">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/default_padding_narrow">
+
+            <TextView
+                android:id="@+id/textViewPost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Don't aim for success if you want it, just do what you love."
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textViewUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/textViewPost"
+                android:text="Post By AryBin"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="1000dp"
+            android:layout_height="1px"
+            android:background="?attr/colorTextTranslucent" />
+
+        <info.arybin.fearnotwords.ui.view.FABRevealLayout
+            android:id="@+id/layoutFabReveal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floatingActionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_settings_white_36dp"
+                android:visibility="invisible"
+                app:backgroundTint="?attr/colorPrimaryDark" />
+
+            <LinearLayout
+                android:id="@+id/layoutEntrance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/shape_divider"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/default_padding_wide"
+                android:paddingRight="@dimen/default_padding_wide"
+                android:showDividers="middle">
+
+                <info.arybin.fearnotwords.ui.view.SlideLayout
+                    android:id="@+id/layoutEntranceNew"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/default_padding">
+
+                        <TextView
+                            android:id="@+id/textViewEntranceNew"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_centerVertical="true"
+                            android:text="New"
+                            android:textColor="?colorTextTranslucent"
+                            android:textSize="30sp" />
+
+                        <TextView
+                            android:id="@+id/textViewNewCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_toRightOf="@id/textViewEntranceNew"
+                            android:text="4321"
+                            android:textSize="10sp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/default_margin_wide"
+                            android:src="@drawable/ic_order_random_24dp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="@dimen/default_margin_wide"
+                            android:src="@drawable/ic_order_alphabet_white_24dp" />
+
+
+                    </RelativeLayout>
+
+                </info.arybin.fearnotwords.ui.view.SlideLayout>
+
+                <info.arybin.fearnotwords.ui.view.SlideLayout
+                    android:id="@+id/layoutEntranceOld"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/default_padding">
+
+                        <TextView
+                            android:id="@+id/textViewEntranceOld"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_centerVertical="true"
+                            android:text="Old"
+                            android:textColor="?colorTextTranslucent"
+                            android:textSize="30sp" />
+
+                        <TextView
+                            android:id="@+id/textViewOldCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_toRightOf="@id/textViewEntranceOld"
+                            android:text="21"
+                            android:textSize="10sp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/default_margin_wide"
+                            android:src="@drawable/ic_order_time_dec_white_24dp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="@dimen/default_margin_wide"
+                            android:src="@drawable/ic_order_time_dec_white_24dp" />
+
+
+                    </RelativeLayout>
+
+                </info.arybin.fearnotwords.ui.view.SlideLayout>
+
+                <info.arybin.fearnotwords.ui.view.SlideLayout
+                    android:id="@+id/layoutEntranceAll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/default_padding">
+
+                        <TextView
+                            android:id="@+id/textViewEntranceAll"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_centerVertical="true"
+                            android:text="All"
+                            android:textColor="?colorTextTranslucent"
+                            android:textSize="30sp" />
+
+                        <TextView
+                            android:id="@+id/textViewAllCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_toRightOf="@id/textViewEntranceAll"
+                            android:text="4342"
+                            android:textSize="10sp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/default_margin_wide"
+                            android:src="@drawable/ic_order_random_24dp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="@dimen/default_margin_wide"
+                            android:src="@drawable/ic_order_alphabet_white_24dp" />
+
+
+                    </RelativeLayout>
+
+                </info.arybin.fearnotwords.ui.view.SlideLayout>
+
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/layoutSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="secondary view" />
+            </RelativeLayout>
+
+        </info.arybin.fearnotwords.ui.view.FABRevealLayout>
+
+
+    </LinearLayout>
+
+</eightbitlab.com.blurview.BlurView>
+
+
+
+
