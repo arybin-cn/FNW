@@ -78,9 +78,6 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
     }
 
     private void tryToInitializeViews(Class<?> klass, Object instance) throws Exception {
-
-        System.out.println(klass.getName());
-
         for (Field field : klass.getDeclaredFields()) {
             if (TextView.class.equals(field.getType())) {
                 initializeTextView((TextView) field.get(instance));

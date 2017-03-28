@@ -79,7 +79,7 @@ public class EntranceFragment extends BaseFragment {
 
     private void initializedViews() {
         blurView.setupWith((ViewGroup) mainActivity.imageView.getParent()).blurRadius(BLUR_RADIUS);
-
+        mainActivity.imageViewBlurred.setAlpha(0);
         layoutSetting.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -92,6 +92,7 @@ public class EntranceFragment extends BaseFragment {
             @Override
             public void onSlideToLeft(SlideLayout layout) {
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.addToBackStack(null);
                 transaction.replace(R.id.layoutFragment, new MemorizeFragment());
                 transaction.commit();
             }
@@ -130,6 +131,12 @@ public class EntranceFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
         mainActivity = (MainActivity) getActivity();
         initialize();
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 
 }
