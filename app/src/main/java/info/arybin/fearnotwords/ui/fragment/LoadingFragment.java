@@ -16,6 +16,9 @@ public class LoadingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_loading, container, false);
         ButterKnife.bind(this, view);
+
+        System.out.println(getArguments().getString("test"));
+
         return view;
     }
 }

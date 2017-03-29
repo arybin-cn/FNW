@@ -6,11 +6,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import info.arybin.fearnotwords.Constants;
+import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.activity.BaseActivity;
 
-/**
- * Created by AryBin on 2017-3-28.
- */
 
 public abstract class BaseFragment extends Fragment implements Constants {
     @Override
@@ -18,4 +16,16 @@ public abstract class BaseFragment extends Fragment implements Constants {
         super.onActivityCreated(savedInstanceState);
         ((BaseActivity) getActivity()).initializeViews(getClass(), this);
     }
+
+
+    protected void loadLoadingFragment(Bundle arguments) {
+        LoadingFragment fragment = new LoadingFragment();
+        fragment.setArguments(arguments);
+        getFragmentManager().beginTransaction().
+                addToBackStack(null).
+                replace(R.id.layoutFragmentContainer, fragment).
+                commit();
+    }
+
+
 }

@@ -169,11 +169,9 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
 
     @Override
     public void onSlideToRight(SlideLayout layout) {
-        System.out.println(111);
-        getFragmentManager().beginTransaction().
-                addToBackStack(null).
-                replace(R.id.layoutFragmentContainer, new LoadingFragment()).
-                commit();
+        Bundle bundle = new Bundle();
+        bundle.putString("test", "str");
+        loadLoadingFragment(bundle);
     }
 
     @Override
