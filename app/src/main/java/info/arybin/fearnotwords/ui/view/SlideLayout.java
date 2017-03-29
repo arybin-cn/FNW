@@ -2,6 +2,7 @@ package info.arybin.fearnotwords.ui.view;
 
 
 import android.content.Context;
+import android.transition.Slide;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
@@ -51,17 +52,15 @@ public class SlideLayout extends RelativeLayout {
     public boolean onInterceptTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (!mScroller.isFinished()) {
-                    mScroller.abortAnimation();
-                    mState = STATE_SCROLLING;
-                    return true;
-                } else {
+                if (null != mOnSlideListener) {
+                    mOnSlideListener.onStartSlide(this);
+                }
+                if (mScroller.isFinished()) {
                     mPreviousX = event.getX();
                     mState = STATE_IDLE;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-
                 float deltaX = event.getX() - mPreviousX;
 
                 if (mState == STATE_IDLE && Math.abs(deltaX) >= mTouchSlop) {
@@ -77,21 +76,10 @@ public class SlideLayout extends RelativeLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if (!mScroller.isFinished()) {
-                    mScroller.abortAnimation();
-                    mState = STATE_SCROLLING;
-                } else {
-                    mPreviousX = event.getX();
-                    mState = STATE_IDLE;
-                }
-                break;
+
             case MotionEvent.ACTION_MOVE:
                 float deltaX = event.getX() - mPreviousX;
                 if (mState == STATE_IDLE && Math.abs(deltaX) > mTouchSlop) {
-                    if (null != mOnSlideListener) {
-                        mOnSlideListener.onStartSlide();
-                    }
                     mPreviousX = event.getX();
                     mState = STATE_SCROLLING;
                     break;
@@ -112,7 +100,7 @@ public class SlideLayout extends RelativeLayout {
 
             case MotionEvent.ACTION_UP:
                 if (null != mOnSlideListener) {
-                    mOnSlideListener.onFinishSlide();
+                    mOnSlideListener.onFinishSlide(this);
                 }
                 scrollToCenter();
                 break;
@@ -122,7 +110,7 @@ public class SlideLayout extends RelativeLayout {
 
     public void scrollToCenter() {
         int scrolledX = getScrollX();
-        mScroller.startScroll(scrolledX, 0, -scrolledX, 0, Math.abs(scrolledX) * 5);
+        mScroller.startScroll(scrolledX, 0, -scrolledX, 0, Math.abs(scrolledX) * 8);
         invalidate();
     }
 
@@ -144,7 +132,7 @@ public class SlideLayout extends RelativeLayout {
             }
         } else {
             if (null != mOnSlideListener && mState == STATE_SCROLLING) {
-                mOnSlideListener.onSlide(getScrollX() * -1f / mOffsetMax);
+                mOnSlideListener.onSlide(this, getScrollX() * -1f / mOffsetMax);
             }
         }
 
@@ -161,11 +149,11 @@ public class SlideLayout extends RelativeLayout {
 
         void onSlideToRight(SlideLayout layout);
 
-        void onSlide(float rate);
+        void onSlide(SlideLayout layout, float rate);
 
-        void onStartSlide();
+        void onStartSlide(SlideLayout layout);
 
-        void onFinishSlide();
+        void onFinishSlide(SlideLayout layout);
 
     }
 

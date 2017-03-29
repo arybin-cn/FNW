@@ -1,8 +1,8 @@
 package info.arybin.fearnotwords.activity;
 
 import android.os.Bundle;
-import android.view.ViewGroup;
 import android.support.v4.app.FragmentTransaction;
+import android.view.ViewGroup;
 
 import com.flaviofaria.kenburnsview.KenBurnsView;
 
@@ -16,10 +16,10 @@ import info.arybin.fearnotwords.ui.fragment.EntranceFragment;
 public class MainActivity extends BaseActivity {
 
 
-    @BindView(R.id.imageViewBlurred)
+    @BindView(R.id.blurredLayer)
     public BlurView imageViewBlurred;
 
-    @BindView(R.id.imageView)
+    @BindView(R.id.layer)
     public KenBurnsView imageView;
 
 
@@ -38,7 +38,7 @@ public class MainActivity extends BaseActivity {
         imageViewBlurred.setupWith((ViewGroup) imageView.getParent()).blurRadius(BLUR_RADIUS);
         imageViewBlurred.setBlurAutoUpdate(false);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.layoutFragment, new EntranceFragment());
+        transaction.add(R.id.layoutFragmentContainer, new EntranceFragment());
         transaction.commit();
     }
 

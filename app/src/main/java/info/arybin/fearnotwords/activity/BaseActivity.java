@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 
 import info.arybin.fearnotwords.Constants;
+import info.arybin.fearnotwords.ui.view.TextViewNonAscii;
 
 public abstract class BaseActivity extends FragmentActivity implements Constants, Handler.Callback {
 
@@ -58,7 +59,11 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
     }
 
     protected void initializeTextView(TextView textView) {
-        setTextViewFont(textView, configs.getString(KEY_FONT, DEF_FONT));
+        if (textView instanceof TextViewNonAscii) {
+            setTextViewFont(textView, configs.getString(KEY_FONT_NON_ASCII, DEF_FONT_NON_ASCII));
+        } else {
+            setTextViewFont(textView, configs.getString(KEY_FONT, DEF_FONT));
+        }
     }
 
     private void initialize() {
@@ -85,13 +90,14 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
 
     private void tryToInitializeViews(Class<?> klass, Object instance) throws Exception {
         for (Field field : klass.getDeclaredFields()) {
-            if (TextView.class.equals(field.getType())) {
-                initializeTextView((TextView) field.get(instance));
+            Object obj = field.get(instance);
+            if (obj instanceof TextView) {
+                initializeTextView((TextView) obj);
             }
         }
     }
 
-    protected void setTextViewFont(TextView textView, String fontName) {
+    private void setTextViewFont(TextView textView, String fontName) {
         Typeface tf = Typeface.createFromAsset(assetManager, "fonts/" + fontName);
         textView.setTypeface(tf);
     }
@@ -138,31 +144,5 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
         }).start();
     }
 
-
-    protected final int getScreenWidth() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        return displayMetrics.widthPixels;
-    }
-
-    protected final int getScreenHeight() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        return displayMetrics.heightPixels;
-    }
-
-    /**
-     * Note: Ignore when given the negative value(eg -1).
-     */
-    protected final void setViewBound(View view, int width, int height) {
-        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        if (width >= 0) {
-            layoutParams.width = width;
-        }
-        if (height >= 0) {
-            layoutParams.height = height;
-        }
-        view.setLayoutParams(layoutParams);
-    }
 
 }

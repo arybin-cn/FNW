@@ -7,20 +7,21 @@
     android:clipChildren="false">
 
     <com.flaviofaria.kenburnsview.KenBurnsView
-        android:id="@+id/imageView"
+        android:id="@+id/layer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@mipmap/bg" />
 
     <eightbitlab.com.blurview.BlurView
-        android:id="@+id/imageViewBlurred"
+        android:id="@+id/blurredLayer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0"
+        android:clipChildren="false"
         app:blurOverlayColor="?attr/colorBlurOverlay" />
 
     <RelativeLayout
-        android:id="@+id/layoutFragment"
+        android:id="@+id/layoutFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
