@@ -1,9 +1,8 @@
 <eightbitlab.com.blurview.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/blurView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true" >
+    android:layout_alignParentBottom="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,7 +13,6 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:padding="@dimen/default_padding_narrow">
 
             <TextView
@@ -94,14 +92,17 @@
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="@dimen/default_margin_wide"
+
                         android:src="@drawable/ic_order_random_24dp" />
 
                     <ImageView
                         android:layout_width="wrap_content"
+
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="@dimen/default_margin_wide"
+
                         android:src="@drawable/ic_order_alphabet_white_24dp" />
 
 
@@ -147,18 +148,22 @@
 
                     <ImageView
                         android:layout_width="wrap_content"
+
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="@dimen/default_margin_wide"
+
                         android:src="@drawable/ic_order_time_dec_white_24dp" />
 
                     <ImageView
                         android:layout_width="wrap_content"
+
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="@dimen/default_margin_wide"
+
                         android:src="@drawable/ic_order_time_dec_white_24dp" />
 
 
@@ -206,18 +211,22 @@
 
                     <ImageView
                         android:layout_width="wrap_content"
+
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="@dimen/default_margin_wide"
+
                         android:src="@drawable/ic_order_random_24dp" />
 
                     <ImageView
                         android:layout_width="wrap_content"
+
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="@dimen/default_margin_wide"
+
                         android:src="@drawable/ic_order_alphabet_white_24dp" />
 
 
@@ -232,5 +241,7 @@
     </LinearLayout>
 
 </eightbitlab.com.blurview.BlurView>
+
+
 
 

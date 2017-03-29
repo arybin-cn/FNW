@@ -22,7 +22,6 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.layer)
     public KenBurnsView imageView;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

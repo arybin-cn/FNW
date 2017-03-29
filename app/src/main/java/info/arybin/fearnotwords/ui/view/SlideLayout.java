@@ -144,12 +144,13 @@ public class SlideLayout extends RelativeLayout {
         }
         if (Math.abs(Math.abs(getScrollX()) - mOffsetMax) < 1) {
             scrollToCenter();
-            if (null != mOnSlideListener) {
+            if (null != mOnSlideListener && mState == STATE_SCROLLING) {
                 if (getScrollX() > 0) {
                     mOnSlideListener.onSlideToLeft(this);
                 } else {
                     mOnSlideListener.onSlideToRight(this);
                 }
+                mState = STATE_IDLE;
             }
         }
 

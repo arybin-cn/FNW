@@ -65,4 +65,10 @@ dependencies {
     //ExpectAnim
     compile 'com.github.florent37:expectanim:1.0.1'
 
+    //Loading Animation
+    compile 'com.tuyenmonkey:mkloader:1.2.0'
+
+    //Shimmer
+    compile 'com.facebook.shimmer:shimmer:0.1.0@aar'
+
 }

@@ -90,10 +90,15 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
 
     private void tryToInitializeViews(Class<?> klass, Object instance) throws Exception {
         for (Field field : klass.getDeclaredFields()) {
-            Object obj = field.get(instance);
-            if (obj instanceof TextView) {
-                initializeTextView((TextView) obj);
+            try {
+                Object obj = field.get(instance);
+                if (obj instanceof TextView) {
+                    initializeTextView((TextView) obj);
+                }
+            } catch (IllegalAccessException ignored) {
+
             }
+
         }
     }
 

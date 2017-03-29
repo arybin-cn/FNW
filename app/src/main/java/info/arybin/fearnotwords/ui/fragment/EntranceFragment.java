@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
+
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,12 +23,11 @@ import info.arybin.fearnotwords.activity.MainActivity;
 import info.arybin.fearnotwords.ui.view.SlideLayout;
 
 public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlideListener {
+    private Random random = new Random();
+    private HashMap<View, Float> transitionMap = new HashMap<>();
 
-    public MainActivity mainActivity;
-    public View transitionOriginView = null;
-    public HashMap<View, Float> transitionMap = new HashMap<>();
-    public Random random = new Random();
-
+    private MainActivity mainActivity;
+    private View transitionOriginView = null;
 
     @BindView(R.id.blurView)
     public BlurView blurView;
@@ -51,10 +52,6 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
     public TextView textViewAllCount;
     @BindView(R.id.textViewEntranceAll)
     public TextView textViewEntranceAll;
-
-    @BindView(R.id.layoutEntrance)
-    public LinearLayout layoutFabReveal;
-
 
     @BindView(R.id.textViewPost)
     public TextView textViewPost;
@@ -84,7 +81,6 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
     private void initializedViews() {
         blurView.setupWith((ViewGroup) mainActivity.imageView.getParent()).blurRadius(BLUR_RADIUS);
         mainActivity.imageViewBlurred.setAlpha(0);
-
 
         layoutEntranceNew.setOnSlideListener(this);
         layoutEntranceOld.setOnSlideListener(this);
@@ -171,10 +167,13 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
         }
     }
 
-
     @Override
     public void onSlideToRight(SlideLayout layout) {
-
+        System.out.println(111);
+        getFragmentManager().beginTransaction().
+                addToBackStack(null).
+                replace(R.id.layoutFragmentContainer, new LoadingFragment()).
+                commit();
     }
 
     @Override

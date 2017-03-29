@@ -13,8 +13,8 @@
         <item name="colorPrimaryDark">#230a45</item>
         <item name="colorAccent">#FF4081</item>
         <item name="colorBlurOverlay">#1A000000</item>
-        <item name="colorTextTranslucent">#bfffffff</item>
-        <item name="android:textColor">#efffffff</item>
+        <item name="colorTextTranslucent">#7fffffff</item>
+        <item name="android:textColor">#bfffffff</item>
         <item name="android:clipChildren">false</item>
         <item name="android:clipToPadding">false</item>
 
