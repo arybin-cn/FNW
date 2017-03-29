@@ -120,11 +120,10 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
             int posView[] = new int[2];
             view.getLocationOnScreen(posView);
 
-            float delta = (posView[1] - posOriginView[1]) * (0.2f + 0.5f * random.nextFloat());
-            if (Math.abs(delta) < 1 && view != originView) {
-                delta = -30;
-            }
-            transitionMap.put(view, delta);
+            float maxDistance = 100f;
+            int direction = (posView[1] - posOriginView[1]);
+            direction = direction > 1 ? 1 : -1;
+            transitionMap.put(view, direction * maxDistance * (0.45f + 0.9f * random.nextFloat()));
         }
 
     }
@@ -156,11 +155,25 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
 
     @Override
     public void onSlideToLeft(SlideLayout layout) {
+
     }
 
     @Override
-    public void onSlideToRight(SlideLayout layout) {
+    public void onSlideToCenter(SlideLayout layout) {
+        if (layoutEntranceNew != layout) {
+            layoutEntranceNew.setSlideable(true);
+        }
+        if (layoutEntranceOld != layout) {
+            layoutEntranceOld.setSlideable(true);
+        }
+        if (layoutEntranceAll != layout) {
+            layoutEntranceAll.setSlideable(true);
+        }
+    }
 
+
+    @Override
+    public void onSlideToRight(SlideLayout layout) {
 
     }
 
@@ -181,6 +194,15 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
 
     @Override
     public void onStartSlide(SlideLayout layout) {
+        if (layoutEntranceNew != layout) {
+            layoutEntranceNew.setSlideable(false);
+        }
+        if (layoutEntranceOld != layout) {
+            layoutEntranceOld.setSlideable(false);
+        }
+        if (layoutEntranceAll != layout) {
+            layoutEntranceAll.setSlideable(false);
+        }
         mainActivity.imageView.pause();
         blurView.setBlurAutoUpdate(false);
         mainActivity.imageViewBlurred.updateBlur();

@@ -14,6 +14,7 @@ public class SlideLayout extends RelativeLayout {
     public final int STATE_IDLE = 0;
     public final int STATE_SCROLLING = 1;
 
+    private boolean slideable = true;
 
     private final Scroller mScroller;
     private final int mTouchSlop;
@@ -47,12 +48,22 @@ public class SlideLayout extends RelativeLayout {
         return mOffsetMax;
     }
 
+    public boolean isSlideable() {
+        return slideable;
+    }
+
+    public void setSlideable(boolean slideable) {
+        this.slideable = slideable;
+    }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (!slideable) {
+            return false;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (null != mOnSlideListener) {
+                if (null != mOnSlideListener && mState == STATE_IDLE) {
                     mOnSlideListener.onStartSlide(this);
                 }
                 if (mScroller.isFinished()) {
@@ -75,8 +86,10 @@ public class SlideLayout extends RelativeLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (!slideable) {
+            return false;
+        }
         switch (event.getAction()) {
-
             case MotionEvent.ACTION_MOVE:
                 float deltaX = event.getX() - mPreviousX;
                 if (mState == STATE_IDLE && Math.abs(deltaX) > mTouchSlop) {
@@ -84,7 +97,6 @@ public class SlideLayout extends RelativeLayout {
                     mState = STATE_SCROLLING;
                     break;
                 }
-
                 if (mState == STATE_SCROLLING) {
                     deltaX *= 1f;
                     mPreviousX = event.getX();
@@ -119,8 +131,17 @@ public class SlideLayout extends RelativeLayout {
         if (mScroller.computeScrollOffset()) {
             scrollTo(mScroller.getCurrX(), 0);
             postInvalidate();
+        } else {
+            if (Math.abs(getScrollX()) == 0 && mState == STATE_SCROLLING) {
+                if (null != mOnSlideListener) {
+                    mOnSlideListener.onSlideToCenter(this);
+                    mState = STATE_IDLE;
+                }
+            }
         }
-
+        if (null != mOnSlideListener) {
+            mOnSlideListener.onSlide(this, getScrollX() * -1f / mOffsetMax);
+        }
         if (Math.abs(Math.abs(getScrollX()) - mOffsetMax) < 1) {
             scrollToCenter();
             if (null != mOnSlideListener) {
@@ -130,11 +151,8 @@ public class SlideLayout extends RelativeLayout {
                     mOnSlideListener.onSlideToRight(this);
                 }
             }
-        } else {
-            if (null != mOnSlideListener && mState == STATE_SCROLLING) {
-                mOnSlideListener.onSlide(this, getScrollX() * -1f / mOffsetMax);
-            }
         }
+
 
     }
 
@@ -146,6 +164,8 @@ public class SlideLayout extends RelativeLayout {
 
     public interface OnSlideListener {
         void onSlideToLeft(SlideLayout layout);
+
+        void onSlideToCenter(SlideLayout layout);
 
         void onSlideToRight(SlideLayout layout);
 
