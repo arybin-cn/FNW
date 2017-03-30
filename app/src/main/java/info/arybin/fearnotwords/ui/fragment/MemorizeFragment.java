@@ -30,4 +30,10 @@ public class MemorizeFragment extends BaseFragment {
     private void initializedViews() {
 
     }
+
+    @Override
+    public boolean onBackPressed() {
+
+        return false;
+    }
 }

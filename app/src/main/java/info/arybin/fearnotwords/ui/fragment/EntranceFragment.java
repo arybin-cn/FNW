@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.florent37.expectanim.ExpectAnim;
+import com.github.florent37.expectanim.listener.AnimationEndListener;
 import com.ldoublem.loadingviewlib.view.LVGhost;
 
 import java.util.HashMap;
@@ -27,17 +28,21 @@ import info.arybin.fearnotwords.ui.view.SlideLayout;
 import static com.github.florent37.expectanim.core.Expectations.aboveOf;
 import static com.github.florent37.expectanim.core.Expectations.alpha;
 import static com.github.florent37.expectanim.core.Expectations.atItsOriginalPosition;
+import static com.github.florent37.expectanim.core.Expectations.invisible;
 import static com.github.florent37.expectanim.core.Expectations.rotated;
+import static com.github.florent37.expectanim.core.Expectations.visible;
 import static info.arybin.fearnotwords.Utils.retrieveAllChildViews;
 
-public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlideListener {
+public class EntranceFragment extends BaseFragment implements
+        SlideLayout.OnSlideListener {
 
-    public static int STATE_IDLE = 0;
-    public static int STATE_LOADING = 1;
+    public static final int STATE_IDLE = 0;
+    public static final int STATE_LOADING = 1;
 
+    private int state = 0;
     private MainActivity mainActivity;
     private Random random = new Random();
-    private AtomicBoolean canSlide = new AtomicBoolean(true);
+    private AtomicBoolean canSwitchSlide = new AtomicBoolean(true);
 
     private View currentSliding;
     private LinkedList<View> currentSlidingChildViews = new LinkedList<>();
@@ -76,8 +81,6 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
     @BindView(R.id.textViewEntranceAll)
     public TextView textViewEntranceAll;
 
-    @BindView(R.id.separatorTop)
-    public View separatorTop;
     @BindView(R.id.textViewPost)
     public TextView textViewPost;
     @BindView(R.id.textViewPostTranslation)
@@ -95,6 +98,19 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
     }
 
     @Override
+    public boolean onBackPressed() {
+        switch (state) {
+            case STATE_IDLE:
+                return false;
+            case STATE_LOADING:
+                abortLoading();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_entrance, container, false);
         ButterKnife.bind(this, view);
@@ -105,13 +121,9 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
         loadingAnimPre = new ExpectAnim().expect(loadingGhost)
                 .toBe(aboveOf(blurView).withMarginDp(36), alpha(0), rotated(180))
                 .toAnimation();
-
         loadingAnim = new ExpectAnim().expect(loadingGhost)
-                .toBe(
-                        rotated(0),
-                        atItsOriginalPosition(),
-                        alpha(0.6f)
-                ).toAnimation();
+                .toBe(rotated(0), atItsOriginalPosition(), alpha(0.6f))
+                .toAnimation();
         initializedViews();
     }
 
@@ -120,8 +132,12 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
         loadingAnimPre.setNow();
         mainActivity.imageViewBlurred.setAlpha(0);
         layoutEntranceNew.setOnSlideListener(this);
+        layoutEntranceNew.setIgnoreLeft(true);
         layoutEntranceOld.setOnSlideListener(this);
+        layoutEntranceOld.setIgnoreLeft(true);
         layoutEntranceAll.setOnSlideListener(this);
+        layoutEntranceAll.setIgnoreLeft(true);
+
     }
 
     private void initTransitionMap(SlideLayout originLayout) {
@@ -146,9 +162,7 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
         }
         currentSlidingChildViews = retrieveAllChildViews(originLayout);
         LinkedList<View> childViews = retrieveAllChildViews(parent, originLayout);
-        Iterator<View> iterator = childViews.iterator();
-        while (iterator.hasNext()) {
-            View view = iterator.next();
+        for (View view : childViews) {
             transitionMap.put(view, 0f);
         }
     }
@@ -177,82 +191,114 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
 
     }
 
-    private void switchToLoadingState() {
-        layoutEntrance.setVisibility(View.INVISIBLE);
-        loadingGhost.startAnim(1200);
-    }
-
-
-    private void switchToIdleState() {
-        layoutEntrance.setVisibility(View.VISIBLE);
-        loadingAnimPre.setNow();
-    }
-
-
-    @Override
-    public void onSlide(SlideLayout layout, float rate) {
+    private void setTransitionMapPercentage(float percent) {
         Iterator<View> i;
         View tmpView;
-        float rateAbs = Math.abs(rate);
+        float rateAbs = Math.abs(percent);
         float conjugateRateAbs = 1 - rateAbs;
         float conjugateRateAbs3 = conjugateRateAbs * conjugateRateAbs * conjugateRateAbs;
-        mainActivity.imageViewBlurred.setAlpha(1 - conjugateRateAbs3);
-        loadingAnim.setPercent(rateAbs);
         i = transitionMap.keySet().iterator();
         while (i.hasNext()) {
             tmpView = i.next();
             tmpView.setTranslationY(rateAbs * transitionMap.get(tmpView));
             tmpView.setAlpha(conjugateRateAbs3);
         }
-        separatorBottom.setAlpha(conjugateRateAbs3);
-
         i = currentSlidingChildViews.iterator();
         while (i.hasNext()) {
             tmpView = i.next();
             tmpView.setAlpha(conjugateRateAbs);
         }
+    }
+
+    private void switchToLoadingState() {
+        setSlidable(false, null);
+        canSwitchSlide.set(false);
+        state = STATE_LOADING;
+        loadingGhost.startAnim(1200);
+        new ExpectAnim()
+                .expect(layoutEntrance).toBe(invisible())
+                .toAnimation()
+                .setDuration(300)
+                .setEndListener(new AnimationEndListener() {
+                    @Override
+                    public void onAnimationEnd(ExpectAnim expectAnim) {
+                        setTransitionMapPercentage(0);
+                    }
+                })
+                .start();
+
+    }
 
 
+    private void abortLoading() {
+        new ExpectAnim()
+                .expect(loadingGhost).toBe(invisible())
+                .expect(separatorBottom).toBe(alpha(1))
+                .expect(mainActivity.imageViewBlurred).toBe(alpha(0))
+                .expect(layoutEntrance).toBe(visible())
+                .toAnimation()
+                .setDuration(1000)
+                .setEndListener(new AnimationEndListener() {
+                    @Override
+                    public void onAnimationEnd(ExpectAnim expectAnim) {
+                        loadingGhost.stopAnim();
+                        state = STATE_IDLE;
+                        setSlidable(true, null);
+                        canSwitchSlide.set(true);
+                    }
+                }).start();
+
+    }
+
+
+    public void setSlidable(boolean slidable, SlideLayout exception) {
+        if (layoutEntranceNew != exception) {
+            layoutEntranceNew.setSlidable(slidable);
+        }
+        if (layoutEntranceOld != exception) {
+            layoutEntranceOld.setSlidable(slidable);
+        }
+        if (layoutEntranceAll != exception) {
+            layoutEntranceAll.setSlidable(slidable);
+        }
+    }
+
+    @Override
+    public void onSlide(SlideLayout layout, float rate) {
+        if (state == STATE_IDLE) {
+            float rateAbs = Math.abs(rate);
+            float conjugateRateAbs = 1 - rateAbs;
+            float conjugateRateAbs3 = conjugateRateAbs * conjugateRateAbs * conjugateRateAbs;
+            mainActivity.imageViewBlurred.setAlpha(1 - conjugateRateAbs3);
+            setTransitionMapPercentage(rate);
+            loadingAnim.setPercent(rateAbs);
+            separatorBottom.setAlpha(conjugateRateAbs3);
+        }
     }
 
     @Override
     public void onSlideToLeft(SlideLayout layout) {
-        switchToLoadingState();
+
     }
 
     @Override
     public void onSlideToCenter(SlideLayout layout) {
         mainActivity.imageView.resume();
         blurView.setBlurAutoUpdate(true);
-        if (layoutEntranceNew != layout) {
-            layoutEntranceNew.setSlidable(true);
-        }
-        if (layoutEntranceOld != layout) {
-            layoutEntranceOld.setSlidable(true);
-        }
-        if (layoutEntranceAll != layout) {
-            layoutEntranceAll.setSlidable(true);
-        }
-        canSlide.set(true);
+        canSwitchSlide.set(true);
+        setSlidable(true, null);
     }
 
     @Override
     public void onSlideToRight(SlideLayout layout) {
+        switchToLoadingState();
     }
 
 
     @Override
     public void onStartSlide(SlideLayout layout) {
-        if (canSlide.compareAndSet(true, false)) {
-            if (layoutEntranceNew != layout) {
-                layoutEntranceNew.setSlidable(false);
-            }
-            if (layoutEntranceOld != layout) {
-                layoutEntranceOld.setSlidable(false);
-            }
-            if (layoutEntranceAll != layout) {
-                layoutEntranceAll.setSlidable(false);
-            }
+        if (canSwitchSlide.compareAndSet(true, false)) {
+            setSlidable(false, layout);
             initTransitionMap(layout);
             mainActivity.imageView.pause();
             blurView.setBlurAutoUpdate(false);

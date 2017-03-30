@@ -19,14 +19,10 @@ public abstract class BaseFragment extends Fragment implements Constants {
     }
 
 
-    protected void loadLoadingFragment(Bundle arguments) {
-        LoadingFragment fragment = new LoadingFragment();
-        fragment.setArguments(arguments);
-        getFragmentManager().beginTransaction().
-                addToBackStack(null).
-                replace(R.id.layoutFragmentContainer, fragment).
-                commit();
-    }
+    /**
+     * @return true if the back press event is consumed, false otherwise.
+     */
+    abstract public boolean onBackPressed();
 
 
 }

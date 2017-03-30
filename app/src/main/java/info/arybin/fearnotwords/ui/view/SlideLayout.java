@@ -8,15 +8,14 @@ import android.view.ViewConfiguration;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class SlideLayout extends RelativeLayout {
 
     public final int STATE_IDLE = 0;
-    public final int STATE_SCROLLING = 1;
+    public final int STATE_SLIDING = 1;
+    public final int STATE_FINISH = 2;
 
-    private boolean slidable = true;
-    private AtomicBoolean slideToSide = new AtomicBoolean(false);
+    private boolean mSlidable = true;
+
 
     private final Scroller mScroller;
     private final int mTouchSlop;
@@ -24,6 +23,9 @@ public class SlideLayout extends RelativeLayout {
     private float mPreviousX;
     private int mState = STATE_IDLE;
     private int mOffsetMax = 360;
+    private boolean ignoreLeft = false;
+    private boolean ignoreRight = false;
+
     private OnSlideListener mOnSlideListener;
 
 
@@ -42,6 +44,14 @@ public class SlideLayout extends RelativeLayout {
     }
 
 
+    public void setIgnoreLeft(boolean ignoreLeft) {
+        this.ignoreLeft = ignoreLeft;
+    }
+
+    public void setIgnoreRight(boolean ignoreRight) {
+        this.ignoreRight = ignoreRight;
+    }
+
     public void setMaxOffset(int offsetMax) {
         this.mOffsetMax = offsetMax;
     }
@@ -51,16 +61,16 @@ public class SlideLayout extends RelativeLayout {
     }
 
     public boolean isSlidable() {
-        return slidable;
+        return mSlidable;
     }
 
     public void setSlidable(boolean slidable) {
-        this.slidable = slidable;
+        this.mSlidable = slidable;
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (!slidable) {
+        if (!mSlidable) {
             return false;
         }
         switch (event.getAction()) {
@@ -73,7 +83,7 @@ public class SlideLayout extends RelativeLayout {
                     mState = STATE_IDLE;
                 } else {
                     mScroller.abortAnimation();
-                    mState = STATE_SCROLLING;
+                    mState = STATE_SLIDING;
                     return true;
                 }
                 break;
@@ -81,7 +91,7 @@ public class SlideLayout extends RelativeLayout {
                 float deltaX = event.getX() - mPreviousX;
 
                 if (mState == STATE_IDLE && Math.abs(deltaX) >= mTouchSlop) {
-                    mState = STATE_SCROLLING;
+                    mState = STATE_SLIDING;
                     mPreviousX = event.getX();
                     return true;
                 }
@@ -92,7 +102,7 @@ public class SlideLayout extends RelativeLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!slidable) {
+        if (!mSlidable) {
             return false;
         }
         switch (event.getAction()) {
@@ -100,10 +110,10 @@ public class SlideLayout extends RelativeLayout {
                 float deltaX = event.getX() - mPreviousX;
                 if (mState == STATE_IDLE && Math.abs(deltaX) > mTouchSlop) {
                     mPreviousX = event.getX();
-                    mState = STATE_SCROLLING;
+                    mState = STATE_SLIDING;
                     break;
                 }
-                if (mState == STATE_SCROLLING) {
+                if (mState == STATE_SLIDING) {
                     deltaX *= 1f;
                     mPreviousX = event.getX();
                     float newX = getScrollX() - deltaX;
@@ -138,32 +148,39 @@ public class SlideLayout extends RelativeLayout {
             scrollTo(mScroller.getCurrX(), 0);
             postInvalidate();
         } else {
-            if (Math.abs(getScrollX()) == 0 && mState == STATE_SCROLLING) {
+            if (Math.abs(getScrollX()) == 0 && mState == STATE_SLIDING) {
                 if (null != mOnSlideListener) {
                     mOnSlideListener.onSlideToCenter(this);
                     mState = STATE_IDLE;
-                    slideToSide.set(false);
                 }
             }
         }
 
-        if (null != mOnSlideListener) {
+        if (null != mOnSlideListener && mState == STATE_SLIDING) {
             mOnSlideListener.onSlide(this, getScrollX() * -1f / mOffsetMax);
         }
 
         if (Math.abs(Math.abs(getScrollX()) - mOffsetMax) < 1) {
-            if (slideToSide.compareAndSet(false, true)) {
-                scrollToCenter();
-                if (null != mOnSlideListener && mState == STATE_SCROLLING) {
-                    mState = STATE_IDLE;
-                    if (getScrollX() > 0) {
+            if (null != mOnSlideListener) {
+                if (getScrollX() > 0) {
+                    if (!ignoreLeft) {
                         mOnSlideListener.onSlideToLeft(this);
-                    } else {
+                        finishSlide();
+                    }
+                } else {
+                    if (!ignoreRight) {
                         mOnSlideListener.onSlideToRight(this);
+                        finishSlide();
                     }
                 }
             }
         }
+    }
+
+
+    private void finishSlide() {
+        mState = STATE_FINISH;
+        scrollTo(0, 0);
     }
 
 

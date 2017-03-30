@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -20,15 +21,22 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import info.arybin.fearnotwords.Constants;
+import info.arybin.fearnotwords.ui.fragment.BaseFragment;
 import info.arybin.fearnotwords.ui.view.TextViewNonAscii;
 
 public abstract class BaseActivity extends FragmentActivity implements Constants, Handler.Callback {
 
     private boolean initialized = false;
     private Handler handler = new Handler(this);
+
+    private BaseFragment topFragment;
+
     protected WindowManager windowManager;
     protected AssetManager assetManager;
+    protected FragmentManager fragmentManager;
+
     protected SharedPreferences configs;
+
 
     protected ArrayList<Fragment> loadedFragments = new ArrayList<>();
 
@@ -69,6 +77,7 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
 
     private void initialize() {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        fragmentManager = getSupportFragmentManager();
         windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         assetManager = getAssets();
         configs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
@@ -150,11 +159,11 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
         }).start();
     }
 
-    protected Fragment loadFragment(int container, Class<? extends Fragment> fragment) {
+    protected Fragment loadFragment(int container, Class<? extends BaseFragment> fragment) {
         return loadFragment(container, fragment, null);
     }
 
-    protected Fragment loadFragment(int container, Class<? extends Fragment> fragment, Bundle args) {
+    protected Fragment loadFragment(int container, Class<? extends BaseFragment> fragment, Bundle args) {
         try {
             return tryToLoadFragment(container, fragment, args);
         } catch (Exception e) {
@@ -163,31 +172,25 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
         }
     }
 
-    private Fragment tryToLoadFragment(int container, Class<? extends Fragment> fragmentClass, Bundle args) throws Exception {
-        Fragment fragment = fragmentClass.newInstance();
+    private Fragment tryToLoadFragment(int container, Class<? extends BaseFragment> fragmentClass, Bundle args) throws Exception {
+        BaseFragment fragment = fragmentClass.newInstance();
+        topFragment = fragment;
         fragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction().
-                add(container, fragment).
+        fragmentManager.beginTransaction().
+                replace(container, fragment).
                 commit();
         loadedFragments.add(fragment);
         return fragment;
     }
 
-
-    protected Fragment unloadFragment(Fragment fragment) {
-        Iterator<Fragment> i = loadedFragments.iterator();
-        while (i.hasNext()) {
-            Fragment fragmentTmp = i.next();
-            if (fragmentTmp == fragment) {
-                getSupportFragmentManager().beginTransaction().
-                        remove(fragment).
-                        commit();
-            }
+    @Override
+    public void onBackPressed() {
+        boolean consumed = false;
+        if (null != topFragment) {
+            consumed = topFragment.onBackPressed();
         }
-
-
-        return null;
+        if (!consumed) {
+            super.onBackPressed();
+        }
     }
-
-
 }
