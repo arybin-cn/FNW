@@ -10,7 +10,7 @@ import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.ui.anim.SimpleTransitionGenerator;
-import info.arybin.fearnotwords.ui.fragment.EntranceFragment;
+import info.arybin.fearnotwords.fragment.EntranceFragment;
 
 public class MainActivity extends BaseActivity {
 

@@ -1,4 +1,4 @@
-package info.arybin.fearnotwords.ui.fragment;
+package info.arybin.fearnotwords.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,7 +34,7 @@ import static com.github.florent37.expectanim.core.Expectations.visible;
 import static info.arybin.fearnotwords.Utils.retrieveAllChildViews;
 
 public class EntranceFragment extends BaseFragment implements
-        SlideLayout.OnSlideListener {
+        SlideLayout.OnSlideListener, View.OnClickListener {
 
     public static final int STATE_IDLE = 0;
     public static final int STATE_LOADING = 1;
@@ -138,6 +138,9 @@ public class EntranceFragment extends BaseFragment implements
         layoutEntranceAll.setOnSlideListener(this);
         layoutEntranceAll.setIgnoreLeft(true);
 
+        //For test
+        layoutEntranceNew.setOnClickListener(this);
+
     }
 
     private void initTransitionMap(SlideLayout originLayout) {
@@ -226,7 +229,6 @@ public class EntranceFragment extends BaseFragment implements
                     }
                 })
                 .start();
-
     }
 
 
@@ -279,6 +281,7 @@ public class EntranceFragment extends BaseFragment implements
     @Override
     public void onSlideToLeft(SlideLayout layout) {
 
+
     }
 
     @Override
@@ -312,4 +315,8 @@ public class EntranceFragment extends BaseFragment implements
     }
 
 
+    @Override
+    public void onClick(View v) {
+        System.out.println(1);
+    }
 }

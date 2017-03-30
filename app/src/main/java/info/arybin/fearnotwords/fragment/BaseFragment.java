@@ -1,4 +1,4 @@
-package info.arybin.fearnotwords.ui.fragment;
+package info.arybin.fearnotwords.fragment;
 
 
 import android.os.Bundle;
@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import info.arybin.fearnotwords.Constants;
-import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.activity.BaseActivity;
 
 

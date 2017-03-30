@@ -124,7 +124,7 @@ public class SlideLayout extends RelativeLayout {
                         scrollBy((int) -deltaX, 0);
                     }
                 }
-                break;
+                return true;
 
             case MotionEvent.ACTION_UP:
                 if (null != mOnSlideListener) {
@@ -133,7 +133,7 @@ public class SlideLayout extends RelativeLayout {
                 scrollToCenter();
                 break;
         }
-        return true;
+        return super.onTouchEvent(event);
     }
 
     public void scrollToCenter() {
