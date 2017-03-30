@@ -7,11 +7,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.DisplayMetrics;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -19,6 +16,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import info.arybin.fearnotwords.Constants;
 import info.arybin.fearnotwords.ui.view.TextViewNonAscii;
@@ -30,6 +29,8 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
     protected WindowManager windowManager;
     protected AssetManager assetManager;
     protected SharedPreferences configs;
+
+    protected ArrayList<Fragment> loadedFragments = new ArrayList<>();
 
     private boolean initializedDatabase = false;
 
@@ -147,6 +148,45 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
                 }
             }
         }).start();
+    }
+
+    protected Fragment loadFragment(int container, Class<? extends Fragment> fragment) {
+        return loadFragment(container, fragment, null);
+    }
+
+    protected Fragment loadFragment(int container, Class<? extends Fragment> fragment, Bundle args) {
+        try {
+            return tryToLoadFragment(container, fragment, args);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Fragment tryToLoadFragment(int container, Class<? extends Fragment> fragmentClass, Bundle args) throws Exception {
+        Fragment fragment = fragmentClass.newInstance();
+        fragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction().
+                add(container, fragment).
+                commit();
+        loadedFragments.add(fragment);
+        return fragment;
+    }
+
+
+    protected Fragment unloadFragment(Fragment fragment) {
+        Iterator<Fragment> i = loadedFragments.iterator();
+        while (i.hasNext()) {
+            Fragment fragmentTmp = i.next();
+            if (fragmentTmp == fragment) {
+                getSupportFragmentManager().beginTransaction().
+                        remove(fragment).
+                        commit();
+            }
+        }
+
+
+        return null;
     }
 
 

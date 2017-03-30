@@ -2,7 +2,6 @@ package info.arybin.fearnotwords.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,18 +27,21 @@ import info.arybin.fearnotwords.ui.view.SlideLayout;
 import static com.github.florent37.expectanim.core.Expectations.aboveOf;
 import static com.github.florent37.expectanim.core.Expectations.alpha;
 import static com.github.florent37.expectanim.core.Expectations.atItsOriginalPosition;
-import static com.github.florent37.expectanim.core.Expectations.outOfScreen;
 import static com.github.florent37.expectanim.core.Expectations.rotated;
 import static info.arybin.fearnotwords.Utils.retrieveAllChildViews;
 
 public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlideListener {
-    private Random random = new Random();
-    private HashMap<View, Float> transitionMap = new HashMap<>();
+
+    public static int STATE_IDLE = 0;
+    public static int STATE_LOADING = 1;
 
     private MainActivity mainActivity;
+    private Random random = new Random();
     private AtomicBoolean canSlide = new AtomicBoolean(true);
+
     private View currentSliding;
     private LinkedList<View> currentSlidingChildViews = new LinkedList<>();
+    private HashMap<View, Float> transitionMap = new HashMap<>();
 
     private ExpectAnim loadingAnimPre;
     private ExpectAnim loadingAnim;
@@ -175,6 +177,18 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
 
     }
 
+    private void switchToLoadingState() {
+        layoutEntrance.setVisibility(View.INVISIBLE);
+        loadingGhost.startAnim(1200);
+    }
+
+
+    private void switchToIdleState() {
+        layoutEntrance.setVisibility(View.VISIBLE);
+        loadingAnimPre.setNow();
+    }
+
+
     @Override
     public void onSlide(SlideLayout layout, float rate) {
         Iterator<View> i;
@@ -203,11 +217,7 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
 
     @Override
     public void onSlideToLeft(SlideLayout layout) {
-        layoutEntrance.setVisibility(View.INVISIBLE);
-        loadingGhost.startAnim(1200);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("test", "str");
-//        loadLoadingFragment(bundle);
+        switchToLoadingState();
     }
 
     @Override
@@ -254,5 +264,6 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
     public void onFinishSlide(SlideLayout layout) {
 
     }
+
 
 }

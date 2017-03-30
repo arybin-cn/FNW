@@ -1,7 +1,6 @@
 package info.arybin.fearnotwords.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
 
 import com.flaviofaria.kenburnsview.KenBurnsView;
@@ -27,7 +26,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-     }
+    }
 
 
     @Override
@@ -36,9 +35,7 @@ public class MainActivity extends BaseActivity {
         imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.25f, 5));
         imageViewBlurred.setupWith((ViewGroup) imageView.getParent()).blurRadius(BLUR_RADIUS);
         imageViewBlurred.setBlurAutoUpdate(false);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.layoutFragmentContainer, new EntranceFragment());
-        transaction.commit();
+        loadFragment(R.id.layoutFragmentContainer, EntranceFragment.class);
     }
 
 }
