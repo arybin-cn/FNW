@@ -39,7 +39,7 @@ import static com.github.florent37.expectanim.core.Expectations.rotated;
 import static com.github.florent37.expectanim.core.Expectations.visible;
 import static info.arybin.fearnotwords.Utils.retrieveAllChildViews;
 
-public class EntranceFragment extends BaseFragment implements
+public class EntryFragment extends BaseFragment implements
         SlideLayout.OnSlideListener, View.OnClickListener {
 
     public static final int STATE_IDLE = 0;
@@ -252,6 +252,7 @@ public class EntranceFragment extends BaseFragment implements
                 .setEndListener(new AnimationEndListener() {
                     @Override
                     public void onAnimationEnd(ExpectAnim expectAnim) {
+                        mainActivity.imageView.resume();
                         loadingGhost.stopAnim();
                         state = STATE_IDLE;
                         setSlidable(true, null);

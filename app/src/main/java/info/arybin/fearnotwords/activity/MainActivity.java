@@ -10,7 +10,7 @@ import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.ui.anim.SimpleTransitionGenerator;
-import info.arybin.fearnotwords.fragment.EntranceFragment;
+import info.arybin.fearnotwords.fragment.EntryFragment;
 
 public class MainActivity extends BaseActivity {
 
@@ -32,10 +32,10 @@ public class MainActivity extends BaseActivity {
     @Override
     public void initializeViews() {
         super.initializeViews();
-        imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.25f, 5));
+        imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.1f, 3));
         imageViewBlurred.setupWith((ViewGroup) imageView.getParent()).blurRadius(BLUR_RADIUS);
         imageViewBlurred.setBlurAutoUpdate(false);
-        loadFragment(R.id.layoutFragmentContainer, EntranceFragment.class);
+        loadFragment(R.id.layoutFragmentContainer, EntryFragment.class);
     }
 
 }
