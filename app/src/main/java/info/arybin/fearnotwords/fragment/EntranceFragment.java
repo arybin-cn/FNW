@@ -23,6 +23,8 @@ import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.activity.MainActivity;
+import info.arybin.fearnotwords.model.LocalizedEntity;
+import info.arybin.fearnotwords.model.Translatable;
 import info.arybin.fearnotwords.ui.view.SlideLayout;
 
 import static com.github.florent37.expectanim.core.Expectations.aboveOf;
@@ -317,6 +319,16 @@ public class EntranceFragment extends BaseFragment implements
 
     @Override
     public void onClick(View v) {
-        System.out.println(1);
+        LocalizedEntity entity = LocalizedEntity.create("abandon", "CH");
+
+        System.out.println(entity.getExampleCount());
+        for (int i=0;i<entity.getExampleCount();i++){
+            Translatable translatable = entity.getExampleAt(i);
+            System.out.println(translatable.getOriginal());
+            System.out.println(translatable.getTranslation());
+
+        }
+
+
     }
 }

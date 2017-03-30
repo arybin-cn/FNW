@@ -24,7 +24,6 @@ import info.arybin.fearnotwords.model.orm.Translation;
  * The language of pronounce/translation and the translation of examples are determined by the language
  * used to construct.
  */
-@SuppressWarnings("unused")
 public class LocalizedEntity implements Memorable, Parcelable {
 
     private final long entityID;
@@ -121,11 +120,12 @@ public class LocalizedEntity implements Memorable, Parcelable {
             CharSequence original = null;
             CharSequence translation = null;
             for (EntityL entityL : expressionL.getEntityLs()) {
-                if (entity.getLanguage().equals(entityL.getLanguage())) {
-                    original = entity.getBody();
+
+                if (entityL.getLanguage().equals(entity.getLanguage())) {
+                    original = entityL.getBody();
                 }
-                if (entity.getLanguage().equals(language)) {
-                    translation = entity.getBody();
+                if (entityL.getLanguage().equals(language)) {
+                    translation = entityL.getBody();
                 }
                 if (original != null && translation != null) {
                     tmpExamples.add(new Pair<>(original, translation));
@@ -251,4 +251,8 @@ public class LocalizedEntity implements Memorable, Parcelable {
     }
 
 
+    @Override
+    public String toString() {
+        return String.format("%s\n%s\n%s", body, pronounce, translation);
+    }
 }

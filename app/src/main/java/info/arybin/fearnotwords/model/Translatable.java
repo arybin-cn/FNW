@@ -1,6 +1,7 @@
 package info.arybin.fearnotwords.model;
 
-interface Translatable  {
+public interface Translatable {
     CharSequence getOriginal();
+
     CharSequence getTranslation();
 }
