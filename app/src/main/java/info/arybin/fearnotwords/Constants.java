@@ -6,6 +6,7 @@ package info.arybin.fearnotwords;
  */
 public interface Constants {
     int MSG_INITIALIZED_DB = 0;
+    int MSG_LOADED = 1;
 
     String KEY_FONT = "font";
     String KEY_FONT_NON_ASCII = "font_non_ascii";

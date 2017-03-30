@@ -1,6 +1,8 @@
 package info.arybin.fearnotwords.fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +15,10 @@ import com.github.florent37.expectanim.ExpectAnim;
 import com.github.florent37.expectanim.listener.AnimationEndListener;
 import com.ldoublem.loadingviewlib.view.LVGhost;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,10 +27,8 @@ import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.activity.MainActivity;
+import info.arybin.fearnotwords.model.LoadPlanTask;
 import info.arybin.fearnotwords.model.LocalizedEntity;
-import info.arybin.fearnotwords.model.LocalizedPlan;
-import info.arybin.fearnotwords.model.Translatable;
-import info.arybin.fearnotwords.model.orm.Entity;
 import info.arybin.fearnotwords.ui.view.SlideLayout;
 
 import static com.github.florent37.expectanim.core.Expectations.aboveOf;
@@ -40,7 +40,7 @@ import static com.github.florent37.expectanim.core.Expectations.visible;
 import static info.arybin.fearnotwords.Utils.retrieveAllChildViews;
 
 public class EntryFragment extends BaseFragment implements
-        SlideLayout.OnSlideListener, View.OnClickListener {
+        SlideLayout.OnSlideListener, View.OnClickListener, Handler.Callback {
 
     public static final int STATE_IDLE = 0;
     public static final int STATE_LOADING = 1;
@@ -98,32 +98,8 @@ public class EntryFragment extends BaseFragment implements
     @BindView(R.id.separatorBottom)
     public View separatorBottom;
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mainActivity = (MainActivity) getActivity();
-        initialize();
-    }
+    private Handler handler = new Handler(this);
 
-    @Override
-    public boolean onBackPressed() {
-        switch (state) {
-            case STATE_IDLE:
-                return false;
-            case STATE_LOADING:
-                abortLoading();
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_entrance, container, false);
-        ButterKnife.bind(this, view);
-        return view;
-    }
 
     private void initialize() {
         loadingAnimPre = new ExpectAnim().expect(loadingGhost)
@@ -240,7 +216,6 @@ public class EntryFragment extends BaseFragment implements
                 .start();
     }
 
-
     private void abortLoading() {
         new ExpectAnim()
                 .expect(loadingGhost).toBe(invisible())
@@ -262,8 +237,7 @@ public class EntryFragment extends BaseFragment implements
 
     }
 
-
-    public void setSlidable(boolean slidable, SlideLayout exception) {
+    private void setSlidable(boolean slidable, SlideLayout exception) {
         if (layoutEntranceNew != exception) {
             layoutEntranceNew.setSlidable(slidable);
         }
@@ -274,6 +248,39 @@ public class EntryFragment extends BaseFragment implements
             layoutEntranceAll.setSlidable(slidable);
         }
     }
+
+    private void prepareToLoadNew() {
+        switchToLoadingState();
+    }
+
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mainActivity = (MainActivity) getActivity();
+        initialize();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_entrance, container, false);
+        ButterKnife.bind(this, view);
+        return view;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        switch (state) {
+            case STATE_IDLE:
+                return false;
+            case STATE_LOADING:
+                abortLoading();
+                return true;
+            default:
+                return false;
+        }
+    }
+
 
     @Override
     public void onSlide(SlideLayout layout, float rate) {
@@ -303,9 +310,8 @@ public class EntryFragment extends BaseFragment implements
 
     @Override
     public void onSlideToRight(SlideLayout layout) {
-        switchToLoadingState();
+        prepareToLoadNew();
     }
-
 
     @Override
     public void onStartSlide(SlideLayout layout) {
@@ -327,5 +333,22 @@ public class EntryFragment extends BaseFragment implements
     @Override
     public void onClick(View v) {
 
+        LoadPlanTask.setupFor("GRE", new LoadPlanTask.OnProgressListener() {
+            @Override
+            public void onProgressUpdated(float percentage) {
+                System.out.println(percentage);
+            }
+
+            @Override
+            public void onProgressCompleted(ArrayList<LocalizedEntity> result) {
+                System.out.println("completed " + result.size());
+            }
+        }, 1).execute(LoadPlanTask.Type.NEW);
+
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        return false;
     }
 }
