@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.florent37.expectanim.ExpectAnim;
@@ -15,6 +16,7 @@ import com.ldoublem.loadingviewlib.view.LVGhost;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -24,7 +26,9 @@ import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.activity.MainActivity;
 import info.arybin.fearnotwords.model.LocalizedEntity;
+import info.arybin.fearnotwords.model.LocalizedPlan;
 import info.arybin.fearnotwords.model.Translatable;
+import info.arybin.fearnotwords.model.orm.Entity;
 import info.arybin.fearnotwords.ui.view.SlideLayout;
 
 import static com.github.florent37.expectanim.core.Expectations.aboveOf;
@@ -44,9 +48,9 @@ public class EntranceFragment extends BaseFragment implements
     private int state = 0;
     private MainActivity mainActivity;
     private Random random = new Random();
+
     private AtomicBoolean canSwitchSlide = new AtomicBoolean(true);
 
-    private View currentSliding;
     private LinkedList<View> currentSlidingChildViews = new LinkedList<>();
     private HashMap<View, Float> transitionMap = new HashMap<>();
 
@@ -83,6 +87,8 @@ public class EntranceFragment extends BaseFragment implements
     @BindView(R.id.textViewEntranceAll)
     public TextView textViewEntranceAll;
 
+    @BindView(R.id.layoutPost)
+    public RelativeLayout layoutPost;
     @BindView(R.id.textViewPost)
     public TextView textViewPost;
     @BindView(R.id.textViewPostTranslation)
@@ -133,15 +139,18 @@ public class EntranceFragment extends BaseFragment implements
         blurView.setupWith((ViewGroup) mainActivity.imageView.getParent()).blurRadius(BLUR_RADIUS);
         loadingAnimPre.setNow();
         mainActivity.imageViewBlurred.setAlpha(0);
+
         layoutEntranceNew.setOnSlideListener(this);
         layoutEntranceNew.setIgnoreLeft(true);
+
         layoutEntranceOld.setOnSlideListener(this);
         layoutEntranceOld.setIgnoreLeft(true);
+
         layoutEntranceAll.setOnSlideListener(this);
         layoutEntranceAll.setIgnoreLeft(true);
 
         //For test
-        layoutEntranceNew.setOnClickListener(this);
+        layoutPost.setOnClickListener(this);
 
     }
 
@@ -161,15 +170,16 @@ public class EntranceFragment extends BaseFragment implements
 
     private void tryToPrepareTransitionMap(SlideLayout originLayout, int hierarchy) throws Exception {
         transitionMap.clear();
+        currentSlidingChildViews = retrieveAllChildViews(originLayout);
         ViewGroup parent = (ViewGroup) originLayout.getParent();
         for (int i = hierarchy; i > 1; i--) {
             parent = (ViewGroup) parent.getParent();
         }
-        currentSlidingChildViews = retrieveAllChildViews(originLayout);
         LinkedList<View> childViews = retrieveAllChildViews(parent, originLayout);
         for (View view : childViews) {
             transitionMap.put(view, 0f);
         }
+
     }
 
     private void tryToInitTransitionMap(SlideLayout originLayout, int hierarchy) throws Exception {
@@ -177,10 +187,7 @@ public class EntranceFragment extends BaseFragment implements
             throw new IllegalArgumentException("hierarchy must >= 1");
         }
 
-        if (transitionMap.size() == 0 || currentSliding != originLayout) {
-            tryToPrepareTransitionMap(originLayout, hierarchy);
-            currentSliding = originLayout;
-        }
+        tryToPrepareTransitionMap(originLayout, hierarchy);
 
         for (View view : transitionMap.keySet()) {
             int posOriginView[] = new int[2];
@@ -269,15 +276,14 @@ public class EntranceFragment extends BaseFragment implements
 
     @Override
     public void onSlide(SlideLayout layout, float rate) {
-        if (state == STATE_IDLE) {
-            float rateAbs = Math.abs(rate);
-            float conjugateRateAbs = 1 - rateAbs;
-            float conjugateRateAbs3 = conjugateRateAbs * conjugateRateAbs * conjugateRateAbs;
-            mainActivity.imageViewBlurred.setAlpha(1 - conjugateRateAbs3);
-            setTransitionMapPercentage(rate);
-            loadingAnim.setPercent(rateAbs);
-            separatorBottom.setAlpha(conjugateRateAbs3);
-        }
+
+        float rateAbs = Math.abs(rate);
+        float conjugateRateAbs = 1 - rateAbs;
+        float conjugateRateAbs3 = conjugateRateAbs * conjugateRateAbs * conjugateRateAbs;
+        mainActivity.imageViewBlurred.setAlpha(1 - conjugateRateAbs3);
+        setTransitionMapPercentage(rate);
+        loadingAnim.setPercent(rateAbs);
+        separatorBottom.setAlpha(conjugateRateAbs3);
     }
 
     @Override
@@ -290,8 +296,8 @@ public class EntranceFragment extends BaseFragment implements
     public void onSlideToCenter(SlideLayout layout) {
         mainActivity.imageView.resume();
         blurView.setBlurAutoUpdate(true);
-        canSwitchSlide.set(true);
         setSlidable(true, null);
+        canSwitchSlide.set(true);
     }
 
     @Override
@@ -303,8 +309,8 @@ public class EntranceFragment extends BaseFragment implements
     @Override
     public void onStartSlide(SlideLayout layout) {
         if (canSwitchSlide.compareAndSet(true, false)) {
-            setSlidable(false, layout);
             initTransitionMap(layout);
+            setSlidable(false, layout);
             mainActivity.imageView.pause();
             blurView.setBlurAutoUpdate(false);
             mainActivity.imageViewBlurred.updateBlur();
@@ -319,16 +325,6 @@ public class EntranceFragment extends BaseFragment implements
 
     @Override
     public void onClick(View v) {
-        LocalizedEntity entity = LocalizedEntity.create("abandon", "CH");
-
-        System.out.println(entity.getExampleCount());
-        for (int i=0;i<entity.getExampleCount();i++){
-            Translatable translatable = entity.getExampleAt(i);
-            System.out.println(translatable.getOriginal());
-            System.out.println(translatable.getTranslation());
-
-        }
-
 
     }
 }

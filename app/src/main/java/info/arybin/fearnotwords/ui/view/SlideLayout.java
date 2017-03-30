@@ -68,6 +68,7 @@ public class SlideLayout extends RelativeLayout {
         this.mSlidable = slidable;
     }
 
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if (!mSlidable) {
@@ -75,15 +76,10 @@ public class SlideLayout extends RelativeLayout {
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (null != mOnSlideListener && mState == STATE_IDLE) {
-                    mOnSlideListener.onStartSlide(this);
-                }
                 mPreviousX = event.getX();
-                if (mScroller.isFinished()) {
-                    mState = STATE_IDLE;
-                } else {
+                mState = STATE_IDLE;
+                if (!mScroller.isFinished()) {
                     mScroller.abortAnimation();
-                    mState = STATE_SLIDING;
                     return true;
                 }
                 break;
@@ -91,13 +87,16 @@ public class SlideLayout extends RelativeLayout {
                 float deltaX = event.getX() - mPreviousX;
 
                 if (mState == STATE_IDLE && Math.abs(deltaX) >= mTouchSlop) {
+                    if (null != mOnSlideListener) {
+                        mOnSlideListener.onStartSlide(this);
+                    }
                     mState = STATE_SLIDING;
                     mPreviousX = event.getX();
                     return true;
                 }
                 break;
         }
-        return false;
+        return super.onInterceptTouchEvent(event);
     }
 
     @Override
@@ -106,12 +105,22 @@ public class SlideLayout extends RelativeLayout {
             return false;
         }
         switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mPreviousX = event.getX();
+                mState = STATE_IDLE;
+                if (!mScroller.isFinished()) {
+                    mState = STATE_SLIDING;
+                    mScroller.abortAnimation();
+                }
+                return true;
             case MotionEvent.ACTION_MOVE:
                 float deltaX = event.getX() - mPreviousX;
                 if (mState == STATE_IDLE && Math.abs(deltaX) > mTouchSlop) {
-                    mPreviousX = event.getX();
+                    if (null != mOnSlideListener) {
+                        mOnSlideListener.onStartSlide(this);
+                    }
                     mState = STATE_SLIDING;
-                    break;
+                    mPreviousX = event.getX();
                 }
                 if (mState == STATE_SLIDING) {
                     deltaX *= 1f;
