@@ -68,7 +68,11 @@ dependencies {
     //Loading Animation
     compile 'com.tuyenmonkey:mkloader:1.2.0'
 
+    //Loading Animation2
+    compile 'com.ldoublem.loadingview:loadingviewlib:1.0'
+
     //Shimmer
     compile 'com.facebook.shimmer:shimmer:0.1.0@aar'
+
 
 }

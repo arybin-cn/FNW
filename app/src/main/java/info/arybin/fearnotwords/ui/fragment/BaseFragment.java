@@ -11,6 +11,7 @@ import info.arybin.fearnotwords.activity.BaseActivity;
 
 
 public abstract class BaseFragment extends Fragment implements Constants {
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);

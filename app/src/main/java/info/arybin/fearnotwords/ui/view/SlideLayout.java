@@ -2,26 +2,28 @@ package info.arybin.fearnotwords.ui.view;
 
 
 import android.content.Context;
-import android.transition.Slide;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class SlideLayout extends RelativeLayout {
 
     public final int STATE_IDLE = 0;
     public final int STATE_SCROLLING = 1;
 
-    private boolean slideable = true;
+    private boolean slidable = true;
+    private AtomicBoolean slideToSide = new AtomicBoolean(false);
 
     private final Scroller mScroller;
     private final int mTouchSlop;
 
     private float mPreviousX;
     private int mState = STATE_IDLE;
-    private int mOffsetMax = 200;
+    private int mOffsetMax = 360;
     private OnSlideListener mOnSlideListener;
 
 
@@ -48,17 +50,17 @@ public class SlideLayout extends RelativeLayout {
         return mOffsetMax;
     }
 
-    public boolean isSlideable() {
-        return slideable;
+    public boolean isSlidable() {
+        return slidable;
     }
 
-    public void setSlideable(boolean slideable) {
-        this.slideable = slideable;
+    public void setSlidable(boolean slidable) {
+        this.slidable = slidable;
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (!slideable) {
+        if (!slidable) {
             return false;
         }
         switch (event.getAction()) {
@@ -66,9 +68,13 @@ public class SlideLayout extends RelativeLayout {
                 if (null != mOnSlideListener && mState == STATE_IDLE) {
                     mOnSlideListener.onStartSlide(this);
                 }
+                mPreviousX = event.getX();
                 if (mScroller.isFinished()) {
-                    mPreviousX = event.getX();
                     mState = STATE_IDLE;
+                } else {
+                    mScroller.abortAnimation();
+                    mState = STATE_SCROLLING;
+                    return true;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -86,7 +92,7 @@ public class SlideLayout extends RelativeLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!slideable) {
+        if (!slidable) {
             return false;
         }
         switch (event.getAction()) {
@@ -122,7 +128,7 @@ public class SlideLayout extends RelativeLayout {
 
     public void scrollToCenter() {
         int scrolledX = getScrollX();
-        mScroller.startScroll(scrolledX, 0, -scrolledX, 0, Math.abs(scrolledX) * 8);
+        mScroller.startScroll(scrolledX, 0, -scrolledX, 0, Math.abs(scrolledX) * 5);
         invalidate();
     }
 
@@ -136,25 +142,28 @@ public class SlideLayout extends RelativeLayout {
                 if (null != mOnSlideListener) {
                     mOnSlideListener.onSlideToCenter(this);
                     mState = STATE_IDLE;
+                    slideToSide.set(false);
                 }
             }
         }
+
         if (null != mOnSlideListener) {
             mOnSlideListener.onSlide(this, getScrollX() * -1f / mOffsetMax);
         }
+
         if (Math.abs(Math.abs(getScrollX()) - mOffsetMax) < 1) {
-            scrollToCenter();
-            if (null != mOnSlideListener && mState == STATE_SCROLLING) {
-                if (getScrollX() > 0) {
-                    mOnSlideListener.onSlideToLeft(this);
-                } else {
-                    mOnSlideListener.onSlideToRight(this);
+            if (slideToSide.compareAndSet(false, true)) {
+                scrollToCenter();
+                if (null != mOnSlideListener && mState == STATE_SCROLLING) {
+                    mState = STATE_IDLE;
+                    if (getScrollX() > 0) {
+                        mOnSlideListener.onSlideToLeft(this);
+                    } else {
+                        mOnSlideListener.onSlideToRight(this);
+                    }
                 }
-                mState = STATE_IDLE;
             }
         }
-
-
     }
 
 
@@ -164,13 +173,13 @@ public class SlideLayout extends RelativeLayout {
 
 
     public interface OnSlideListener {
+        void onSlide(SlideLayout layout, float rate);
+
         void onSlideToLeft(SlideLayout layout);
 
         void onSlideToCenter(SlideLayout layout);
 
         void onSlideToRight(SlideLayout layout);
-
-        void onSlide(SlideLayout layout, float rate);
 
         void onStartSlide(SlideLayout layout);
 

@@ -2,18 +2,21 @@ package info.arybin.fearnotwords.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.facebook.shimmer.ShimmerFrameLayout;
+import com.github.florent37.expectanim.ExpectAnim;
+import com.ldoublem.loadingviewlib.view.LVGhost;
 
-import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,15 +25,33 @@ import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.activity.MainActivity;
 import info.arybin.fearnotwords.ui.view.SlideLayout;
 
+import static com.github.florent37.expectanim.core.Expectations.aboveOf;
+import static com.github.florent37.expectanim.core.Expectations.alpha;
+import static com.github.florent37.expectanim.core.Expectations.atItsOriginalPosition;
+import static com.github.florent37.expectanim.core.Expectations.outOfScreen;
+import static com.github.florent37.expectanim.core.Expectations.rotated;
+import static info.arybin.fearnotwords.Utils.retrieveAllChildViews;
+
 public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlideListener {
     private Random random = new Random();
     private HashMap<View, Float> transitionMap = new HashMap<>();
 
     private MainActivity mainActivity;
-    private View transitionOriginView = null;
+    private AtomicBoolean canSlide = new AtomicBoolean(true);
+    private View currentSliding;
+    private LinkedList<View> currentSlidingChildViews = new LinkedList<>();
+
+    private ExpectAnim loadingAnimPre;
+    private ExpectAnim loadingAnim;
 
     @BindView(R.id.blurView)
     public BlurView blurView;
+
+    @BindView(R.id.loadingGhost)
+    protected LVGhost loadingGhost;
+
+    @BindView(R.id.layoutEntrance)
+    public LinearLayout layoutEntrance;
 
     @BindView(R.id.layoutEntranceNew)
     public SlideLayout layoutEntranceNew;
@@ -53,12 +74,16 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
     @BindView(R.id.textViewEntranceAll)
     public TextView textViewEntranceAll;
 
+    @BindView(R.id.separatorTop)
+    public View separatorTop;
     @BindView(R.id.textViewPost)
     public TextView textViewPost;
     @BindView(R.id.textViewPostTranslation)
     public TextView textViewPostTranslation;
     @BindView(R.id.textViewUser)
     public TextView textViewUser;
+    @BindView(R.id.separatorBottom)
+    public View separatorBottom;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -75,141 +100,159 @@ public class EntranceFragment extends BaseFragment implements SlideLayout.OnSlid
     }
 
     private void initialize() {
+        loadingAnimPre = new ExpectAnim().expect(loadingGhost)
+                .toBe(aboveOf(blurView).withMarginDp(36), alpha(0), rotated(180))
+                .toAnimation();
+
+        loadingAnim = new ExpectAnim().expect(loadingGhost)
+                .toBe(
+                        rotated(0),
+                        atItsOriginalPosition(),
+                        alpha(0.6f)
+                ).toAnimation();
         initializedViews();
     }
 
     private void initializedViews() {
         blurView.setupWith((ViewGroup) mainActivity.imageView.getParent()).blurRadius(BLUR_RADIUS);
+        loadingAnimPre.setNow();
         mainActivity.imageViewBlurred.setAlpha(0);
-
         layoutEntranceNew.setOnSlideListener(this);
         layoutEntranceOld.setOnSlideListener(this);
         layoutEntranceAll.setOnSlideListener(this);
     }
 
-    private void initTransitionMap(ViewGroup originView) {
-        initTransitionMap(originView, 3);
+    private void initTransitionMap(SlideLayout originLayout) {
+        initTransitionMap(originLayout, 1);
 
     }
 
-    private void initTransitionMap(View originView, int hierarchy) {
+    private void initTransitionMap(SlideLayout originLayout, int hierarchy) {
         try {
-            tryToInitTransitionMap(originView, hierarchy);
+            tryToInitTransitionMap(originLayout, hierarchy);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    private void tryToInitTransitionMap(View originView, int hierarchy) throws Exception {
+    private void tryToPrepareTransitionMap(SlideLayout originLayout, int hierarchy) throws Exception {
+        transitionMap.clear();
+        ViewGroup parent = (ViewGroup) originLayout.getParent();
+        for (int i = hierarchy; i > 1; i--) {
+            parent = (ViewGroup) parent.getParent();
+        }
+        currentSlidingChildViews = retrieveAllChildViews(originLayout);
+        LinkedList<View> childViews = retrieveAllChildViews(parent, originLayout);
+        Iterator<View> iterator = childViews.iterator();
+        while (iterator.hasNext()) {
+            View view = iterator.next();
+            transitionMap.put(view, 0f);
+        }
+    }
+
+    private void tryToInitTransitionMap(SlideLayout originLayout, int hierarchy) throws Exception {
         if (hierarchy < 1) {
             throw new IllegalArgumentException("hierarchy must >= 1");
         }
-        if (transitionMap.size() == 0 || transitionOriginView != originView) {
-            tryToPrepareTransitionMap(originView, hierarchy);
-            transitionOriginView = originView;
+
+        if (transitionMap.size() == 0 || currentSliding != originLayout) {
+            tryToPrepareTransitionMap(originLayout, hierarchy);
+            currentSliding = originLayout;
         }
 
         for (View view : transitionMap.keySet()) {
             int posOriginView[] = new int[2];
-            originView.getLocationOnScreen(posOriginView);
+            originLayout.getLocationOnScreen(posOriginView);
             int posView[] = new int[2];
             view.getLocationOnScreen(posView);
 
             float maxDistance = 100f;
             int direction = (posView[1] - posOriginView[1]);
             direction = direction > 1 ? 1 : -1;
-            transitionMap.put(view, direction * maxDistance * (0.45f + 0.9f * random.nextFloat()));
+            transitionMap.put(view, direction * maxDistance * (0.5f + 1.5f * random.nextFloat()));
         }
 
     }
 
-    private void tryToPrepareTransitionMap(View originView, int hierarchy) throws Exception {
-        transitionMap.clear();
-        ViewGroup parent = (ViewGroup) originView.getParent();
-        for (int i = hierarchy; i > 1; i--) {
-            parent = (ViewGroup) parent.getParent();
+    @Override
+    public void onSlide(SlideLayout layout, float rate) {
+        Iterator<View> i;
+        View tmpView;
+        float rateAbs = Math.abs(rate);
+        float conjugateRateAbs = 1 - rateAbs;
+        float conjugateRateAbs3 = conjugateRateAbs * conjugateRateAbs * conjugateRateAbs;
+        mainActivity.imageViewBlurred.setAlpha(1 - conjugateRateAbs3);
+        loadingAnim.setPercent(rateAbs);
+        i = transitionMap.keySet().iterator();
+        while (i.hasNext()) {
+            tmpView = i.next();
+            tmpView.setTranslationY(rateAbs * transitionMap.get(tmpView));
+            tmpView.setAlpha(conjugateRateAbs3);
         }
-        ArrayDeque<View> queue = new ArrayDeque<>();
-        queue.add(parent);
-        while (queue.size() > 0) {
-            View view = queue.poll();
-            if (view instanceof ViewGroup) {
-                if (view != originView) {
-                    ViewGroup tmpGroup = (ViewGroup) view;
-                    int childCount = tmpGroup.getChildCount();
-                    for (int j = 0; j < childCount; j++) {
-                        queue.add(tmpGroup.getChildAt(j));
-                    }
-                }
-                continue;
-            }
-            transitionMap.put(view, 0f);
+        separatorBottom.setAlpha(conjugateRateAbs3);
+
+        i = currentSlidingChildViews.iterator();
+        while (i.hasNext()) {
+            tmpView = i.next();
+            tmpView.setAlpha(conjugateRateAbs);
         }
+
 
     }
 
     @Override
     public void onSlideToLeft(SlideLayout layout) {
-
+        layoutEntrance.setVisibility(View.INVISIBLE);
+        loadingGhost.startAnim(1200);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("test", "str");
+//        loadLoadingFragment(bundle);
     }
 
     @Override
     public void onSlideToCenter(SlideLayout layout) {
+        mainActivity.imageView.resume();
+        blurView.setBlurAutoUpdate(true);
         if (layoutEntranceNew != layout) {
-            layoutEntranceNew.setSlideable(true);
+            layoutEntranceNew.setSlidable(true);
         }
         if (layoutEntranceOld != layout) {
-            layoutEntranceOld.setSlideable(true);
+            layoutEntranceOld.setSlidable(true);
         }
         if (layoutEntranceAll != layout) {
-            layoutEntranceAll.setSlideable(true);
+            layoutEntranceAll.setSlidable(true);
         }
+        canSlide.set(true);
     }
 
     @Override
     public void onSlideToRight(SlideLayout layout) {
-        Bundle bundle = new Bundle();
-        bundle.putString("test", "str");
-        loadLoadingFragment(bundle);
     }
 
-    @Override
-    public void onSlide(SlideLayout layout, float rate) {
-        float rateAbs = Math.abs(rate);
-        float conjugateRateAbs = 1 - rateAbs;
-        float conjugateRateAbs3 = conjugateRateAbs * conjugateRateAbs * conjugateRateAbs;
-        mainActivity.imageViewBlurred.setAlpha(1 - conjugateRateAbs3);
-        blurView.setAlpha(conjugateRateAbs);
-        Iterator<View> i = transitionMap.keySet().iterator();
-        while (i.hasNext()) {
-            View view = i.next();
-            view.setTranslationY(rateAbs * transitionMap.get(view));
-            view.setAlpha(conjugateRateAbs3 * conjugateRateAbs);
-        }
-    }
 
     @Override
     public void onStartSlide(SlideLayout layout) {
-        if (layoutEntranceNew != layout) {
-            layoutEntranceNew.setSlideable(false);
+        if (canSlide.compareAndSet(true, false)) {
+            if (layoutEntranceNew != layout) {
+                layoutEntranceNew.setSlidable(false);
+            }
+            if (layoutEntranceOld != layout) {
+                layoutEntranceOld.setSlidable(false);
+            }
+            if (layoutEntranceAll != layout) {
+                layoutEntranceAll.setSlidable(false);
+            }
+            initTransitionMap(layout);
+            mainActivity.imageView.pause();
+            blurView.setBlurAutoUpdate(false);
+            mainActivity.imageViewBlurred.updateBlur();
         }
-        if (layoutEntranceOld != layout) {
-            layoutEntranceOld.setSlideable(false);
-        }
-        if (layoutEntranceAll != layout) {
-            layoutEntranceAll.setSlideable(false);
-        }
-        mainActivity.imageView.pause();
-        blurView.setBlurAutoUpdate(false);
-        mainActivity.imageViewBlurred.updateBlur();
-        initTransitionMap(layout);
     }
 
     @Override
     public void onFinishSlide(SlideLayout layout) {
-        mainActivity.imageView.resume();
-        blurView.setBlurAutoUpdate(true);
+
     }
 
 }
