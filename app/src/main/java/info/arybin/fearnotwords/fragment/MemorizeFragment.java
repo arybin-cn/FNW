@@ -6,14 +6,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import butterknife.ButterKnife;
 import info.arybin.fearnotwords.R;
-
-/**
- * Created by AryBin on 2017-3-29.
- */
+import info.arybin.fearnotwords.core.OperableQueue;
+import info.arybin.fearnotwords.core.SimpleOperableQueue;
+import info.arybin.fearnotwords.model.Memorable;
 
 public class MemorizeFragment extends BaseFragment {
+
+    private OperableQueue<? extends Memorable> memorableQueue;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_memorize, container, false);
@@ -21,12 +26,10 @@ public class MemorizeFragment extends BaseFragment {
         return view;
     }
 
-    private void initialize() {
-        initializedViews();
-    }
-
-    private void initializedViews() {
-
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initialize();
     }
 
     @Override
@@ -34,4 +37,17 @@ public class MemorizeFragment extends BaseFragment {
 
         return false;
     }
+
+    private void initialize() {
+        initializedViews();
+
+        ArrayList<? extends Memorable> tmp = getArguments().getParcelableArrayList(KEY_LOADED_MEMORABLE);
+        memorableQueue = SimpleOperableQueue.buildFrom(tmp);
+    }
+
+    private void initializedViews() {
+
+    }
+
+
 }

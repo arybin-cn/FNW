@@ -29,4 +29,9 @@ public abstract class BaseFragment extends Fragment implements Constants {
         return ((BaseActivity) getActivity()).readConfig(config);
     }
 
+    public Fragment loadFragment(int container, Class<? extends BaseFragment> fragment, Bundle args) {
+        return ((BaseActivity) getActivity()).loadFragment(container, fragment, args);
+    }
+
+
 }

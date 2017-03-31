@@ -48,6 +48,9 @@ public class FakeEntity implements Memorable, Parcelable {
             examples[i] = "This is a usage example for " + body + " which is just for test.";
             exampleTranslations[i] = "这是一个仅用于测试的例句示例";
         }
+
+        updateTime = new Date();
+        progress = 0;
     }
 
 
@@ -100,7 +103,7 @@ public class FakeEntity implements Memorable, Parcelable {
 
     @Override
     public String toString() {
-        return String.format("%s\n%s\n%s", body, pronounce, translation);
+        return String.format("%s\n%s\n%s\n", body, pronounce, translation);
     }
 
     @Override

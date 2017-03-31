@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 import info.arybin.fearnotwords.Config;
 import info.arybin.fearnotwords.Constants;
@@ -29,15 +28,13 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
     private boolean initialized = false;
     private Handler handler = new Handler(this);
 
-    private BaseFragment topFragment;
+    private BaseFragment lastLoadedFragment;
 
     protected WindowManager windowManager;
     protected AssetManager assetManager;
     protected FragmentManager fragmentManager;
 
     private SharedPreferences configs;
-
-    protected ArrayList<Fragment> loadedFragments = new ArrayList<>();
 
     protected boolean initializedDatabase = false;
 
@@ -159,7 +156,7 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
         return loadFragment(container, fragment, null);
     }
 
-    protected Fragment loadFragment(int container, Class<? extends BaseFragment> fragment, Bundle args) {
+    public Fragment loadFragment(int container, Class<? extends BaseFragment> fragment, Bundle args) {
         try {
             return tryToLoadFragment(container, fragment, args);
         } catch (Exception e) {
@@ -170,12 +167,12 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
 
     private Fragment tryToLoadFragment(int container, Class<? extends BaseFragment> fragmentClass, Bundle args) throws Exception {
         BaseFragment fragment = fragmentClass.newInstance();
-        topFragment = fragment;
+        lastLoadedFragment = fragment;
         fragment.setArguments(args);
-        fragmentManager.beginTransaction().
-                replace(container, fragment).
-                commit();
-        loadedFragments.add(fragment);
+        fragmentManager.beginTransaction()
+                .addToBackStack(null)
+                .replace(container, fragment)
+                .commit();
         return fragment;
     }
 
@@ -191,8 +188,8 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
     @Override
     public void onBackPressed() {
         boolean consumed = false;
-        if (null != topFragment) {
-            consumed = topFragment.onBackPressed();
+        if (null != lastLoadedFragment) {
+            consumed = lastLoadedFragment.onBackPressed();
         }
         if (!consumed) {
             super.onBackPressed();

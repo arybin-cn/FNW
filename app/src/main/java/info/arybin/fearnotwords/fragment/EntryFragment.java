@@ -15,6 +15,7 @@ import com.github.florent37.expectanim.ExpectAnim;
 import com.github.florent37.expectanim.listener.AnimationEndListener;
 import com.ldoublem.loadingviewlib.view.LVGhost;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -26,6 +27,7 @@ import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.activity.MainActivity;
+import info.arybin.fearnotwords.model.FakeEntity;
 import info.arybin.fearnotwords.ui.view.SlideLayout;
 
 import static com.github.florent37.expectanim.core.Expectations.aboveOf;
@@ -252,6 +254,26 @@ public class EntryFragment extends BaseFragment implements
 
     private void prepareToLoadNew() {
         switchToLoadingState();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ArrayList<FakeEntity> list = new ArrayList<>(8000);
+                    for (int i = 0; i < 8000; i++) {
+                        list.add(new FakeEntity(i));
+                    }
+                    Thread.sleep(1000);
+                    Message msg = new Message();
+                    Bundle data = new Bundle();
+                    data.putParcelableArrayList(KEY_LOADED_MEMORABLE, list);
+                    msg.setData(data);
+                    msg.what = MSG_LOADED;
+                    handler.sendMessage(msg);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 
@@ -285,7 +307,6 @@ public class EntryFragment extends BaseFragment implements
 
     @Override
     public void onSlide(SlideLayout layout, float rate) {
-
         float rateAbs = Math.abs(rate);
         float conjugateRateAbs = 1 - rateAbs;
         float conjugateRateAbs3 = conjugateRateAbs * conjugateRateAbs * conjugateRateAbs;
@@ -333,12 +354,18 @@ public class EntryFragment extends BaseFragment implements
 
     @Override
     public void onClick(View v) {
-
-
     }
 
     @Override
     public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MSG_LOADED:
+                loadFragment(R.id.layoutFragmentContainer, MemorizeFragment.class, msg.getData());
+                abortLoading();
+                break;
+            default:
+
+        }
         return false;
     }
 }

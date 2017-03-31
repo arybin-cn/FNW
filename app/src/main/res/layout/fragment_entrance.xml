@@ -6,7 +6,7 @@
         android:id="@+id/blurView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" >
+        android:layout_alignParentBottom="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -261,7 +261,7 @@
         android:layout_height="108dp"
         android:layout_above="@id/blurView"
         android:layout_centerHorizontal="true"
-        android:alpha="0.6" />
+        android:alpha="0" />
 
 </RelativeLayout>
 
