@@ -252,6 +252,16 @@ public class EntryFragment extends BaseFragment implements
 
     private void prepareToLoadNew() {
 
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                for (int i = 1; i < 1000; i++) {
+//                    DataSupport.where("body = ?", "abandon")
+//                            .findFirst(Entity.class);
+//                }
+//            }
+//        }).start();
+
         switchToLoadingState();
     }
 
