@@ -112,6 +112,9 @@ public class EntryFragment extends BaseFragment implements
     }
 
     private void initializedViews() {
+
+//        blurView.setOverlayColor(Color.argb(64, 0, 0, 0));
+
         blurView.setupWith((ViewGroup) mainActivity.imageView.getParent()).blurRadius(BLUR_RADIUS);
         loadingAnimPre.setNow();
         mainActivity.imageViewBlurred.setAlpha(0);

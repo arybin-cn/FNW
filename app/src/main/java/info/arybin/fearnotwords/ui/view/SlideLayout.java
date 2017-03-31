@@ -79,6 +79,7 @@ public class SlideLayout extends RelativeLayout {
                 mPreviousX = event.getX();
                 mState = STATE_IDLE;
                 if (!mScroller.isFinished()) {
+                    mState = STATE_SLIDING;
                     mScroller.abortAnimation();
                     return true;
                 }
@@ -107,7 +108,6 @@ public class SlideLayout extends RelativeLayout {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mPreviousX = event.getX();
-                mState = STATE_IDLE;
                 if (!mScroller.isFinished()) {
                     mState = STATE_SLIDING;
                     mScroller.abortAnimation();
@@ -164,7 +164,6 @@ public class SlideLayout extends RelativeLayout {
                 }
             }
         }
-
         if (null != mOnSlideListener && mState == STATE_SLIDING) {
             mOnSlideListener.onSlide(this, getScrollX() * -1f / mOffsetMax);
         }
