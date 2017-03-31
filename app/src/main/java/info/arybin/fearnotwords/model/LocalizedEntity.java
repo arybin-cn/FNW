@@ -161,40 +161,6 @@ public class LocalizedEntity implements Memorable, Parcelable {
         return progress;
     }
 
-    public void setAsNew(boolean autoSave) {
-        setProgress(Entity.PROGRESS_NEW);
-        if (autoSave) {
-            save();
-        }
-    }
-
-    public void setAsNew() {
-        setAsNew(true);
-    }
-
-    public void setAsSkipped(boolean autoSave) {
-        setProgress(Entity.PROGRESS_SKIPPED);
-        if (autoSave) {
-            save();
-        }
-    }
-
-
-    public void setAsSkipped() {
-        setAsSkipped(true);
-    }
-
-    public void setAsOld(boolean autoSave) {
-        setProgress(Entity.PROGRESS_OLD);
-        if (autoSave) {
-            save();
-        }
-    }
-
-    public void setAsOld() {
-        setAsOld(true);
-    }
-
     public int save() {
         Entity entity = new Entity();
         entity.setProgress(progress);
@@ -254,5 +220,15 @@ public class LocalizedEntity implements Memorable, Parcelable {
     @Override
     public String toString() {
         return String.format("%s\n%s\n%s", body, pronounce, translation);
+    }
+
+    @Override
+    public void setMemoryProgress(int progress) {
+        setProgress(progress);
+    }
+
+    @Override
+    public int getMemoryProgress() {
+        return progress;
     }
 }
