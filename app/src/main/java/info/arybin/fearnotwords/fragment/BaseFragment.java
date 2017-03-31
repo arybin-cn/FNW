@@ -11,11 +11,13 @@ import info.arybin.fearnotwords.activity.BaseActivity;
 
 
 public abstract class BaseFragment extends Fragment implements Constants {
+    protected BaseActivity activity;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ((BaseActivity) getActivity()).initializeViews(getClass(), this);
+        activity = ((BaseActivity) getActivity());
+        activity.initializeViews(getClass(), this);
     }
 
 
@@ -26,11 +28,17 @@ public abstract class BaseFragment extends Fragment implements Constants {
 
 
     protected String readConfig(Config config) {
-        return ((BaseActivity) getActivity()).readConfig(config);
+        if (null != activity) {
+            return activity.readConfig(config);
+        }
+        return null;
     }
 
     public Fragment loadFragment(int container, Class<? extends BaseFragment> fragment, Bundle args) {
-        return ((BaseActivity) getActivity()).loadFragment(container, fragment, args);
+        if (null != activity) {
+            return activity.loadFragment(container, fragment, args);
+        }
+        return null;
     }
 
 

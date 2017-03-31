@@ -230,14 +230,20 @@ public class EntryFragment extends BaseFragment implements
                     @Override
                     public void onAnimationEnd(ExpectAnim expectAnim) {
                         mainActivity.imageView.resume();
-                        loadingGhost.stopAnim();
-                        state = STATE_IDLE;
-                        setSlidable(true, null);
-                        canSwitchSlide.set(true);
+                        finishLoading();
                     }
                 }).start();
 
     }
+
+    private void finishLoading() {
+        loadingGhost.setAlpha(0);
+        loadingGhost.stopAnim();
+        state = STATE_IDLE;
+        setSlidable(true, null);
+        canSwitchSlide.set(true);
+    }
+
 
     private void setSlidable(boolean slidable, SlideLayout exception) {
         if (layoutEntranceNew != exception) {
@@ -361,7 +367,7 @@ public class EntryFragment extends BaseFragment implements
         switch (msg.what) {
             case MSG_LOADED:
                 loadFragment(R.id.layoutFragmentContainer, MemorizeFragment.class, msg.getData());
-                abortLoading();
+                finishLoading();
                 break;
             default:
 
