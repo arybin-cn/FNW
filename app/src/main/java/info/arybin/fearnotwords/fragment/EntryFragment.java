@@ -15,7 +15,6 @@ import com.github.florent37.expectanim.ExpectAnim;
 import com.github.florent37.expectanim.listener.AnimationEndListener;
 import com.ldoublem.loadingviewlib.view.LVGhost;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -27,8 +26,6 @@ import butterknife.ButterKnife;
 import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.activity.MainActivity;
-import info.arybin.fearnotwords.model.LoadPlanTask;
-import info.arybin.fearnotwords.model.LocalizedEntity;
 import info.arybin.fearnotwords.ui.view.SlideLayout;
 
 import static com.github.florent37.expectanim.core.Expectations.aboveOf;
@@ -252,7 +249,9 @@ public class EntryFragment extends BaseFragment implements
         }
     }
 
+
     private void prepareToLoadNew() {
+
         switchToLoadingState();
     }
 
@@ -336,17 +335,6 @@ public class EntryFragment extends BaseFragment implements
     @Override
     public void onClick(View v) {
 
-        LoadPlanTask.setupFor("GRE", new LoadPlanTask.OnProgressListener() {
-            @Override
-            public void onProgressUpdated(float percentage) {
-                System.out.println(percentage);
-            }
-
-            @Override
-            public void onProgressCompleted(ArrayList<LocalizedEntity> result) {
-                System.out.println("completed " + result.size());
-            }
-        }, 1).execute(LoadPlanTask.Type.NEW);
 
     }
 

@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import info.arybin.fearnotwords.Config;
 import info.arybin.fearnotwords.Constants;
 import info.arybin.fearnotwords.fragment.BaseFragment;
 import info.arybin.fearnotwords.ui.view.TextViewNonAscii;
@@ -34,12 +35,11 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
     protected AssetManager assetManager;
     protected FragmentManager fragmentManager;
 
-    protected SharedPreferences configs;
-
+    private SharedPreferences configs;
 
     protected ArrayList<Fragment> loadedFragments = new ArrayList<>();
 
-    private boolean initializedDatabase = false;
+    protected boolean initializedDatabase = false;
 
     @Override
     protected void onStart() {
@@ -68,9 +68,9 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
 
     protected void initializeTextView(TextView textView) {
         if (textView instanceof TextViewNonAscii) {
-            setTextViewFont(textView, configs.getString(KEY_FONT_NON_ASCII, DEF_FONT_NON_ASCII));
+            setTextViewFont(textView, readConfig(Config.FONT_NON_ASCII));
         } else {
-            setTextViewFont(textView, configs.getString(KEY_FONT, DEF_FONT));
+            setTextViewFont(textView, readConfig(Config.FONT));
         }
     }
 
@@ -83,6 +83,7 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
         initializeViews();
         initializeDatabase();
     }
+
 
     public void initializeViews() {
         initializeViews(getClass(), this);
@@ -124,13 +125,8 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
         releaseDatabase();
     }
 
-    protected boolean initializedDatabase() {
-        return initializedDatabase;
-    }
-
-
     protected final boolean databaseExist() {
-        return getDatabasePath(DEF_DB_FILE).exists();
+        return getDatabasePath(readConfig(Config.DB_FILE)).exists();
     }
 
     protected final void releaseDatabase() {
@@ -139,10 +135,11 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
             public void run() {
                 try {
                     byte[] buf;
-                    File dbFile = getDatabasePath(DEF_DB_FILE);
+                    String dbFileName = readConfig(Config.DB_FILE);
+                    File dbFile = getDatabasePath(dbFileName);
                     dbFile.getParentFile().mkdirs();
                     dbFile.createNewFile();
-                    InputStream inputStream = assetManager.open("databases/" + DEF_DB_FILE);
+                    InputStream inputStream = assetManager.open("databases/" + dbFileName);
                     buf = new byte[inputStream.available()];
                     FileOutputStream fileOutputStream = new FileOutputStream(dbFile);
                     while (inputStream.read(buf) != -1) {
@@ -181,6 +178,15 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
         loadedFragments.add(fragment);
         return fragment;
     }
+
+
+    public String readConfig(Config config) {
+        if (null != configs) {
+            return configs.getString(config.name(), config.getDefaultValue());
+        }
+        return null;
+    }
+
 
     @Override
     public void onBackPressed() {

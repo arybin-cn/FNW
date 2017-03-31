@@ -43,7 +43,7 @@ public class Expression extends DataSupport {
         return entities;
     }
 
-    public Translation getTranslation(String language) {
+    public Translation getTranslation(CharSequence language) {
         for (Translation translation : getTranslations()) {
             if (language.equals(translation.getLanguage())) {
                 return translation;

@@ -21,7 +21,7 @@ public class LoadPlanTask extends AsyncTask<LoadPlanTask.Type, Float, ArrayList<
             this.progress = progress;
         }
 
-        int getProgress() {
+        public int getProgress() {
             return progress;
         }
     }
@@ -88,13 +88,24 @@ public class LoadPlanTask extends AsyncTask<LoadPlanTask.Type, Float, ArrayList<
             if (wanted) {
                 result.add(LocalizedEntity.create(entity, plan.getToLanguage()));
                 if (result.size() % updateProgressThreshold == 0) {
-                    listener.onProgressUpdated(1f * result.size() / total);
+                    publishProgress(1f * result.size() / total);
                 }
             }
         }
-        listener.onProgressCompleted(result);
+
         return result;
     }
 
 
+    @Override
+    protected void onProgressUpdate(Float... values) {
+        super.onProgressUpdate(values);
+        listener.onProgressUpdated(values[0]);
+    }
+
+    @Override
+    protected void onPostExecute(ArrayList<LocalizedEntity> localizedEntities) {
+        super.onPostExecute(localizedEntities);
+        listener.onProgressCompleted(localizedEntities);
+    }
 }

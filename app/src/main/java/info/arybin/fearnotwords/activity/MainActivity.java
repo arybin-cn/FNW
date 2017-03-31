@@ -32,7 +32,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void initializeViews() {
         super.initializeViews();
-        imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.1f, 3));
+        imageView.setTransitionGenerator(new SimpleTransitionGenerator(0.1f, 5));
         imageViewBlurred.setupWith((ViewGroup) imageView.getParent()).blurRadius(BLUR_RADIUS);
         imageViewBlurred.setBlurAutoUpdate(false);
         loadFragment(R.id.layoutFragmentContainer, EntryFragment.class);

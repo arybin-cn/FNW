@@ -6,10 +6,6 @@ import android.view.ViewGroup;
 import java.util.ArrayDeque;
 import java.util.LinkedList;
 
-/**
- * Created by AryBin on 2017-3-30.
- */
-
 public class Utils {
     public static LinkedList<View> retrieveAllChildViews(ViewGroup parent, View... exceptions) {
         LinkedList<View> list = new LinkedList<>();

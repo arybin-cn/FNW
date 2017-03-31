@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import info.arybin.fearnotwords.Config;
 import info.arybin.fearnotwords.Constants;
 import info.arybin.fearnotwords.activity.BaseActivity;
 
@@ -23,5 +24,9 @@ public abstract class BaseFragment extends Fragment implements Constants {
      */
     abstract public boolean onBackPressed();
 
+
+    protected String readConfig(Config config) {
+        return ((BaseActivity) getActivity()).readConfig(config);
+    }
 
 }
