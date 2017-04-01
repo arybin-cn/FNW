@@ -4,11 +4,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static info.arybin.fearnotwords.Utils.isPointInsideView;
 
@@ -19,6 +19,7 @@ public class ObservableLayout extends RelativeLayout {
 
     private static final int STATE_IDLE = 0;
     private static final int STATE_PRESSED = 1;
+    private final int touchSlop;
 
 
     private EventListener listener;
@@ -37,20 +38,57 @@ public class ObservableLayout extends RelativeLayout {
 
 
     public ObservableLayout(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public ObservableLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public ObservableLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        return locked || super.onInterceptTouchEvent(event);
+        if (locked) {
+            return true;
+        }
+
+        if (null != listener && onPressObservers.size() != 0) {
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (STATE_IDLE == state) {
+                        for (View observer : onPressObservers) {
+                            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
+                                switchToStatePressed(observer, event);
+                                listener.onPressDown(observer);
+                            }
+                        }
+                    }
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    float deltaX = event.getX() - previousX;
+                    float deltaY = event.getY() - previousY;
+                    if (Math.abs(deltaX) > touchSlop || Math.abs(deltaY) > touchSlop) {
+                        return true;
+                    }
+
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (state == STATE_PRESSED) {
+                        return true;
+                    }
+                    break;
+            }
+
+
+        }
+
+
+        return super.onInterceptTouchEvent(event);
     }
 
     @Override

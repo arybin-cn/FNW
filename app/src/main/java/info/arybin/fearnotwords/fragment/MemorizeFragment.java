@@ -84,6 +84,13 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
         layoutMain.addOnPressObserver(imagePronounce, imageSkip, imagePass);
         layoutMain.addOnHoverObserver(textViewTranslation, textViewBody);
 
+        imagePass.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                System.out.println(1);
+                return false;
+            }
+        });
 
         updateView(memorableQueue.current());
     }

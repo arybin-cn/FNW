@@ -44,4 +44,5 @@ public class Utils {
         return (x > viewX && x < (viewX + view.getWidth())) &&
                 (y > viewY && y < (viewY + view.getHeight()));
     }
+
 }
