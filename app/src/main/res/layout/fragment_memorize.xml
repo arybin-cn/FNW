@@ -104,7 +104,7 @@
     <info.arybin.fearnotwords.ui.view.textview.TextViewNonAscii
         android:id="@+id/textViewTranslation"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@id/imagePronounce"
         android:layout_below="@id/textViewPronounce"
         android:gravity="center"

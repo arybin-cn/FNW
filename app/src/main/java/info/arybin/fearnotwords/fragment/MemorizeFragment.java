@@ -81,16 +81,18 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
 
         layoutMain.setEventListener(this);
 
-        layoutMain.addOnPressObserver(imagePronounce,imageSkip,imagePass);
-        layoutMain.addOnHoverObserver(textViewTranslation,textViewBody);
+        layoutMain.addOnPressObserver(imagePronounce, imageSkip, imagePass);
+        layoutMain.addOnHoverObserver(textViewTranslation, textViewBody);
 
 
-
-        updateView(0);
+        updateView(memorableQueue.current());
     }
 
-    public void updateView(int exampleIndex) {
-        Memorable memorable = memorableQueue.current();
+    public void updateView(Memorable memorable) {
+        updateView(memorable, 0);
+    }
+
+    public void updateView(Memorable memorable, int exampleIndex) {
         System.out.println(memorable);
         textViewBody.setText(memorable.getOriginal());
         textViewPronounce.setText(memorable.getPronounce());
@@ -113,7 +115,14 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onPressUp(View pressDownView, float xInScreen, float yInScreen) {
-        System.out.println("OnPressUp-" + pressDownView);
+        boolean shouldPass = false;
+        switch (pressDownView.getId()) {
+            case R.id.imagePass:
+                shouldPass = true;
+            case R.id.imageSkip:
+                updateView(memorableQueue.pass());
+                break;
+        }
     }
 
     @Override

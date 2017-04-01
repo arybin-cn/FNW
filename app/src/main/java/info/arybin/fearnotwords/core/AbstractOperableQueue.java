@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
+    private LoopType currentLoopType = LoopType.NoLoop;
+
     private ConcurrentLinkedQueue<T> mSkipped;
     private ConcurrentLinkedQueue<T> mPassed;
     private ConcurrentLinkedQueue<T> mSource;
@@ -23,25 +25,6 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
     }
 
 
-    private T next(boolean passCurrent, boolean inLoop) {
-        if (mCurrent == null) {
-            return null;
-        }
-        (passCurrent ? mPassed : mSkipped).add(mCurrent);
-        if (inLoop) {
-            mCurrent = mSkipped.poll();
-        } else {
-            if (mSource.size() == 0 || (mSkipped.size() > 0 && shouldReview(mIntervalToLastReview++))) {
-                mIntervalToLastReview = 0;
-                mCurrent = mSkipped.poll();
-            } else {
-                mCurrent = mSource.poll();
-            }
-        }
-        return mCurrent;
-    }
-
-
     @Override
     public T current() {
         return mCurrent;
@@ -49,17 +32,42 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
     @Override
     public T pass() {
-        return next(true, false);
+        return next(true);
     }
 
     @Override
     public T skip() {
-        return next(false, false);
+        return next(false);
     }
 
     @Override
-    public T loop() {
-        return next(false, true);
+    public T next(boolean passCurrent) {
+        if (mCurrent == null) {
+            return null;
+        }
+        (passCurrent ? mPassed : mSkipped).add(mCurrent);
+        switch (currentLoopType) {
+            case NoLoop:
+                if (mSource.size() == 0 || (mSkipped.size() > 0 && shouldReview(mIntervalToLastReview++))) {
+                    mIntervalToLastReview = 0;
+                    mCurrent = mSkipped.poll();
+                } else {
+                    mCurrent = mSource.poll();
+                }
+                break;
+            case LoopInSkipped:
+                mCurrent = mSkipped.poll();
+                break;
+            case LoopInPassed:
+                mCurrent = mPassed.poll();
+                break;
+        }
+        return mCurrent;
+    }
+
+    @Override
+    public void setLoopType(LoopType loopType) {
+        currentLoopType = loopType;
     }
 
     @Override
