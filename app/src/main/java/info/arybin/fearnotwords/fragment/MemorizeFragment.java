@@ -67,6 +67,8 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
     private void initialize() {
         ArrayList<? extends Memorable> tmp = getArguments().getParcelableArrayList(KEY_LOADED_MEMORABLE);
         memorableQueue = SimpleOperableQueue.buildFrom(tmp);
+
+
         initializedViews();
     }
 
@@ -77,6 +79,7 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
 
     public void updateView(int exampleIndex) {
         Memorable memorable = memorableQueue.current();
+        System.out.println(memorable);
         textViewBody.setText(memorable.getOriginal());
         textViewPronounce.setText(memorable.getPronounce());
         textViewTranslation.setText(memorable.getTranslation());
@@ -89,10 +92,8 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onClick(View v) {
 
-        System.out.println(1);
-        System.out.println(layoutMain.getHeight());
-        System.out.println(layoutMain.getMeasuredHeight());
-
+        memorableQueue.pass();
+        updateView(0);
 
     }
 }

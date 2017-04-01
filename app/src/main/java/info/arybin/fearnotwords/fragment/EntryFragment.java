@@ -264,8 +264,8 @@ public class EntryFragment extends BaseFragment implements
             @Override
             public void run() {
                 try {
-                    ArrayList<FakeEntity> list = new ArrayList<>(8000);
-                    for (int i = 0; i < 8000; i++) {
+                    ArrayList<FakeEntity> list = new ArrayList<>(300);
+                    for (int i = 0; i < 300; i++) {
                         list.add(new FakeEntity(i));
                     }
                     Thread.sleep(1000);

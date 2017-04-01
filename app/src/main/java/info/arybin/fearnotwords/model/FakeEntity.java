@@ -30,22 +30,18 @@ public class FakeEntity implements Memorable, Parcelable {
         entityID = ++count;
         body = "body-" + salt;
         if (random.nextInt(2) > 0) {
-            pronounce = "['æəæəæ-" + salt + "]";
+            pronounce = "['bɒdɪ]";
         } else {
             pronounce = null;
         }
 
-        StringBuilder tran = new StringBuilder("a.翻译\nb.翻译第二行");
-        if (random.nextInt(2) > 0) {
-            tran.append("\nc.翻译第三行(可能内容)");
-        }
-        translation = tran.toString();
+        translation = "n. 身体；主体；大量；团体；主要部分\nvt. 赋以形体\n[复数bodies,过去式bodied,过去分词bodied,现在分词bodying,第三人称单数bodies]";
 
         int exampleCount = 1 + random.nextInt(3);
         examples = new String[exampleCount];
         exampleTranslations = new String[exampleCount];
         for (int i = 0; i < examples.length; i++) {
-            examples[i] = "This is a usage example for " + body + " which is just for test.";
+            examples[i] = "This is a usage example for " + body + ".";
             exampleTranslations[i] = "这是一个仅用于测试的例句示例";
         }
 

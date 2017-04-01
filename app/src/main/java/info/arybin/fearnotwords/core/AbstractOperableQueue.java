@@ -31,7 +31,7 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
         if (inLoop) {
             mCurrent = mSkipped.poll();
         } else {
-            if (mSource.size() == 0 || shouldReview(mIntervalToLastReview++)) {
+            if (mSource.size() == 0 || (mSkipped.size() > 0 && shouldReview(mIntervalToLastReview++))) {
                 mIntervalToLastReview = 0;
                 mCurrent = mSkipped.poll();
             } else {

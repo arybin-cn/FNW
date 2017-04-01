@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/default_padding_narrow">
 
-                <TextView
+                <info.arybin.fearnotwords.ui.view.textview.TextViewAscii
                     android:id="@+id/textViewPost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
                     android:text="I love three things in the world, the sun, the moon, and you. The sun for the day, the moon for the night, and you for ever."
                     android:textSize="18sp" />
 
-                <info.arybin.fearnotwords.ui.view.TextViewNonAscii
+                <info.arybin.fearnotwords.ui.view.textview.TextViewNonAscii
                     android:id="@+id/textViewPostTranslation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
                     android:text="浮世万千，吾爱有三。日，月与卿。日为朝，夜为暮，卿为朝朝暮暮。"
                     android:textSize="16sp" />
 
-                <TextView
+                <info.arybin.fearnotwords.ui.view.textview.TextViewAscii
                     android:id="@+id/textViewUser"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/default_padding">
 
-                        <TextView
+                        <info.arybin.fearnotwords.ui.view.textview.TextViewAscii
                             android:id="@+id/textViewEntranceNew"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
                             android:textColor="?colorTextTranslucent"
                             android:textSize="30sp" />
 
-                        <TextView
+                        <info.arybin.fearnotwords.ui.view.textview.TextViewAscii
                             android:id="@+id/textViewNewCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -140,7 +140,7 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/default_padding">
 
-                        <TextView
+                        <info.arybin.fearnotwords.ui.view.textview.TextViewAscii
                             android:id="@+id/textViewEntranceOld"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
                             android:textColor="?colorTextTranslucent"
                             android:textSize="30sp" />
 
-                        <TextView
+                        <info.arybin.fearnotwords.ui.view.textview.TextViewAscii
                             android:id="@+id/textViewOldCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -203,7 +203,7 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/default_padding">
 
-                        <TextView
+                        <info.arybin.fearnotwords.ui.view.textview.TextViewAscii
                             android:id="@+id/textViewEntranceAll"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -213,7 +213,7 @@
                             android:textColor="?colorTextTranslucent"
                             android:textSize="30sp" />
 
-                        <TextView
+                        <info.arybin.fearnotwords.ui.view.textview.TextViewAscii
                             android:id="@+id/textViewAllCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

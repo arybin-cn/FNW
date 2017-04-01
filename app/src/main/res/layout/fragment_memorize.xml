@@ -25,15 +25,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
+                <info.arybin.fearnotwords.ui.view.textview.TextViewAscii
                     android:id="@+id/textViewExampleBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:maxLines="3"
                     android:textSize="22sp" />
 
-                <info.arybin.fearnotwords.ui.view.TextViewNonAscii
+                <info.arybin.fearnotwords.ui.view.textview.TextViewNonAscii
                     android:id="@+id/textViewExampleTranslation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -47,7 +46,7 @@
 
     </RelativeLayout>
 
-    <me.grantland.widget.AutofitTextView
+    <info.arybin.fearnotwords.ui.view.textview.TextViewAscii
         android:id="@+id/textViewBody"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -59,7 +58,7 @@
         android:paddingRight="@dimen/default_padding_wide"
         android:textSize="54sp" />
 
-    <TextView
+    <info.arybin.fearnotwords.ui.view.textview.TextViewPhonetic
         android:id="@+id/textViewPronounce"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -107,7 +106,7 @@
     </LinearLayout>
 
 
-    <info.arybin.fearnotwords.ui.view.TextViewNonAscii
+    <info.arybin.fearnotwords.ui.view.textview.TextViewNonAscii
         android:id="@+id/textViewTranslation"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

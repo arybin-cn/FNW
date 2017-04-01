@@ -1,4 +1,4 @@
-package info.arybin.fearnotwords.ui.view;
+package info.arybin.fearnotwords.ui.view.textview;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

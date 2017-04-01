@@ -21,7 +21,9 @@ import java.lang.reflect.Field;
 import info.arybin.fearnotwords.Config;
 import info.arybin.fearnotwords.Constants;
 import info.arybin.fearnotwords.fragment.BaseFragment;
-import info.arybin.fearnotwords.ui.view.TextViewNonAscii;
+import info.arybin.fearnotwords.ui.view.textview.TextViewAscii;
+import info.arybin.fearnotwords.ui.view.textview.TextViewNonAscii;
+import info.arybin.fearnotwords.ui.view.textview.TextViewPhonetic;
 
 public abstract class BaseActivity extends FragmentActivity implements Constants, Handler.Callback {
 
@@ -66,8 +68,10 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
     protected void initializeTextView(TextView textView) {
         if (textView instanceof TextViewNonAscii) {
             setTextViewFont(textView, readConfig(Config.FONT_NON_ASCII));
-        } else {
-            setTextViewFont(textView, readConfig(Config.FONT));
+        } else if (textView instanceof TextViewAscii) {
+            setTextViewFont(textView, readConfig(Config.FONT_ASCII));
+        } else if (textView instanceof TextViewPhonetic) {
+            setTextViewFont(textView, readConfig(Config.FONT_PHONETIC));
         }
     }
 

@@ -2,8 +2,9 @@ package info.arybin.fearnotwords;
 
 public enum Config {
     DB_FILE("default_lite.db"),
-    FONT("GothamCondensed_Light.otf"),
-    FONT_NON_ASCII("FZLanTingHei_GBK.ttf"),
+    FONT_PHONETIC("LucidaSansUnicode.ttf"),
+    FONT_ASCII("GothamCondensedLight.otf"),
+    FONT_NON_ASCII("FZLanTingHeiGBK.ttf"),
     CURRENT_PLAN("词汇A组");
     private String defaultValue;
 
