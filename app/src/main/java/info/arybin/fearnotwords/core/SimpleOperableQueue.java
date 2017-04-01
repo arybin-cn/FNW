@@ -1,10 +1,13 @@
 package info.arybin.fearnotwords.core;
 
 import java.util.Collection;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 public class SimpleOperableQueue<T> extends AbstractOperableQueue<T> {
+
+    private static Random random = new Random();
 
 
     private SimpleOperableQueue(Collection<T> source, Collection<T> skipped) {
@@ -30,7 +33,7 @@ public class SimpleOperableQueue<T> extends AbstractOperableQueue<T> {
     @Override
     protected boolean shouldReview(int intervalToLastReview) {
         //Words' review strategy here
-        return skipped().size() > 5 || intervalToLastReview > 3;
+        return skipped().size() > 10 || intervalToLastReview > 3 || (random.nextInt(13) < 2);
     }
 
 }

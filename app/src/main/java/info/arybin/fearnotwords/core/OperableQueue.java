@@ -19,6 +19,8 @@ public interface OperableQueue<T> {
 
     void setLoopType(LoopType loopType);
 
+    LoopType getLoopType();
+
     Collection<T> passed();
 
     Collection<T> skipped();

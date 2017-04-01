@@ -6,7 +6,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
+    public enum LastElementType {
+        Source, Passed, Skipped
+    }
+
     private LoopType currentLoopType = LoopType.NoLoop;
+    private LastElementType lastElementType = LastElementType.Source;
 
     private ConcurrentLinkedQueue<T> mSkipped;
     private ConcurrentLinkedQueue<T> mPassed;
@@ -42,32 +47,67 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
     @Override
     public T next(boolean passCurrent) {
-        if (mCurrent == null) {
-            return null;
+        if (mCurrent != null) {
+            (passCurrent ? mPassed : mSkipped).add(mCurrent);
         }
-        (passCurrent ? mPassed : mSkipped).add(mCurrent);
         switch (currentLoopType) {
             case NoLoop:
-                if (mSource.size() == 0 || (mSkipped.size() > 0 && shouldReview(mIntervalToLastReview++))) {
-                    mIntervalToLastReview = 0;
-                    mCurrent = mSkipped.poll();
+                if (mSource.size() == 0 && mSkipped.size() == 0) {
+                    mCurrent = null;
+                    break;
+                }
+                if (mSource.size() == 0) {
+                    mCurrent = pollFromSkipped();
+                    break;
+                }
+                if (mSkipped.size() == 0) {
+                    mCurrent = pollFromSource();
+                    break;
+                }
+                if (shouldReview(mIntervalToLastReview++)) {
+                    mCurrent = pollFromSkipped();
                 } else {
-                    mCurrent = mSource.poll();
+                    mCurrent = pollFromSource();
                 }
                 break;
             case LoopInSkipped:
-                mCurrent = mSkipped.poll();
+                mCurrent = pollFromSkipped();
                 break;
             case LoopInPassed:
-                mCurrent = mPassed.poll();
+                mCurrent = pollFromPassed();
                 break;
         }
         return mCurrent;
     }
 
+    private T pollFromSkipped() {
+        lastElementType = LastElementType.Skipped;
+        return mSkipped.poll();
+    }
+
+    private T pollFromSource() {
+        lastElementType = LastElementType.Source;
+        return mSource.poll();
+    }
+
+    private T pollFromPassed() {
+        lastElementType = LastElementType.Passed;
+        return mPassed.poll();
+    }
+
+
     @Override
     public void setLoopType(LoopType loopType) {
         currentLoopType = loopType;
+    }
+
+    @Override
+    public LoopType getLoopType() {
+        return currentLoopType;
+    }
+
+    public LastElementType getLastElementType() {
+        return lastElementType;
     }
 
     @Override

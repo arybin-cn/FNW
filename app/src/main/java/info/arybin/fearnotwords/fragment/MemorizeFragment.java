@@ -120,7 +120,22 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
             case R.id.imagePass:
                 shouldPass = true;
             case R.id.imageSkip:
-                updateView(memorableQueue.pass());
+                Memorable memorable = memorableQueue.next(shouldPass);
+                if (memorable == null) {
+                    if (memorableQueue.getLoopType() != OperableQueue.LoopType.NoLoop) {
+                        memorableQueue.setLoopType(OperableQueue.LoopType.NoLoop);
+                        memorable = memorableQueue.next(shouldPass);
+                        if (memorable == null) {
+                            //end of OperableQueue
+                        } else {
+                            updateView(memorable);
+                        }
+                    } else {
+                        //end of OperableQueue
+                    }
+                } else {
+                    updateView(memorable);
+                }
                 break;
         }
     }
