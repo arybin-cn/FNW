@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.core.OperableQueue;
 import info.arybin.fearnotwords.core.SimpleOperableQueue;
 import info.arybin.fearnotwords.model.Memorable;
+import info.arybin.fearnotwords.model.Translatable;
 
 public class MemorizeFragment extends BaseFragment implements View.OnClickListener {
 
@@ -29,6 +31,8 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
     @BindView(R.id.textViewTranslation)
     public TextView textViewTranslation;
 
+    @BindView(R.id.scrollViewExample)
+    public ScrollView scrollViewExample;
     @BindView(R.id.textViewExampleBody)
     public TextView textViewExampleBody;
     @BindView(R.id.textViewExampleTranslation)
@@ -61,14 +65,24 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
     }
 
     private void initialize() {
-        initializedViews();
-
         ArrayList<? extends Memorable> tmp = getArguments().getParcelableArrayList(KEY_LOADED_MEMORABLE);
         memorableQueue = SimpleOperableQueue.buildFrom(tmp);
+        initializedViews();
     }
 
     private void initializedViews() {
         layoutMain.setOnClickListener(this);
+        updateView(0);
+    }
+
+    public void updateView(int exampleIndex) {
+        Memorable memorable = memorableQueue.current();
+        textViewBody.setText(memorable.getOriginal());
+        textViewPronounce.setText(memorable.getPronounce());
+        textViewTranslation.setText(memorable.getTranslation());
+        Translatable example = memorable.getExampleAt(exampleIndex);
+        textViewExampleBody.setText(example.getOriginal());
+        textViewExampleTranslation.setText(example.getTranslation());
     }
 
 
