@@ -1,4 +1,4 @@
-package info.arybin.fearnotwords.ui.view;
+package info.arybin.fearnotwords.ui.view.layout;
 
 
 import android.content.Context;
@@ -121,6 +121,7 @@ public class SlideLayout extends RelativeLayout {
                     }
                     mState = STATE_SLIDING;
                     mPreviousX = event.getX();
+                    break;
                 }
                 if (mState == STATE_SLIDING) {
                     deltaX *= 1f;

@@ -36,4 +36,12 @@ public class Utils {
         return list;
     }
 
+    public static boolean isPointInsideView(float x, float y, View view) {
+        int location[] = new int[2];
+        view.getLocationOnScreen(location);
+        int viewX = location[0];
+        int viewY = location[1];
+        return (x > viewX && x < (viewX + view.getWidth())) &&
+                (y > viewY && y < (viewY + view.getHeight()));
+    }
 }

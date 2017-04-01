@@ -28,7 +28,7 @@ import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.activity.MainActivity;
 import info.arybin.fearnotwords.model.FakeEntity;
-import info.arybin.fearnotwords.ui.view.SlideLayout;
+import info.arybin.fearnotwords.ui.view.layout.SlideLayout;
 
 import static com.github.florent37.expectanim.core.Expectations.aboveOf;
 import static com.github.florent37.expectanim.core.Expectations.alpha;
