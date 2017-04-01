@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static info.arybin.fearnotwords.Utils.isPointInsideView;
 
@@ -95,6 +97,7 @@ public class ObservableLayout extends RelativeLayout {
                 case MotionEvent.ACTION_UP:
                     if (STATE_PRESSED == state) {
                         this.listener.onPressUp(currentPressedView, event.getRawX(), event.getRawY());
+                        state = STATE_IDLE;
                         return true;
                     }
 
@@ -132,8 +135,8 @@ public class ObservableLayout extends RelativeLayout {
     }
 
 
-    public void addOnPressObserver(View view) {
-        this.onPressObservers.add(view);
+    public void addOnPressObserver(View... views) {
+        this.onPressObservers.addAll(Arrays.asList(views));
     }
 
     public void removeOnPressObserver(View view) {
@@ -144,8 +147,8 @@ public class ObservableLayout extends RelativeLayout {
         return onPressObservers;
     }
 
-    public void addOnHoverObserver(View view) {
-        this.onHoverObservers.add(view);
+    public void addOnHoverObserver(View... views) {
+        this.onHoverObservers.addAll(Arrays.asList(views));
     }
 
     public void removeOnHoverObserver(View view) {

@@ -19,11 +19,12 @@ import info.arybin.fearnotwords.core.OperableQueue;
 import info.arybin.fearnotwords.core.SimpleOperableQueue;
 import info.arybin.fearnotwords.model.Memorable;
 import info.arybin.fearnotwords.model.Translatable;
+import info.arybin.fearnotwords.ui.view.layout.ObservableLayout;
 
-public class MemorizeFragment extends BaseFragment implements View.OnClickListener {
+public class MemorizeFragment extends BaseFragment implements View.OnClickListener, ObservableLayout.EventListener {
 
     @BindView(R.id.layoutMain)
-    protected ViewGroup layoutMain;
+    protected ObservableLayout layoutMain;
 
     @BindView(R.id.textViewBody)
     public TextView textViewBody;
@@ -77,15 +78,13 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
     }
 
     private void initializedViews() {
-        layoutMain.setOnClickListener(this);
 
-        imagePronounce.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                System.out.println(event);
-                return true;
-            }
-        });
+        layoutMain.setEventListener(this);
+
+        layoutMain.addOnPressObserver(imagePronounce,imageSkip,imagePass);
+        layoutMain.addOnHoverObserver(textViewTranslation,textViewBody);
+
+
 
         updateView(0);
     }
@@ -99,6 +98,27 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
         Translatable example = memorable.getExampleAt(exampleIndex);
         textViewExampleBody.setText(example.getOriginal());
         textViewExampleTranslation.setText(example.getTranslation());
+    }
+
+
+    @Override
+    public void onPressDown(View view) {
+        System.out.println("OnPressDown-" + view);
+    }
+
+    @Override
+    public void onPressMove(View view, double distance2LastPos, double distance2AnchorPos) {
+        System.out.println("OnPressMove-" + distance2LastPos);
+    }
+
+    @Override
+    public void onPressUp(View pressDownView, float xInScreen, float yInScreen) {
+        System.out.println("OnPressUp-" + pressDownView);
+    }
+
+    @Override
+    public void onHover(View pressDownView, View viewOnHover) {
+        System.out.println("OnHover-" + pressDownView + "*******" + viewOnHover);
     }
 
 
