@@ -1,6 +1,7 @@
 <resources>
     <dimen name="default_margin">15dp</dimen>
     <dimen name="default_margin_wide">32dp</dimen>
+    <dimen name="default_margin_narrow">9dp</dimen>
     <dimen name="default_padding">15dp</dimen>
     <dimen name="default_padding_wide">32dp</dimen>
     <dimen name="default_padding_narrow">9dp</dimen>

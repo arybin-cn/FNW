@@ -35,7 +35,7 @@ public class FakeEntity implements Memorable, Parcelable {
             pronounce = null;
         }
 
-        translation = "n. 身体；主体；大量；团体；主要部分\nvt. 赋以形体\n[复数bodies,过去式bodied,过去分词bodied,现在分词bodying,第三人称单数bodies]";
+        translation = "n. 身体；主体；主要部分\nvt. 赋以形体";
 
         int exampleCount = 1 + random.nextInt(3);
         examples = new String[exampleCount];

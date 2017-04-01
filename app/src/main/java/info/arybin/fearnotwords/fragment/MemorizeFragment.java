@@ -3,6 +3,7 @@ package info.arybin.fearnotwords.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -38,9 +39,12 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
     @BindView(R.id.textViewExampleTranslation)
     public TextView textViewExampleTranslation;
 
+    @BindView(R.id.imageSkip)
+    protected ImageView imageSkip;
     @BindView(R.id.imagePass)
     protected ImageView imagePass;
-
+    @BindView(R.id.imagePronounce)
+    protected ImageView imagePronounce;
 
     private OperableQueue<? extends Memorable> memorableQueue;
 
@@ -74,6 +78,15 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
 
     private void initializedViews() {
         layoutMain.setOnClickListener(this);
+
+        imagePronounce.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                System.out.println(event);
+                return true;
+            }
+        });
+
         updateView(0);
     }
 
@@ -92,8 +105,18 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onClick(View v) {
 
-        memorableQueue.pass();
-        updateView(0);
+//        new ExpectAnim()
+//                .expect(imagePronounce)
+//                .toBe(rightOfParent())
+//                .expect(imageSkip)
+//                .toBe(toLeftOf(imagePronounce))
+//                .expect(imagePass)
+//                .toBe(aboveOf(imagePronounce), alignLeft(imagePronounce))
+//                .toAnimation()
+//                .setDuration(1000).start();
+
+//        memorableQueue.pass();
+//        updateView(0);
 
     }
 }
