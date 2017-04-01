@@ -74,5 +74,8 @@ dependencies {
     //Shimmer
     compile 'com.facebook.shimmer:shimmer:0.1.0@aar'
 
+    //Auto Fit TextView
+    compile 'me.grantland:autofittextview:0.2.+'
+
 
 }

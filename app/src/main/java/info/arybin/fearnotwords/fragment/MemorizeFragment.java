@@ -5,16 +5,38 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.core.OperableQueue;
 import info.arybin.fearnotwords.core.SimpleOperableQueue;
 import info.arybin.fearnotwords.model.Memorable;
 
-public class MemorizeFragment extends BaseFragment {
+public class MemorizeFragment extends BaseFragment implements View.OnClickListener {
+
+    @BindView(R.id.layoutMain)
+    protected ViewGroup layoutMain;
+
+    @BindView(R.id.textViewBody)
+    public TextView textViewBody;
+    @BindView(R.id.textViewPronounce)
+    public TextView textViewPronounce;
+    @BindView(R.id.textViewTranslation)
+    public TextView textViewTranslation;
+
+    @BindView(R.id.textViewExampleBody)
+    public TextView textViewExampleBody;
+    @BindView(R.id.textViewExampleTranslation)
+    public TextView textViewExampleTranslation;
+
+    @BindView(R.id.imagePass)
+    protected ImageView imagePass;
+
 
     private OperableQueue<? extends Memorable> memorableQueue;
 
@@ -46,8 +68,17 @@ public class MemorizeFragment extends BaseFragment {
     }
 
     private void initializedViews() {
-
+        layoutMain.setOnClickListener(this);
     }
 
 
+    @Override
+    public void onClick(View v) {
+
+        System.out.println(1);
+        System.out.println(layoutMain.getHeight());
+        System.out.println(layoutMain.getMeasuredHeight());
+
+
+    }
 }
