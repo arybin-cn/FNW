@@ -66,6 +66,7 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
                 }
                 if (shouldReview(mIntervalToLastReview++)) {
                     mCurrent = pollFromSkipped();
+                    mIntervalToLastReview = 0;
                 } else {
                     mCurrent = pollFromSource();
                 }

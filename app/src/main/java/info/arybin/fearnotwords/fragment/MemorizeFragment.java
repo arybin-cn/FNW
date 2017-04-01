@@ -93,7 +93,6 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
     }
 
     public void updateView(Memorable memorable, int exampleIndex) {
-        System.out.println(memorable);
         textViewBody.setText(memorable.getOriginal());
         textViewPronounce.setText(memorable.getPronounce());
         textViewTranslation.setText(memorable.getTranslation());
@@ -138,6 +137,8 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
                 }
                 break;
         }
+        System.out.println("passed - " + memorableQueue.passed());
+        System.out.println("skipped - " + memorableQueue.skipped());
     }
 
     @Override
