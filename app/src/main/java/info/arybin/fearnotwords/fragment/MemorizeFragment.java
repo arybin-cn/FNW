@@ -6,7 +6,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -33,6 +36,8 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
     @BindView(R.id.textViewTranslation)
     public TextView textViewTranslation;
 
+    @BindView(R.id.layoutExample)
+    public RelativeLayout layoutExample;
     @BindView(R.id.scrollViewExample)
     public ScrollView scrollViewExample;
     @BindView(R.id.textViewExampleBody)
@@ -81,8 +86,9 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
 
         layoutMain.setEventListener(this);
 
-        layoutMain.addOnPressObserver(imagePronounce, imageSkip, imagePass);
-        layoutMain.addOnHoverObserver(imageSkip);
+        layoutMain.addOnPressObserver(layoutMain, imagePronounce, imageSkip, imagePass);
+        layoutMain.addOnHoverObserver(imagePronounce, imageSkip, imagePass
+                , textViewTranslation, layoutExample);
 
         imagePass.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,6 +111,20 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
         Translatable example = memorable.getExampleAt(exampleIndex);
         textViewExampleBody.setText(example.getOriginal());
         textViewExampleTranslation.setText(example.getTranslation());
+    }
+
+    private Animation makeHoverInAnimation(boolean reverse) {
+        if (reverse) {
+            return AnimationUtils.loadAnimation(getContext(), R.anim.in_hover_reverse);
+        }
+        return AnimationUtils.loadAnimation(getContext(), R.anim.in_hover);
+    }
+
+    private Animation makeHoverOutAnimation(boolean reverse) {
+        if (reverse) {
+            return AnimationUtils.loadAnimation(getContext(), R.anim.out_hover_reverse);
+        }
+        return AnimationUtils.loadAnimation(getContext(), R.anim.out_hover);
     }
 
 
@@ -153,18 +173,46 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onHoverIn(View pressDownView, View viewOnHover, MotionEvent event) {
+        System.out.println("HoverIn   " + viewOnHover);
+        switch (viewOnHover.getId()) {
+            case R.id.imagePass:
+            case R.id.imagePronounce:
+            case R.id.imageSkip:
+                viewOnHover.startAnimation(makeHoverInAnimation(true));
+                break;
+            default:
+                viewOnHover.startAnimation(makeHoverInAnimation(false));
 
-        System.out.println(viewOnHover);
+        }
+
     }
 
     @Override
     public void onHoverOut(View pressDownView, View viewOnHover, MotionEvent event) {
-        System.out.println(viewOnHover);
+        switch (viewOnHover.getId()) {
+            case R.id.imagePass:
+            case R.id.imagePronounce:
+            case R.id.imageSkip:
+                viewOnHover.startAnimation(makeHoverOutAnimation(true));
+                break;
+            default:
+                viewOnHover.startAnimation(makeHoverOutAnimation(false));
 
+        }
     }
 
     @Override
     public boolean onHoverCancel(View pressDownView, View viewOnHover, MotionEvent event) {
-        return false;
+        switch (viewOnHover.getId()) {
+            case R.id.imagePass:
+            case R.id.imagePronounce:
+            case R.id.imageSkip:
+                viewOnHover.startAnimation(makeHoverOutAnimation(true));
+                break;
+            default:
+                viewOnHover.startAnimation(makeHoverOutAnimation(false));
+
+        }
+        return true;
     }
 }

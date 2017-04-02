@@ -28,21 +28,22 @@ public class FakeEntity implements Memorable, Parcelable {
 
     public FakeEntity(int salt) {
         entityID = ++count;
-        body = "body-" + salt;
+        body = "admire" + salt;
         if (random.nextInt(2) > 0) {
-            pronounce = "['bɒdɪ]";
+            pronounce = "[əd'maɪə]";
         } else {
             pronounce = null;
         }
 
-        translation = "n. 身体；主体；主要部分\nvt. 赋以形体";
+        translation = "vt. 钦佩；赞美\n" +
+                "vi. 钦佩；称赞";
 
         int exampleCount = 1 + random.nextInt(3);
         examples = new String[exampleCount];
         exampleTranslations = new String[exampleCount];
         for (int i = 0; i < examples.length; i++) {
-            examples[i] = "This is a usage example for " + body + ".";
-            exampleTranslations[i] = "这是一个仅用于测试的例句示例";
+            examples[i] = "We stopped halfway to admire the view-" + i;
+            exampleTranslations[i] = "我们中途停下来观赏风景-" + i;
         }
 
         updateTime = new Date();
