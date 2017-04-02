@@ -87,7 +87,7 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
         imagePass.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                System.out.println(1);
+                System.out.println("OnLongClick");
                 return false;
             }
         });
@@ -111,16 +111,17 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onPressDown(View view) {
-        System.out.println("OnPressDown-" + view);
+        System.out.println("OnPressDown");
     }
 
     @Override
     public void onPressMove(View view, double distance2LastPos, double distance2AnchorPos) {
-        System.out.println("OnPressMove-" + distance2LastPos);
+        System.out.println("OnPressMove");
     }
 
     @Override
     public void onPressUp(View pressDownView, float xInScreen, float yInScreen) {
+        System.out.println("OnPressUp");
         boolean shouldPass = false;
         switch (pressDownView.getId()) {
             case R.id.imagePass:
@@ -144,13 +145,24 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
                 }
                 break;
         }
-        System.out.println("passed - " + memorableQueue.passed());
-        System.out.println("skipped - " + memorableQueue.skipped());
+//        System.out.println("passed - " + memorableQueue.passed());
+//        System.out.println("skipped - " + memorableQueue.skipped());
     }
 
     @Override
-    public void onHover(View pressDownView, View viewOnHover) {
-        System.out.println("OnHover-" + pressDownView + "*******" + viewOnHover);
+    public void onHoverIn(View pressDownView, View viewOnHover) {
+        System.out.println("OnHoverIn-" + pressDownView + "-" + viewOnHover);
+    }
+
+    @Override
+    public void onHoverOut(View pressDownView, View viewOnHover) {
+        System.out.println("OnHoverOut-" + pressDownView + "-" + viewOnHover);
+    }
+
+    @Override
+    public boolean onHoverCancel(View pressDownView, View viewOnHover) {
+        System.out.println("onHoverCancel-" + pressDownView + "-" + viewOnHover);
+        return false;
     }
 
 
