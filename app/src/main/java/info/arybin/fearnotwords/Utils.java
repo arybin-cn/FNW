@@ -2,6 +2,7 @@ package info.arybin.fearnotwords;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 
 import java.util.ArrayDeque;
 import java.util.LinkedList;
@@ -43,6 +44,23 @@ public class Utils {
         int viewY = location[1];
         return (x > viewX && x < (viewX + view.getWidth())) &&
                 (y > viewY && y < (viewY + view.getHeight()));
+    }
+
+    public abstract static class AnimationListenerAdapter implements Animation.AnimationListener{
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
     }
 
 }

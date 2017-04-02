@@ -10,21 +10,22 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import info.arybin.fearnotwords.R;
+import info.arybin.fearnotwords.Utils;
 import info.arybin.fearnotwords.core.OperableQueue;
 import info.arybin.fearnotwords.core.SimpleOperableQueue;
 import info.arybin.fearnotwords.model.Memorable;
 import info.arybin.fearnotwords.model.Translatable;
 import info.arybin.fearnotwords.ui.view.layout.ObservableLayout;
 
-public class MemorizeFragment extends BaseFragment implements View.OnClickListener, ObservableLayout.EventListener {
+public class MemorizeFragment extends BaseFragment implements ObservableLayout.EventListener {
 
     @BindView(R.id.layoutMain)
     protected ObservableLayout layoutMain;
@@ -38,8 +39,6 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
 
     @BindView(R.id.layoutExample)
     public RelativeLayout layoutExample;
-    @BindView(R.id.scrollViewExample)
-    public ScrollView scrollViewExample;
     @BindView(R.id.textViewExampleBody)
     public TextView textViewExampleBody;
     @BindView(R.id.textViewExampleTranslation)
@@ -53,6 +52,17 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
     protected ImageView imagePronounce;
 
     private OperableQueue<? extends Memorable> memorableQueue;
+
+
+    private static final int STATE_HIDE = 0x1;
+    private static final int STATE_WILL_SHOW = 0x2;
+    private static final int STATE_SHOW = 0x4;
+    private static final int STATE_SHOW_LOCKED = 0x8;
+    private static final int STATE_WILL_HIDE = 0x10;
+    private int translationState = STATE_HIDE;
+    private int exampleState = STATE_HIDE;
+    private ArrayList<View> controlViews = new ArrayList<>(3);
+    private View hoveredControlView = null;
 
 
     @Override
@@ -83,6 +93,8 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
     }
 
     private void initializedViews() {
+
+        controlViews.addAll(Arrays.asList(imageSkip, imagePronounce, imagePass));
 
         layoutMain.setEventListener(this);
 
@@ -127,92 +139,137 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
         return AnimationUtils.loadAnimation(getContext(), R.anim.out_hover);
     }
 
+    private Animation makeFadeInAnimation(final View view) {
+        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.in_fade);
+        animation.setAnimationListener(new Utils.AnimationListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                view.setVisibility(View.VISIBLE);
+            }
+        });
+        return animation;
+    }
 
-    @Override
-    public void onClick(View v) {
+    private Animation makeFadeOutAnimation(final View view) {
+        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.out_fade);
+        animation.setAnimationListener(new Utils.AnimationListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                view.setVisibility(View.INVISIBLE);
+            }
+        });
+        return animation;
+    }
+
+
+    private void showTranslation() {
 
 
     }
+
+    private void hideTranslation() {
+
+    }
+
+
+    private Memorable next(boolean shouldPass) {
+        Memorable memorable = memorableQueue.next(shouldPass);
+        if (memorable == null) {
+            if (memorableQueue.getLoopType() != OperableQueue.LoopType.NoLoop) {
+                memorableQueue.setLoopType(OperableQueue.LoopType.NoLoop);
+                memorable = memorableQueue.next(shouldPass);
+                if (memorable == null) {
+                    //end of OperableQueue
+                    return null;
+                } else {
+                    return memorable;
+                }
+            } else {
+                //end of OperableQueue
+                return null;
+            }
+        }
+        return memorable;
+    }
+
 
     @Override
     public void onPressDown(View view, MotionEvent event) {
-//        new ExpectAnim().expect(imageSkip).toBe(Expectations.centerInParent(true, true)).toAnimation().setDuration(1000).start();
+        i = 0;
+        hoveredControlView = view;
+        if (controlViews.contains(view)) {
+            hoveredControlView.startAnimation(makeHoverInAnimation(true));
+            for (View other : controlViews) {
+                if (other != hoveredControlView) {
+                    other.startAnimation(makeHoverInAnimation(false));
+                }
+            }
+        }
 
+        switch (view.getId()) {
+            case R.id.imagePronounce:
+                //sound
+                break;
+            case R.id.imageSkip:
+
+                break;
+            case R.id.imagePass:
+                break;
+        }
     }
+
+    int i;
 
     @Override
     public void onPressMove(View view, double distance2LastPos, double distance2AnchorPos, MotionEvent event) {
+        System.out.println(++i);
     }
 
     @Override
     public void onPressUp(View pressDownView, MotionEvent event) {
+
+        if (controlViews.contains(pressDownView)) {
+            hoveredControlView.startAnimation(makeHoverOutAnimation(true));
+            for (View other : controlViews) {
+                if (other != hoveredControlView) {
+                    other.startAnimation(makeHoverOutAnimation(false));
+                }
+
+            }
+        }
+
+
         boolean shouldPass = false;
         switch (pressDownView.getId()) {
             case R.id.imagePass:
                 shouldPass = true;
             case R.id.imageSkip:
-                Memorable memorable = memorableQueue.next(shouldPass);
-                if (memorable == null) {
-                    if (memorableQueue.getLoopType() != OperableQueue.LoopType.NoLoop) {
-                        memorableQueue.setLoopType(OperableQueue.LoopType.NoLoop);
-                        memorable = memorableQueue.next(shouldPass);
-                        if (memorable == null) {
-                            //end of OperableQueue
-                        } else {
-                            updateView(memorable);
-                        }
-                    } else {
-                        //end of OperableQueue
-                    }
-                } else {
-                    updateView(memorable);
-                }
+                updateView(next(shouldPass));
                 break;
         }
     }
 
     @Override
     public void onHoverIn(View pressDownView, View viewOnHover, MotionEvent event) {
-        System.out.println("HoverIn   " + viewOnHover);
-        switch (viewOnHover.getId()) {
-            case R.id.imagePass:
-            case R.id.imagePronounce:
-            case R.id.imageSkip:
+        if (controlViews.contains(viewOnHover)) {
+            if (hoveredControlView != viewOnHover){
+                hoveredControlView.startAnimation(makeHoverOutAnimation(true));
                 viewOnHover.startAnimation(makeHoverInAnimation(true));
-                break;
-            default:
-                viewOnHover.startAnimation(makeHoverInAnimation(false));
-
+                hoveredControlView = viewOnHover;
+            }
         }
-
     }
 
     @Override
     public void onHoverOut(View pressDownView, View viewOnHover, MotionEvent event) {
-        switch (viewOnHover.getId()) {
-            case R.id.imagePass:
-            case R.id.imagePronounce:
-            case R.id.imageSkip:
-                viewOnHover.startAnimation(makeHoverOutAnimation(true));
-                break;
-            default:
-                viewOnHover.startAnimation(makeHoverOutAnimation(false));
 
-        }
+
     }
 
     @Override
     public boolean onHoverCancel(View pressDownView, View viewOnHover, MotionEvent event) {
-        switch (viewOnHover.getId()) {
-            case R.id.imagePass:
-            case R.id.imagePronounce:
-            case R.id.imageSkip:
-                viewOnHover.startAnimation(makeHoverOutAnimation(true));
-                break;
-            default:
-                viewOnHover.startAnimation(makeHoverOutAnimation(false));
 
-        }
+
         return true;
     }
 }

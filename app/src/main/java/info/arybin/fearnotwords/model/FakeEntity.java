@@ -29,21 +29,21 @@ public class FakeEntity implements Memorable, Parcelable {
     public FakeEntity(int salt) {
         entityID = ++count;
         body = "admire" + salt;
-        if (random.nextInt(2) > 0) {
+        if (random.nextInt(20) > 0) {
             pronounce = "[əd'maɪə]";
         } else {
             pronounce = null;
         }
 
         translation = "vt. 钦佩；赞美\n" +
-                "vi. 钦佩；称赞";
+                "vi. 钦佩；称赞；爱慕";
 
         int exampleCount = 1 + random.nextInt(3);
         examples = new String[exampleCount];
         exampleTranslations = new String[exampleCount];
         for (int i = 0; i < examples.length; i++) {
-            examples[i] = "We stopped halfway to admire the view-" + i;
-            exampleTranslations[i] = "我们中途停下来观赏风景-" + i;
+            examples[i] = "We stopped halfway to admire the view-" + salt + "-" + i;
+            exampleTranslations[i] = "我们中途停下来观赏风景-" + salt + "-" + i;
         }
 
         updateTime = new Date();

@@ -29,6 +29,7 @@
                     android:id="@+id/textViewPost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLines="2"
                     android:paddingBottom="@dimen/default_padding_narrow"
                     android:text="I love three things in the world, the sun, the moon, and you. The sun for the day, the moon for the night, and you for ever."
                     android:textSize="18sp" />
@@ -38,6 +39,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/textViewPost"
+                    android:maxLines="2"
                     android:text="浮世万千，吾爱有三。日，月与卿。日为朝，夜为暮，卿为朝朝暮暮。"
                     android:textSize="16sp" />
 
@@ -105,16 +107,19 @@
                             android:layout_alignParentLeft="true"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="@dimen/default_margin_wide"
+                            
+
 
                             android:src="@drawable/ic_order_random_24dp" />
 
                         <ImageView
                             android:layout_width="wrap_content"
-
                             android:layout_height="wrap_content"
+
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
                             android:layout_marginRight="@dimen/default_margin_wide"
+                            
 
                             android:src="@drawable/ic_order_alphabet_white_24dp" />
 
@@ -166,16 +171,18 @@
                             android:layout_alignParentLeft="true"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="@dimen/default_margin_wide"
+                            
 
                             android:src="@drawable/ic_order_time_dec_white_24dp" />
 
                         <ImageView
                             android:layout_width="wrap_content"
-
                             android:layout_height="wrap_content"
+
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
                             android:layout_marginRight="@dimen/default_margin_wide"
+                            
 
                             android:src="@drawable/ic_order_time_dec_white_24dp" />
 
@@ -229,16 +236,18 @@
                             android:layout_alignParentLeft="true"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="@dimen/default_margin_wide"
+                            
 
                             android:src="@drawable/ic_order_random_24dp" />
 
                         <ImageView
                             android:layout_width="wrap_content"
-
                             android:layout_height="wrap_content"
+
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
                             android:layout_marginRight="@dimen/default_margin_wide"
+                            
 
                             android:src="@drawable/ic_order_alphabet_white_24dp" />
 

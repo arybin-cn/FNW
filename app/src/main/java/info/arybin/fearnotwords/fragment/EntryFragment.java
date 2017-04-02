@@ -268,7 +268,7 @@ public class EntryFragment extends BaseFragment implements
                     for (int i = 0; i < 300; i++) {
                         list.add(new FakeEntity(i));
                     }
-                    Thread.sleep(1000);
+                    Thread.sleep(5000);
                     Message msg = new Message();
                     Bundle data = new Bundle();
                     data.putParcelableArrayList(KEY_LOADED_MEMORABLE, list);
