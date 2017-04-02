@@ -82,13 +82,12 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
         layoutMain.setEventListener(this);
 
         layoutMain.addOnPressObserver(imagePronounce, imageSkip, imagePass);
-        layoutMain.addOnHoverObserver(textViewTranslation, textViewBody);
+        layoutMain.addOnHoverObserver(imageSkip);
 
-        imagePass.setOnLongClickListener(new View.OnLongClickListener() {
+        imagePass.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View v) {
-                System.out.println("OnLongClick");
-                return false;
+            public void onClick(View v) {
+                System.out.println("Click");
             }
         });
 
@@ -110,18 +109,23 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
 
 
     @Override
-    public void onPressDown(View view) {
-        System.out.println("OnPressDown");
+    public void onClick(View v) {
+
+
     }
 
     @Override
-    public void onPressMove(View view, double distance2LastPos, double distance2AnchorPos) {
-        System.out.println("OnPressMove");
+    public void onPressDown(View view, MotionEvent event) {
+//        new ExpectAnim().expect(imageSkip).toBe(Expectations.centerInParent(true, true)).toAnimation().setDuration(1000).start();
+
     }
 
     @Override
-    public void onPressUp(View pressDownView, float xInScreen, float yInScreen) {
-        System.out.println("OnPressUp");
+    public void onPressMove(View view, double distance2LastPos, double distance2AnchorPos, MotionEvent event) {
+    }
+
+    @Override
+    public void onPressUp(View pressDownView, MotionEvent event) {
         boolean shouldPass = false;
         switch (pressDownView.getId()) {
             case R.id.imagePass:
@@ -145,42 +149,22 @@ public class MemorizeFragment extends BaseFragment implements View.OnClickListen
                 }
                 break;
         }
-//        System.out.println("passed - " + memorableQueue.passed());
-//        System.out.println("skipped - " + memorableQueue.skipped());
     }
 
     @Override
-    public void onHoverIn(View pressDownView, View viewOnHover) {
-        System.out.println("OnHoverIn-" + pressDownView + "-" + viewOnHover);
+    public void onHoverIn(View pressDownView, View viewOnHover, MotionEvent event) {
+
+        System.out.println(viewOnHover);
     }
 
     @Override
-    public void onHoverOut(View pressDownView, View viewOnHover) {
-        System.out.println("OnHoverOut-" + pressDownView + "-" + viewOnHover);
+    public void onHoverOut(View pressDownView, View viewOnHover, MotionEvent event) {
+        System.out.println(viewOnHover);
+
     }
 
     @Override
-    public boolean onHoverCancel(View pressDownView, View viewOnHover) {
-        System.out.println("onHoverCancel-" + pressDownView + "-" + viewOnHover);
+    public boolean onHoverCancel(View pressDownView, View viewOnHover, MotionEvent event) {
         return false;
-    }
-
-
-    @Override
-    public void onClick(View v) {
-
-//        new ExpectAnim()
-//                .expect(imagePronounce)
-//                .toBe(rightOfParent())
-//                .expect(imageSkip)
-//                .toBe(toLeftOf(imagePronounce))
-//                .expect(imagePass)
-//                .toBe(aboveOf(imagePronounce), alignLeft(imagePronounce))
-//                .toAnimation()
-//                .setDuration(1000).start();
-
-//        memorableQueue.pass();
-//        updateView(0);
-
     }
 }

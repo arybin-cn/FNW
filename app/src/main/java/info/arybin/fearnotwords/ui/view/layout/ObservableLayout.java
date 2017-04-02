@@ -59,17 +59,11 @@ public class ObservableLayout extends RelativeLayout {
         }
 
         if (null != listener && onPressObservers.size() != 0) {
-
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if (STATE_IDLE == state) {
-                        for (View observer : onPressObservers) {
-                            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
-                                recordPosition(event);
-                                switchToStatePressed(observer);
-                                listener.onPressDown(observer);
-                            }
-                        }
+                        notifyOnPress(event);
+                        notifyHoverIn(event);
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
@@ -109,29 +103,13 @@ public class ObservableLayout extends RelativeLayout {
 
                 case MotionEvent.ACTION_MOVE:
                     if (STATE_PRESSED == state) {
-                        for (View observer : onHoverObservers) {
-                            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
-                                if (!currentHoveredStack.contains(observer)) {
-                                    currentHoveredStack.push(observer);
-                                    this.listener.onHoverIn(currentPressedView, observer);
-                                }
-                            }
-
-                        }
-
-                        for (View hoveredView : currentHoveredStack) {
-                            if (!isPointInsideView(event.getRawX(), event.getRawY(), hoveredView)) {
-                                currentHoveredStack.remove(hoveredView);
-                                this.listener.onHoverOut(currentPressedView, hoveredView);
-                            }
-
-                        }
-
+                        notifyHoverIn(event);
+                        notifyHoverOut(event);
                         float currentX = event.getX();
                         float currentY = event.getY();
                         listener.onPressMove(currentPressedView,
                                 Math.sqrt(Math.pow(currentX - previousX, 2) + Math.pow(currentY - previousY, 2)),
-                                Math.sqrt(Math.pow(currentX - anchorX, 2) + Math.pow(currentY - anchorY, 2)));
+                                Math.sqrt(Math.pow(currentX - anchorX, 2) + Math.pow(currentY - anchorY, 2)), event);
                         previousX = currentX;
                         previousY = currentY;
                         return true;
@@ -142,11 +120,11 @@ public class ObservableLayout extends RelativeLayout {
                         View hoveredView;
                         while (currentHoveredStack.size() > 0) {
                             hoveredView = currentHoveredStack.pop();
-                            if (null == hoveredView || listener.onHoverCancel(currentPressedView, hoveredView)) {
+                            if (null == hoveredView || listener.onHoverCancel(currentPressedView, hoveredView, event)) {
                                 break;
                             }
                         }
-                        this.listener.onPressUp(currentPressedView, event.getRawX(), event.getRawY());
+                        this.listener.onPressUp(currentPressedView, event);
                         state = STATE_IDLE;
                         return true;
                     }
@@ -158,6 +136,36 @@ public class ObservableLayout extends RelativeLayout {
 
         }
         return super.onTouchEvent(event);
+    }
+
+    private void notifyOnPress(MotionEvent event) {
+        for (View observer : onPressObservers) {
+            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
+                recordPosition(event);
+                switchToStatePressed(observer);
+                listener.onPressDown(observer, event);
+            }
+        }
+    }
+
+    private void notifyHoverIn(MotionEvent event) {
+        for (View observer : onHoverObservers) {
+            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
+                if (!currentHoveredStack.contains(observer)) {
+                    currentHoveredStack.push(observer);
+                    this.listener.onHoverIn(currentPressedView, observer, event);
+                }
+            }
+        }
+    }
+
+    private void notifyHoverOut(MotionEvent event) {
+        for (View hoveredView : currentHoveredStack) {
+            if (!isPointInsideView(event.getRawX(), event.getRawY(), hoveredView)) {
+                currentHoveredStack.remove(hoveredView);
+                this.listener.onHoverOut(currentPressedView, hoveredView, event);
+            }
+        }
     }
 
 
@@ -220,20 +228,21 @@ public class ObservableLayout extends RelativeLayout {
 
 
     public interface EventListener {
-        void onPressDown(View view);
 
-        void onPressMove(View view, double distance2LastPos, double distance2AnchorPos);
+        void onPressDown(View view, MotionEvent event);
 
-        void onPressUp(View pressDownView, float xInScreen, float yInScreen);
+        void onPressMove(View view, double distance2LastPos, double distance2AnchorPos, MotionEvent event);
 
-        void onHoverIn(View pressDownView, View viewOnHover);
+        void onPressUp(View pressDownView, MotionEvent event);
 
-        void onHoverOut(View pressDownView, View viewOnHover);
+        void onHoverIn(View pressDownView, View viewOnHover, MotionEvent event);
+
+        void onHoverOut(View pressDownView, View viewOnHover, MotionEvent event);
 
         /**
          * @return true to notify other hovered views(order LIFO)
          */
-        boolean onHoverCancel(View pressDownView, View viewOnHover);
+        boolean onHoverCancel(View pressDownView, View viewOnHover, MotionEvent event);
     }
 
 }
