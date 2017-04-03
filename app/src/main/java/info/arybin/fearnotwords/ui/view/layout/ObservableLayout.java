@@ -53,24 +53,30 @@ public class ObservableLayout extends RelativeLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
+        System.out.println("I" + event);
         if (locked) {
-            return consumeMotion;
+            return true;
         }
-        if (null != listener && onPressObservers.size() != 0) {
+        if (null != listener) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if (STATE_IDLE == state) {
-                        notifyOnPress(event);
+                        if (anyPressObserversIn(event)) {
+                            notifyOnPress(event);
+                        } else {
+                            listener.onPressDown(this, event);
+                            switchToStatePressed(this);
+                        }
                         notifyHoverIn(event);
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if (STATE_PRESSED == state) {
-                        float deltaX = event.getX() - previousX;
-                        float deltaY = event.getY() - previousY;
-                        if (Math.abs(deltaX) > touchSlop || Math.abs(deltaY) > touchSlop) {
-                            return true;
-                        }
+                        notifyHoverIn(event);
+                        notifyHoverOut(event);
+                        recordPosition(event);
+                        listener.onPressMove(currentPressedView, event);
+                        return false;
                     }
                     break;
                 case MotionEvent.ACTION_UP:
@@ -87,11 +93,12 @@ public class ObservableLayout extends RelativeLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        System.out.println(event);
         if (locked) {
             return consumeMotion;
         }
 
-        if (null != listener && onPressObservers.size() != 0) {
+        if (null != listener) {
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -127,6 +134,16 @@ public class ObservableLayout extends RelativeLayout {
         }
         return super.onTouchEvent(event);
     }
+
+    private boolean anyPressObserversIn(MotionEvent event) {
+        for (View observer : onPressObservers) {
+            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private void notifyOnPress(MotionEvent event) {
         for (View observer : onPressObservers) {

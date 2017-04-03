@@ -115,7 +115,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         layoutMain.setEventListener(this);
 
         layoutMain.addOnPressObserver(imageSkip, imagePronounce, imagePass);
-        layoutMain.addOnHoverObserver(imagePronounce, imageSkip, imagePass
+        layoutMain.addOnHoverObserver(imageSkip, imagePronounce, imagePass
                 , textViewTranslation, layoutExample);
 
 
@@ -205,35 +205,19 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onPressDown(View pressDownView, MotionEvent event) {
-        pressDownX = event.getX();
-        pressDownY = event.getY();
+        System.out.println("OnPressDown-" + pressDownView);
+
     }
 
     @Override
     public void onPressMove(View pressDownView, MotionEvent event) {
-        float deltaY = pressDownY - event.getY();
-        if (deltaY < 0 && Math.abs(deltaY) < LOCK_SLOP) {
-            pressDownView.setScrollY((int) deltaY);
-        }
+        System.out.println("OnPressMove");
+
     }
 
     @Override
     public void onPressUp(final View pressDownView, MotionEvent event) {
-        float deltaY = pressDownY - event.getY();
-        if (deltaY < 0) {
-            scroller.startScroll(0, (int) deltaY, 0, -(int) deltaY, (int) Math.abs(deltaY) * 5);
-            pressDownView.setScrollY((int) deltaY);
-            pressDownView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                    if (scroller.computeScrollOffset()) {
-                        v.scrollTo(0, scroller.getCurrY());
-                        v.postInvalidate();
-                    }
-                }
-            });
-
-        }
+        System.out.println("OnPressUp");
 //        boolean shouldPass = false;
 //        switch (pressDownView.getId()) {
 //            case R.id.imagePass:
@@ -246,18 +230,18 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onHoverIn(View pressDownView, View viewOnHover, MotionEvent event) {
-
+        System.out.println("HoverIn");
     }
 
     @Override
     public void onHoverOut(View pressDownView, View viewOnHover, MotionEvent event) {
-
+        System.out.println("HoverOut");
 
     }
 
     @Override
     public boolean onHoverCancel(View pressDownView, View viewOnHover, MotionEvent event) {
-
+        System.out.println("HoverCancel");
 
         return true;
     }

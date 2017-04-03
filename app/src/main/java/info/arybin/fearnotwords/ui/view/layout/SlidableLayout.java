@@ -126,7 +126,7 @@ public class SlidableLayout extends RelativeLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if (!slidable) {
-            return consumeMotion;
+            return true;
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
