@@ -10,6 +10,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Scroller;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -54,15 +55,30 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     private OperableQueue<? extends Memorable> memorableQueue;
 
 
-    private static final int STATE_HIDE = 0x1;
-    private static final int STATE_WILL_SHOW = 0x2;
-    private static final int STATE_SHOW = 0x4;
-    private static final int STATE_SHOW_LOCKED = 0x8;
-    private static final int STATE_WILL_HIDE = 0x10;
-    private int translationState = STATE_HIDE;
-    private int exampleState = STATE_HIDE;
+    private static final int LOCK_SLOP = 50;
+
+    private static final int PRI_STATE_IDLE = 0;
+    private static final int PRI_STATE_CONTROL_LOCKED = 1;
+
+    private static final int MIN_STATE_TRANSLATION_HIDE = 0x0;
+    private static final int MIN_STATE_TRANSLATION_SHOW = 0x1;
+
+    private static final int MIN_STATE_TRANSLATION_WILL_SHOW = 0x2;
+    private static final int MIN_STATE_TRANSLATION_WILL_HIDE = 0x4;
+
+    private static final int MIN_STATE_TRANSLATION_LOCKED = 0x10;
+    private static final int MIN_STATE_TRANSLATION_UNLOCKED = 0x00;
+
+
+    private Scroller scroller;
+    private int primaryState = PRI_STATE_IDLE;
+    private int minorState = MIN_STATE_TRANSLATION_HIDE;
+
+
     private ArrayList<View> controlViews = new ArrayList<>(3);
-    private View hoveredControlView = null;
+
+    private float pressDownX;
+    private float pressDownY;
 
 
     @Override
@@ -87,27 +103,21 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     private void initialize() {
         ArrayList<? extends Memorable> tmp = getArguments().getParcelableArrayList(KEY_LOADED_MEMORABLE);
         memorableQueue = SimpleOperableQueue.buildFrom(tmp);
-
+        scroller = new Scroller(getContext());
 
         initializedViews();
     }
 
     private void initializedViews() {
 
-        controlViews.addAll(Arrays.asList(imageSkip, imagePronounce, imagePass));
+        controlViews.addAll(Arrays.asList(imageSkip, imagePass, imagePronounce));
 
         layoutMain.setEventListener(this);
 
-        layoutMain.addOnPressObserver(imagePronounce, imageSkip, imagePass);
+        layoutMain.addOnPressObserver(imageSkip, imagePronounce, imagePass);
         layoutMain.addOnHoverObserver(imagePronounce, imageSkip, imagePass
                 , textViewTranslation, layoutExample);
 
-        imagePass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("Click");
-            }
-        });
 
         updateView(memorableQueue.current());
     }
@@ -194,17 +204,36 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
 
     @Override
-    public void onPressDown(View view, MotionEvent event) {
-
+    public void onPressDown(View pressDownView, MotionEvent event) {
+        pressDownX = event.getX();
+        pressDownY = event.getY();
     }
 
     @Override
-    public void onPressMove(View view, double distance2LastPos, double distance2AnchorPos, MotionEvent event) {
-
+    public void onPressMove(View pressDownView, MotionEvent event) {
+        float deltaY = pressDownY - event.getY();
+        if (deltaY < 0 && Math.abs(deltaY) < LOCK_SLOP) {
+            pressDownView.setScrollY((int) deltaY);
+        }
     }
 
     @Override
-    public void onPressUp(View pressDownView, MotionEvent event) {
+    public void onPressUp(final View pressDownView, MotionEvent event) {
+        float deltaY = pressDownY - event.getY();
+        if (deltaY < 0) {
+            scroller.startScroll(0, (int) deltaY, 0, -(int) deltaY, (int) Math.abs(deltaY) * 5);
+            pressDownView.setScrollY((int) deltaY);
+            pressDownView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    if (scroller.computeScrollOffset()) {
+                        v.scrollTo(0, scroller.getCurrY());
+                        v.postInvalidate();
+                    }
+                }
+            });
+
+        }
 //        boolean shouldPass = false;
 //        switch (pressDownView.getId()) {
 //            case R.id.imagePass:

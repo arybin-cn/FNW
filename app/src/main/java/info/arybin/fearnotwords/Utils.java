@@ -7,7 +7,11 @@ import android.view.animation.Animation;
 import java.util.ArrayDeque;
 import java.util.LinkedList;
 
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
+
 public class Utils {
+
     public static LinkedList<View> retrieveAllChildViews(ViewGroup parent, View... exceptions) {
         LinkedList<View> list = new LinkedList<>();
         ArrayDeque<View> queue = new ArrayDeque<>();
@@ -46,7 +50,11 @@ public class Utils {
                 (y > viewY && y < (viewY + view.getHeight()));
     }
 
-    public abstract static class AnimationListenerAdapter implements Animation.AnimationListener{
+    public double distanceBetween(float x0, float y0, float x1, float y1) {
+        return sqrt(pow(x0 - x1, 2) + pow(y0 - y1, 2));
+    }
+
+    public abstract static class AnimationListenerAdapter implements Animation.AnimationListener {
         @Override
         public void onAnimationStart(Animation animation) {
 

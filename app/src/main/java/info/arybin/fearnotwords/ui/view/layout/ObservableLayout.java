@@ -35,9 +35,6 @@ public class ObservableLayout extends RelativeLayout {
     private float previousX;
     private float previousY;
 
-    private float anchorX;
-    private float anchorY;
-
 
     public ObservableLayout(Context context) {
         this(context, null);
@@ -57,7 +54,6 @@ public class ObservableLayout extends RelativeLayout {
         if (locked) {
             return true;
         }
-
         if (null != listener && onPressObservers.size() != 0) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -172,15 +168,6 @@ public class ObservableLayout extends RelativeLayout {
         currentPressedView = view;
     }
 
-    /**
-     * Should only be used in callbacks of EventListener.
-     */
-    public void anchor(float xInLayout, float yInLayout) {
-        this.anchorX = previousX;
-        this.anchorY = previousY;
-    }
-
-
     public void lock() {
         this.locked = true;
     }
@@ -222,9 +209,9 @@ public class ObservableLayout extends RelativeLayout {
 
     public interface EventListener {
 
-        void onPressDown(View view, MotionEvent event);
+        void onPressDown(View pressDownView, MotionEvent event);
 
-        void onPressMove(View view, MotionEvent event);
+        void onPressMove(View pressDownView, MotionEvent event);
 
         void onPressUp(View pressDownView, MotionEvent event);
 

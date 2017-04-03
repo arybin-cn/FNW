@@ -1,5 +1,6 @@
 package info.arybin.fearnotwords.fragment;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -119,15 +120,14 @@ public class EntryFragment extends BaseFragment implements
         mainActivity.imageViewBlurred.setAlpha(0);
 
         layoutEntranceNew.setOnSlideListener(this);
-        layoutEntranceNew.setIgnoreLeft(true);
+        layoutEntranceNew.setSlidableOffset(300, 100, 200, 50);
+        layoutEntranceNew.setScrollBackWhenFinish(true);
+
 
         layoutEntranceOld.setOnSlideListener(this);
-        layoutEntranceOld.setIgnoreLeft(true);
 
         layoutEntranceAll.setOnSlideListener(this);
-        layoutEntranceAll.setIgnoreLeft(true);
 
-        //For test
         layoutPost.setOnClickListener(this);
 
     }
@@ -308,24 +308,35 @@ public class EntryFragment extends BaseFragment implements
 
 
     @Override
-    public void onSlide(SlideLayout layout, float rate) {
-        float rateAbs = Math.abs(rate);
+    public void onSlide(SlideLayout layout, float rateLeftRight, float rateUpDown) {
+        System.out.println(rateLeftRight + ":" + rateUpDown);
+        float rateAbs = Math.abs(rateLeftRight);
         float conjugateRateAbs = 1 - rateAbs;
         float conjugateRateAbs3 = conjugateRateAbs * conjugateRateAbs * conjugateRateAbs;
-        mainActivity.imageViewBlurred.setAlpha(1 - conjugateRateAbs3);
-        setTransitionMapPercentage(rate);
+
+        if (state == STATE_IDLE) {
+            mainActivity.imageViewBlurred.setAlpha(1 - conjugateRateAbs3);
+        }
+
+        setTransitionMapPercentage(rateLeftRight);
         loadingAnim.setPercent(rateAbs);
         separatorBottom.setAlpha(conjugateRateAbs3);
     }
 
     @Override
     public void onSlideToLeft(SlideLayout layout) {
-
+        System.out.println("Left");
 
     }
 
     @Override
+    public void onSlideToTop(SlideLayout layout) {
+        System.out.println("Top");
+    }
+
+    @Override
     public void onSlideToCenter(SlideLayout layout) {
+        System.out.println("Center");
         mainActivity.imageView.resume();
         blurView.setBlurAutoUpdate(true);
         setSlidable(true, null);
@@ -334,7 +345,14 @@ public class EntryFragment extends BaseFragment implements
 
     @Override
     public void onSlideToRight(SlideLayout layout) {
+        System.out.println("Right");
         prepareToLoadNew();
+    }
+
+    @Override
+    public void onSlideToBottom(SlideLayout layout) {
+        System.out.println("Bottom");
+
     }
 
     @Override
