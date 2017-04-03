@@ -14,7 +14,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
-public class SlideLayout extends RelativeLayout {
+public class SlidableLayout extends RelativeLayout {
 
     public enum Direction {
         Up, Down, Left, Right
@@ -40,15 +40,15 @@ public class SlideLayout extends RelativeLayout {
     private OnSlideListener mOnSlideListener;
 
 
-    public SlideLayout(Context context) {
+    public SlidableLayout(Context context) {
         this(context, null, 0);
     }
 
-    public SlideLayout(Context context, AttributeSet attrs) {
+    public SlidableLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public SlideLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SlidableLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mScroller = new Scroller(context, new OvershootInterpolator());
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
@@ -316,15 +316,15 @@ public class SlideLayout extends RelativeLayout {
 
 
     public interface OnSlideListener {
-        void onSlide(SlideLayout layout, float rateLeftRight, float rateUpDown);
+        void onSlide(SlidableLayout layout, float rateLeftRight, float rateUpDown);
 
-        void onSlideTo(SlideLayout layout, Direction direction);
+        void onSlideTo(SlidableLayout layout, Direction direction);
 
-        void onSlideCancel(SlideLayout layout);
+        void onSlideCancel(SlidableLayout layout);
 
-        void onStartSlide(SlideLayout layout);
+        void onStartSlide(SlidableLayout layout);
 
-        void onFinishSlide(SlideLayout layout);
+        void onFinishSlide(SlidableLayout layout);
 
     }
 
