@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
+import android.view.animation.OvershootInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 
@@ -33,9 +34,8 @@ public class SlideLayout extends RelativeLayout {
     private float mPreviousX;
     private float mPreviousY;
     private int mState = STATE_IDLE;
-    private Rect slidableRect = new Rect(0, 0, 0, 0);
-    //    private int mOffsetMax = 360;
-    private boolean scrollBackWhenFinish = false;
+    private Rect slidableBound = new Rect(0, 0, 0, 0);
+    private boolean scrollBackWhenFinish = true;
 
     private OnSlideListener mOnSlideListener;
 
@@ -50,7 +50,7 @@ public class SlideLayout extends RelativeLayout {
 
     public SlideLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mScroller = new Scroller(context);
+        mScroller = new Scroller(context, new OvershootInterpolator());
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
@@ -74,14 +74,14 @@ public class SlideLayout extends RelativeLayout {
     private boolean canSlide(Direction direction) {
         switch (direction) {
             case Left:
-                return slidableRect.left != 0;
+                return slidableBound.left != 0;
             case Right:
-                return slidableRect.right != 0;
+                return slidableBound.right != 0;
             case Up:
-                return slidableRect.top != 0;
+                return slidableBound.top != 0;
             case Down:
             default:
-                return slidableRect.bottom != 0;
+                return slidableBound.bottom != 0;
         }
     }
 
@@ -103,8 +103,16 @@ public class SlideLayout extends RelativeLayout {
     }
 
 
-    public void setSlidableOffset(int left, int right, int top, int bottom) {
-        this.slidableRect = new Rect(-left, -top, right, bottom);
+    public void setSlidableOffset(int leftOffset, int rightOffset, int topOffset, int bottomOffset) {
+        this.slidableBound = new Rect(-leftOffset, -topOffset, rightOffset, bottomOffset);
+    }
+
+    public void setSlidableOffsetLeftRight(int offset) {
+        this.slidableBound = new Rect(-offset, 0, offset, 0);
+    }
+
+    public void setSlidableOffsetUpDown(int offset) {
+        this.slidableBound = new Rect(0, -offset, 0, offset);
     }
 
     @Override
@@ -174,18 +182,16 @@ public class SlideLayout extends RelativeLayout {
                     float newX = deltaX - getScrollX();
                     float newY = deltaY - getScrollY();
 
-                    if (slidableRect.contains((int) newX, (int) newY)) {
+                    if (slidableBound.contains((int) newX, (int) newY)) {
                         scrollBy((int) -deltaX, (int) -deltaY);
-                    } else if (canSlide(Direction.Left) && newX < slidableRect.left) {
-
-                        scrollTo(abs(slidableRect.left), getScrollY());
-
-                    } else if (canSlide(Direction.Right) && newX > slidableRect.right) {
-                        scrollTo(-slidableRect.right, getScrollY());
-                    } else if (canSlide(Direction.Up) && newY < slidableRect.top) {
-                        scrollTo(getScrollX(), abs(slidableRect.top));
-                    } else if (canSlide(Direction.Down) && newY > slidableRect.bottom) {
-                        scrollTo(getScrollX(), -slidableRect.bottom);
+                    } else if (canSlide(Direction.Left) && newX < slidableBound.left) {
+                        notifyIfSlideTo(Direction.Left);
+                    } else if (canSlide(Direction.Right) && newX > slidableBound.right) {
+                        notifyIfSlideTo(Direction.Right);
+                    } else if (canSlide(Direction.Up) && newY < slidableBound.top) {
+                        notifyIfSlideTo(Direction.Up);
+                    } else if (canSlide(Direction.Down) && newY > slidableBound.bottom) {
+                        notifyIfSlideTo(Direction.Down);
                     } else {
                         //adjust deltaX or deltaY
                         if (deltaX > 0) {
@@ -218,8 +224,45 @@ public class SlideLayout extends RelativeLayout {
         int scrolledX = getScrollX();
         int scrolledY = getScrollY();
         mScroller.startScroll(scrolledX, scrolledY, -scrolledX, -scrolledY,
-                (int) (sqrt(pow(scrolledX, 2) + pow(scrolledY, 2)) * 50));
+                (int) (sqrt(pow(scrolledX, 2) + pow(scrolledY, 2)) * 4));
         invalidate();
+    }
+
+    private void notifyIfSlideTo(Direction direction) {
+        if (canSlide(direction)) {
+            if (null != mOnSlideListener) {
+                boolean shouldNotify = false;
+                switch (direction) {
+                    case Left:
+                        if (getScrollX() > 0) {
+                            shouldNotify = abs(-slidableBound.left - getScrollX()) < 10;
+                        }
+                        break;
+                    case Right:
+                        if (getScrollX() < 0) {
+                            shouldNotify = abs(slidableBound.right + getScrollX()) < 10;
+                        }
+                        break;
+                    case Up:
+                        if (getScrollY() > 0) {
+                            shouldNotify = abs(-slidableBound.top - getScrollY()) < 10;
+                        }
+                        break;
+                    case Down:
+                        if (getScrollY() < 0) {
+                            shouldNotify = abs(slidableBound.bottom + getScrollY()) < 10;
+                        }
+                        break;
+                    default:
+                        //will never happen
+                        shouldNotify = false;
+                }
+                if (shouldNotify && mState == STATE_SLIDING) {
+                    mOnSlideListener.onSlideTo(this, direction);
+                    finishSlide();
+                }
+            }
+        }
     }
 
     @Override
@@ -227,55 +270,31 @@ public class SlideLayout extends RelativeLayout {
         if (mScroller.computeScrollOffset()) {
             scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             postInvalidate();
-        } else {
-            if (abs(getScrollX()) == 0 && abs(getScrollY()) == 0 && mState == STATE_SLIDING) {
-                if (null != mOnSlideListener) {
-                    mOnSlideListener.onSlideToCenter(this);
-                    mState = STATE_IDLE;
-                }
-            }
         }
+
+        if (mState == STATE_SLIDING && abs(getScrollX()) == 0 && abs(getScrollY()) == 0) {
+            mOnSlideListener.onSlideCancel(this);
+            mState = STATE_FINISH;
+        }
+
         if (null != mOnSlideListener && mState == STATE_SLIDING) {
             float rateLeftRight, rateUpDown;
             if (getScrollX() < 0) {
-                rateLeftRight = getScrollX() * -1f / slidableRect.right;
+                rateLeftRight = getScrollX() * -1f / slidableBound.right;
             } else {
-                rateLeftRight = getScrollX() * 1f / slidableRect.left;
+                rateLeftRight = getScrollX() * 1f / slidableBound.left;
             }
             if (getScrollY() < 0) {
-                rateUpDown = getScrollY() * -1f / slidableRect.bottom;
+                rateUpDown = getScrollY() * -1f / slidableBound.bottom;
             } else {
-                rateUpDown = getScrollY() * 1f / slidableRect.top;
+                rateUpDown = getScrollY() * 1f / slidableBound.top;
             }
 
             mOnSlideListener.onSlide(this, rateLeftRight, rateUpDown);
         }
 
-        if (null != mOnSlideListener) {
-            if (canSlide(Direction.Left)) {
-                if (abs(slidableRect.left) - getScrollX() < 1 && mState == STATE_SLIDING) {
-                    mOnSlideListener.onSlideToLeft(this);
-                    finishSlide();
-                }
-            }
-            if (canSlide(Direction.Right)) {
-                if (slidableRect.right + getScrollX() < 1 && mState == STATE_SLIDING) {
-                    mOnSlideListener.onSlideToRight(this);
-                    finishSlide();
-                }
-            }
-            if (canSlide(Direction.Up)) {
-                if (abs(slidableRect.top) - getScrollY() < 1 && mState == STATE_SLIDING) {
-                    mOnSlideListener.onSlideToTop(this);
-                    finishSlide();
-                }
-            }
-            if (canSlide(Direction.Down)) {
-                if (slidableRect.bottom + getScrollY() < 1 && mState == STATE_SLIDING) {
-                    mOnSlideListener.onSlideToBottom(this);
-                    finishSlide();
-                }
-            }
+        for (Direction direction : Direction.values()) {
+            notifyIfSlideTo(direction);
         }
 
     }
@@ -286,7 +305,6 @@ public class SlideLayout extends RelativeLayout {
         if (scrollBackWhenFinish) {
             scrollToCenter();
         } else {
-            mOnSlideListener.onSlide(this, 0, 0);
             scrollTo(0, 0);
         }
     }
@@ -300,15 +318,9 @@ public class SlideLayout extends RelativeLayout {
     public interface OnSlideListener {
         void onSlide(SlideLayout layout, float rateLeftRight, float rateUpDown);
 
-        void onSlideToLeft(SlideLayout layout);
+        void onSlideTo(SlideLayout layout, Direction direction);
 
-        void onSlideToTop(SlideLayout layout);
-
-        void onSlideToCenter(SlideLayout layout);
-
-        void onSlideToRight(SlideLayout layout);
-
-        void onSlideToBottom(SlideLayout layout);
+        void onSlideCancel(SlideLayout layout);
 
         void onStartSlide(SlideLayout layout);
 

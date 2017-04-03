@@ -1,6 +1,5 @@
 package info.arybin.fearnotwords.fragment;
 
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -120,13 +119,14 @@ public class EntryFragment extends BaseFragment implements
         mainActivity.imageViewBlurred.setAlpha(0);
 
         layoutEntranceNew.setOnSlideListener(this);
-        layoutEntranceNew.setSlidableOffset(300, 100, 200, 50);
-        layoutEntranceNew.setScrollBackWhenFinish(true);
-
+        layoutEntranceNew.setSlidableOffsetLeftRight(350);
 
         layoutEntranceOld.setOnSlideListener(this);
+        layoutEntranceOld.setSlidableOffsetLeftRight(350);
+
 
         layoutEntranceAll.setOnSlideListener(this);
+        layoutEntranceAll.setSlidableOffsetLeftRight(350);
 
         layoutPost.setOnClickListener(this);
 
@@ -208,7 +208,7 @@ public class EntryFragment extends BaseFragment implements
         new ExpectAnim()
                 .expect(layoutEntrance).toBe(invisible())
                 .toAnimation()
-                .setDuration(300)
+                .setDuration(100)
                 .setEndListener(new AnimationEndListener() {
                     @Override
                     public void onAnimationEnd(ExpectAnim expectAnim) {
@@ -260,12 +260,18 @@ public class EntryFragment extends BaseFragment implements
 
     private void prepareToLoadNew() {
         switchToLoadingState();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 ArrayList<FakeEntity> list = new ArrayList<>(300);
                 for (int i = 0; i < 300; i++) {
                     list.add(new FakeEntity(i));
+                }
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 Message msg = new Message();
                 Bundle data = new Bundle();
@@ -309,33 +315,28 @@ public class EntryFragment extends BaseFragment implements
 
     @Override
     public void onSlide(SlideLayout layout, float rateLeftRight, float rateUpDown) {
-        System.out.println(rateLeftRight + ":" + rateUpDown);
         float rateAbs = Math.abs(rateLeftRight);
         float conjugateRateAbs = 1 - rateAbs;
         float conjugateRateAbs3 = conjugateRateAbs * conjugateRateAbs * conjugateRateAbs;
-
-        if (state == STATE_IDLE) {
-            mainActivity.imageViewBlurred.setAlpha(1 - conjugateRateAbs3);
-        }
-
+        mainActivity.imageViewBlurred.setAlpha(1 - conjugateRateAbs3);
         setTransitionMapPercentage(rateLeftRight);
-        loadingAnim.setPercent(rateAbs);
+        loadingAnim.setPercent(rateAbs + 0.1f);
         separatorBottom.setAlpha(conjugateRateAbs3);
     }
 
     @Override
-    public void onSlideToLeft(SlideLayout layout) {
-        System.out.println("Left");
+    public void onSlideTo(SlideLayout layout, SlideLayout.Direction direction) {
+        System.out.println("OnSlideTo-" + direction);
+        switch (direction) {
+            case Left:
+                prepareToLoadNew();
+        }
 
     }
 
-    @Override
-    public void onSlideToTop(SlideLayout layout) {
-        System.out.println("Top");
-    }
 
     @Override
-    public void onSlideToCenter(SlideLayout layout) {
+    public void onSlideCancel(SlideLayout layout) {
         System.out.println("Center");
         mainActivity.imageView.resume();
         blurView.setBlurAutoUpdate(true);
@@ -343,17 +344,6 @@ public class EntryFragment extends BaseFragment implements
         canSwitchSlide.set(true);
     }
 
-    @Override
-    public void onSlideToRight(SlideLayout layout) {
-        System.out.println("Right");
-        prepareToLoadNew();
-    }
-
-    @Override
-    public void onSlideToBottom(SlideLayout layout) {
-        System.out.println("Bottom");
-
-    }
 
     @Override
     public void onStartSlide(SlideLayout layout) {
