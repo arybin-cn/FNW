@@ -26,6 +26,8 @@ public class ObservableLayout extends RelativeLayout {
     private EventListener listener;
 
     private boolean locked = false;
+    private boolean consumeMotion = true;
+
     private ArrayList<View> onPressObservers = new ArrayList<>();
     private ArrayList<View> onHoverObservers = new ArrayList<>();
     private View currentPressedView;
@@ -52,7 +54,7 @@ public class ObservableLayout extends RelativeLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if (locked) {
-            return true;
+            return consumeMotion;
         }
         if (null != listener && onPressObservers.size() != 0) {
             switch (event.getAction()) {
@@ -86,14 +88,14 @@ public class ObservableLayout extends RelativeLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (locked) {
-            return true;
+            return consumeMotion;
         }
 
         if (null != listener && onPressObservers.size() != 0) {
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    return true;
+                    return consumeMotion;
 
                 case MotionEvent.ACTION_MOVE:
                     if (STATE_PRESSED == state) {
@@ -101,7 +103,7 @@ public class ObservableLayout extends RelativeLayout {
                         notifyHoverOut(event);
                         recordPosition(event);
                         listener.onPressMove(currentPressedView, event);
-                        return true;
+                        return consumeMotion;
                     }
 
                 case MotionEvent.ACTION_UP:
@@ -115,7 +117,6 @@ public class ObservableLayout extends RelativeLayout {
                         }
                         this.listener.onPressUp(currentPressedView, event);
                         state = STATE_IDLE;
-                        return true;
                     }
 
                 default:

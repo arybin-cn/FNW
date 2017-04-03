@@ -20,24 +20,24 @@ public class SlidableLayout extends RelativeLayout {
         Up, Down, Left, Right
     }
 
-
     public final int STATE_IDLE = 0;
     public final int STATE_SLIDING = 1;
     public final int STATE_FINISH = 2;
 
-    private boolean mSlidable = true;
+    private boolean slidable = true;
+    private boolean consumeMotion = true;
 
 
-    private final Scroller mScroller;
-    private final int mTouchSlop;
+    private final Scroller scroller;
+    private final int touchSlop;
 
-    private float mPreviousX;
-    private float mPreviousY;
-    private int mState = STATE_IDLE;
+    private float previousX;
+    private float previousY;
+    private int state = STATE_IDLE;
     private Rect slidableBound = new Rect(0, 0, 0, 0);
     private boolean scrollBackWhenFinish = true;
 
-    private OnSlideListener mOnSlideListener;
+    private OnSlideListener onSlideListener;
 
 
     public SlidableLayout(Context context) {
@@ -50,8 +50,8 @@ public class SlidableLayout extends RelativeLayout {
 
     public SlidableLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mScroller = new Scroller(context, new OvershootInterpolator());
-        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        scroller = new Scroller(context, new OvershootInterpolator());
+        touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
 
@@ -64,11 +64,19 @@ public class SlidableLayout extends RelativeLayout {
     }
 
     public boolean isSlidable() {
-        return mSlidable;
+        return slidable;
     }
 
     public void setSlidable(boolean slidable) {
-        this.mSlidable = slidable;
+        this.slidable = slidable;
+    }
+
+    public boolean isConsumeMotion() {
+        return consumeMotion;
+    }
+
+    public void setConsumeMotion(boolean consumeMotion) {
+        this.consumeMotion = consumeMotion;
     }
 
     private boolean canSlide(Direction direction) {
@@ -88,16 +96,16 @@ public class SlidableLayout extends RelativeLayout {
     private boolean shouldStartSlide(float currentX, float currentY) {
         boolean shouldIntercept = false;
         if (canSlide(Direction.Left)) {
-            shouldIntercept = (mPreviousX - currentX >= mTouchSlop);
+            shouldIntercept = (previousX - currentX >= touchSlop);
         }
         if (canSlide(Direction.Right)) {
-            shouldIntercept = shouldIntercept || (currentX - mPreviousX >= mTouchSlop);
+            shouldIntercept = shouldIntercept || (currentX - previousX >= touchSlop);
         }
         if (canSlide(Direction.Up)) {
-            shouldIntercept = shouldIntercept || (mPreviousY - currentY >= mTouchSlop);
+            shouldIntercept = shouldIntercept || (previousY - currentY >= touchSlop);
         }
         if (canSlide(Direction.Down)) {
-            shouldIntercept = shouldIntercept || (currentY - mPreviousY >= mTouchSlop);
+            shouldIntercept = shouldIntercept || (currentY - previousY >= touchSlop);
         }
         return shouldIntercept;
     }
@@ -117,28 +125,28 @@ public class SlidableLayout extends RelativeLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (!mSlidable) {
-            return false;
+        if (!slidable) {
+            return consumeMotion;
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mPreviousX = event.getX();
-                mPreviousY = event.getY();
-                mState = STATE_IDLE;
-                if (!mScroller.isFinished()) {
-                    mState = STATE_SLIDING;
-                    mScroller.abortAnimation();
+                previousX = event.getX();
+                previousY = event.getY();
+                state = STATE_IDLE;
+                if (!scroller.isFinished()) {
+                    state = STATE_SLIDING;
+                    scroller.abortAnimation();
                     return true;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (mState == STATE_IDLE && shouldStartSlide(getX(), getY())) {
-                    if (null != mOnSlideListener) {
-                        mOnSlideListener.onStartSlide(this);
+                if (state == STATE_IDLE && shouldStartSlide(getX(), getY())) {
+                    if (null != onSlideListener) {
+                        onSlideListener.onStartSlide(this);
                     }
-                    mState = STATE_SLIDING;
-                    mPreviousX = event.getX();
-                    mPreviousY = event.getY();
+                    state = STATE_SLIDING;
+                    previousX = event.getX();
+                    previousY = event.getY();
                     return true;
                 }
                 break;
@@ -148,36 +156,36 @@ public class SlidableLayout extends RelativeLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!mSlidable) {
-            return false;
+        if (!slidable) {
+            return consumeMotion;
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mPreviousX = event.getX();
-                mPreviousY = event.getY();
-                if (!mScroller.isFinished()) {
-                    mState = STATE_SLIDING;
-                    mScroller.abortAnimation();
+                previousX = event.getX();
+                previousY = event.getY();
+                if (!scroller.isFinished()) {
+                    state = STATE_SLIDING;
+                    scroller.abortAnimation();
                 }
-                return true;
+                return consumeMotion;
             case MotionEvent.ACTION_MOVE:
 
-                if (mState == STATE_IDLE && shouldStartSlide(event.getX(), event.getY())) {
-                    if (null != mOnSlideListener) {
-                        mOnSlideListener.onStartSlide(this);
+                if (state == STATE_IDLE && shouldStartSlide(event.getX(), event.getY())) {
+                    if (null != onSlideListener) {
+                        onSlideListener.onStartSlide(this);
                     }
-                    mState = STATE_SLIDING;
-                    mPreviousX = event.getX();
-                    mPreviousY = event.getY();
+                    state = STATE_SLIDING;
+                    previousX = event.getX();
+                    previousY = event.getY();
                     break;
                 }
-                if (mState == STATE_SLIDING) {
+                if (state == STATE_SLIDING) {
 
-                    float deltaX = event.getX() - mPreviousX;
-                    float deltaY = event.getY() - mPreviousY;
+                    float deltaX = event.getX() - previousX;
+                    float deltaY = event.getY() - previousY;
 
-                    mPreviousX = event.getX();
-                    mPreviousY = event.getY();
+                    previousX = event.getX();
+                    previousY = event.getY();
 
                     float newX = deltaX - getScrollX();
                     float newY = deltaY - getScrollY();
@@ -208,11 +216,11 @@ public class SlidableLayout extends RelativeLayout {
                     }
 
                 }
-                return true;
+                return consumeMotion;
 
             case MotionEvent.ACTION_UP:
-                if (null != mOnSlideListener) {
-                    mOnSlideListener.onFinishSlide(this);
+                if (null != onSlideListener) {
+                    onSlideListener.onFinishSlide(this);
                 }
                 scrollToCenter();
                 break;
@@ -223,14 +231,14 @@ public class SlidableLayout extends RelativeLayout {
     public void scrollToCenter() {
         int scrolledX = getScrollX();
         int scrolledY = getScrollY();
-        mScroller.startScroll(scrolledX, scrolledY, -scrolledX, -scrolledY,
+        scroller.startScroll(scrolledX, scrolledY, -scrolledX, -scrolledY,
                 (int) (sqrt(pow(scrolledX, 2) + pow(scrolledY, 2)) * 4));
         invalidate();
     }
 
     private void notifyIfSlideTo(Direction direction) {
         if (canSlide(direction)) {
-            if (null != mOnSlideListener) {
+            if (null != onSlideListener) {
                 boolean shouldNotify = false;
                 switch (direction) {
                     case Left:
@@ -257,8 +265,8 @@ public class SlidableLayout extends RelativeLayout {
                         //will never happen
                         shouldNotify = false;
                 }
-                if (shouldNotify && mState == STATE_SLIDING) {
-                    mOnSlideListener.onSlideTo(this, direction);
+                if (shouldNotify && state == STATE_SLIDING) {
+                    onSlideListener.onSlideTo(this, direction);
                     finishSlide();
                 }
             }
@@ -267,17 +275,17 @@ public class SlidableLayout extends RelativeLayout {
 
     @Override
     public void computeScroll() {
-        if (mScroller.computeScrollOffset()) {
-            scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
+        if (scroller.computeScrollOffset()) {
+            scrollTo(scroller.getCurrX(), scroller.getCurrY());
             postInvalidate();
         }
 
-        if (mState == STATE_SLIDING && abs(getScrollX()) == 0 && abs(getScrollY()) == 0) {
-            mOnSlideListener.onSlideCancel(this);
-            mState = STATE_FINISH;
+        if (state == STATE_SLIDING && abs(getScrollX()) == 0 && abs(getScrollY()) == 0) {
+            onSlideListener.onSlideCancel(this);
+            state = STATE_FINISH;
         }
 
-        if (null != mOnSlideListener && mState == STATE_SLIDING) {
+        if (null != onSlideListener && state == STATE_SLIDING) {
             float rateLeftRight, rateUpDown;
             if (getScrollX() < 0) {
                 rateLeftRight = getScrollX() * -1f / slidableBound.right;
@@ -290,7 +298,7 @@ public class SlidableLayout extends RelativeLayout {
                 rateUpDown = getScrollY() * 1f / slidableBound.top;
             }
 
-            mOnSlideListener.onSlide(this, rateLeftRight, rateUpDown);
+            onSlideListener.onSlide(this, rateLeftRight, rateUpDown);
         }
 
         for (Direction direction : Direction.values()) {
@@ -301,7 +309,7 @@ public class SlidableLayout extends RelativeLayout {
 
 
     private void finishSlide() {
-        mState = STATE_FINISH;
+        state = STATE_FINISH;
         if (scrollBackWhenFinish) {
             scrollToCenter();
         } else {
@@ -311,7 +319,7 @@ public class SlidableLayout extends RelativeLayout {
 
 
     public void setOnSlideListener(OnSlideListener onSlideListener) {
-        this.mOnSlideListener = onSlideListener;
+        this.onSlideListener = onSlideListener;
     }
 
 
