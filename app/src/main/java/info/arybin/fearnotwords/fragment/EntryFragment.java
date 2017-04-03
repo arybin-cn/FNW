@@ -330,7 +330,7 @@ public class EntryFragment extends BaseFragment implements
 
 
     @Override
-    public void onSlideCancel(SlidableLayout layout) {
+    public void onSlideCanceled(SlidableLayout layout) {
         System.out.println("Center");
         mainActivity.imageView.resume();
         blurView.setBlurAutoUpdate(true);
@@ -351,7 +351,7 @@ public class EntryFragment extends BaseFragment implements
     }
 
     @Override
-    public void onFinishSlide(SlidableLayout layout) {
+    public void onCancelSlide(SlidableLayout layout) {
 
     }
 

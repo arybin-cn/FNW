@@ -13,6 +13,8 @@ import android.widget.RelativeLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
 
+import com.github.florent37.expectanim.ExpectAnim;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -27,7 +29,10 @@ import info.arybin.fearnotwords.model.Translatable;
 import info.arybin.fearnotwords.ui.view.layout.ObservableLayout;
 import info.arybin.fearnotwords.ui.view.layout.SlidableLayout;
 
-public class MemorizeFragment extends BaseFragment implements ObservableLayout.EventListener {
+import static com.github.florent37.expectanim.core.Expectations.scale;
+import static java.lang.Math.abs;
+
+public class MemorizeFragment extends BaseFragment implements ObservableLayout.EventListener, SlidableLayout.OnSlideListener, SlidableLayout.DistanceInterpolator {
 
     @BindView(R.id.layoutMain)
     protected ObservableLayout layoutMain;
@@ -65,62 +70,49 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     private OperableQueue<? extends Memorable> memorableQueue;
 
 
-    private static final int LOCK_SLOP = 60;
+    private static final int LOCK_SLOP = 50;
 
-    private static final int PRI_STATE_IDLE = 0;
-    private static final int PRI_STATE_CONTROL_LOCKED = 1;
+    private static final int PRI_STATE_NORMAL = 0x1;
+    private static final int PRI_STATE_LOOP = 0x2;
 
-    private static final int MIN_STATE_TRANSLATION_HIDE = 0x0;
-    private static final int MIN_STATE_TRANSLATION_SHOW = 0x1;
 
-    private static final int MIN_STATE_TRANSLATION_WILL_SHOW = 0x2;
-    private static final int MIN_STATE_TRANSLATION_WILL_HIDE = 0x4;
-
+    private static final int MIN_STATE_TRANSLATION_HIDE = 0x1;
+    private static final int MIN_STATE_TRANSLATION_SHOW = 0x2;
+    private static final int MIN_STATE_TRANSLATION_WILL_SHOW = 0x4;
+    private static final int MIN_STATE_TRANSLATION_WILL_HIDE = 0x8;
     private static final int MIN_STATE_TRANSLATION_LOCKED = 0x10;
-    private static final int MIN_STATE_TRANSLATION_UNLOCKED = 0x00;
+
+    private static final int MIN_STATE_SKIP_LOCKED = 0x40;
+    private static final int MIN_STATE_WILL_LOCK_SKIP = 0x100;
+    private static final int MIN_STATE_WILL_UNLOCK_SKIP = 0x200;
+
+    private static final int MIN_STATE_PRONOUNCE_LOCKED = 0x20;
+    private static final int MIN_STATE_WILL_LOCK_PRONOUNCE = 0x1000;
+    private static final int MIN_STATE_WILL_UNLOCK_PRONOUNCE = 0x2000;
+
+    private static final int MIN_STATE_PASS_LOCKED = 0x80;
+    private static final int MIN_STATE_WILL_LOCK_PASS = 0x400;
+    private static final int MIN_STATE_WILL_UNLOCK_PASS = 0x800;
 
 
-    private Scroller scroller;
-    private int primaryState = PRI_STATE_IDLE;
+    private int primaryState = PRI_STATE_NORMAL;
     private int minorState = MIN_STATE_TRANSLATION_HIDE;
-
-
-    private ArrayList<View> controlViews = new ArrayList<>(3);
-
+    private SlidableLayout pressedView;
     private float pressDownX;
     private float pressDownY;
+    private float previousX;
+    private float previousY;
 
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_memorize, container, false);
-        ButterKnife.bind(this, view);
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        initialize();
-    }
-
-    @Override
-    public boolean onBackPressed() {
-
-        return false;
-    }
 
     private void initialize() {
         ArrayList<? extends Memorable> tmp = getArguments().getParcelableArrayList(KEY_LOADED_MEMORABLE);
         memorableQueue = SimpleOperableQueue.buildFrom(tmp);
-        scroller = new Scroller(getContext());
 
         initializedViews();
     }
 
     private void initializedViews() {
 
-        controlViews.addAll(Arrays.asList(imageSkip, imagePass, imagePronounce));
 
         layoutMain.setEventListener(this);
 
@@ -129,35 +121,15 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
                 , textViewTranslation, layoutExample);
 
         layoutSkip.setSlidableOffset(0, 0, 0, LOCK_SLOP);
+        layoutSkip.setDistanceInterpolator(this);
         layoutPronounce.setSlidableOffset(0, 0, 0, LOCK_SLOP);
+        layoutPronounce.setDistanceInterpolator(this);
         layoutPass.setSlidableOffset(0, 0, 0, LOCK_SLOP);
+        layoutPass.setDistanceInterpolator(this);
 
-        layoutSkip.setOnSlideListener(new SlidableLayout.OnSlideListener() {
-            @Override
-            public void onSlide(SlidableLayout layout, float rateLeftRight, float rateUpDown) {
-                System.out.println(rateLeftRight+"-"+rateUpDown);
-            }
-
-            @Override
-            public void onSlideTo(SlidableLayout layout, SlidableLayout.Direction direction) {
-
-            }
-
-            @Override
-            public void onSlideCancel(SlidableLayout layout) {
-
-            }
-
-            @Override
-            public void onStartSlide(SlidableLayout layout) {
-
-            }
-
-            @Override
-            public void onFinishSlide(SlidableLayout layout) {
-
-            }
-        });
+        layoutSkip.setOnSlideListener(this);
+        layoutPronounce.setOnSlideListener(this);
+        layoutPass.setOnSlideListener(this);
 
 
         updateView(memorableQueue.current());
@@ -223,36 +195,67 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     }
 
 
-//    private Memorable next(boolean shouldPass) {
-//        Memorable memorable = memorableQueue.next(shouldPass);
-//        if (memorable == null) {
-//            if (memorableQueue.getLoopType() != OperableQueue.LoopType.NoLoop) {
-//                memorableQueue.setLoopType(OperableQueue.LoopType.NoLoop);
-//                memorable = memorableQueue.next(shouldPass);
-//                if (memorable == null) {
-//                    //end of OperableQueue
-//                    return null;
-//                } else {
-//                    return memorable;
-//                }
-//            } else {
-//                //end of OperableQueue
-//                return null;
-//            }
-//        }
-//        return memorable;
-//    }
+    private void addMinorState(int state) {
+        minorState |= state;
+    }
+
+    private void removeMinorState(int state) {
+        minorState &= (~state);
+    }
+
+    private boolean hasMinorState(int state) {
+        return (minorState & state) != 0;
+    }
 
 
     @Override
-    public void onPressDown(View pressDownView, MotionEvent event) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_memorize, container, false);
+        ButterKnife.bind(this, view);
+        return view;
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initialize();
+    }
+
+    @Override
+    public boolean onBackPressed() {
+
+        return false;
+    }
+
+    @Override
+    public void onPressDown(View pressDownView, MotionEvent event) {
+        pressDownX = event.getX();
+        pressDownY = event.getY();
+        previousX = pressDownX;
+        previousY = pressDownY;
+
+        switch (pressDownView.getId()) {
+        }
+
+
+        System.out.println("OnPressDown");
     }
 
     @Override
     public void onPressMove(View pressDownView, MotionEvent event) {
-//        System.out.println("OnPressMove");
+        float currentX = event.getX();
+        float currentY = event.getY();
+        if (pressDownView instanceof SlidableLayout) {
+            //layoutSkip or layoutPronounce or layoutPass
+            pressedView = (SlidableLayout) pressDownView;
+            if (currentY - previousY < -1) {
+                ((SlidableLayout) pressDownView).cancelSlide();
+            }
+        }
 
+
+        previousX = currentX;
+        previousY = currentY;
     }
 
     @Override
@@ -275,10 +278,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onHoverOut(View pressDownView, View viewOnHover, MotionEvent event) {
-        if (viewOnHover instanceof SlidableLayout) {
-            System.out.println("SetSlidable false");
-            ((SlidableLayout) viewOnHover).cancelSlide();
-        }
+
         System.out.println("HoverOut");
 
     }
@@ -288,5 +288,37 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         System.out.println("HoverCancel");
 
         return true;
+    }
+
+    @Override
+    public void onSlide(SlidableLayout layout, float rateLeftRight, float rateUpDown) {
+        System.out.println("OnSlide-" + rateLeftRight + ":" + rateUpDown);
+        layout.setScaleX(1 + 0.5f * abs(rateUpDown));
+        layout.setScaleY(1 + 0.5f * abs(rateUpDown));
+    }
+
+    @Override
+    public void onSlideTo(SlidableLayout layout, SlidableLayout.Direction direction) {
+
+
+    }
+
+    @Override
+    public void onSlideCanceled(SlidableLayout layout) {
+
+    }
+
+    @Override
+    public void onStartSlide(SlidableLayout layout) {
+
+    }
+
+    @Override
+    public void onCancelSlide(SlidableLayout layout) {
+    }
+
+    @Override
+    public float interpolate(float offset) {
+        return offset * 0.8f;
     }
 }

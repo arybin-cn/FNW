@@ -20,26 +20,26 @@ public class SlidableLayout extends RelativeLayout {
         Up, Down, Left, Right
     }
 
+    private final int touchSlop;
+
     public final int STATE_IDLE = 0;
     public final int STATE_SLIDING = 1;
     public final int STATE_CANCEL = 2;
     public final int STATE_FINISH = 3;
+    private int state = STATE_IDLE;
 
     private boolean slidable = true;
     private boolean consumeMotion = true;
-
+    private boolean scrollBackWhenFinish = true;
 
     private Scroller scroller;
-    private final int touchSlop;
+    private Rect slidableBound = new Rect(0, 0, 0, 0);
+
+    private OnSlideListener onSlideListener;
+    private DistanceInterpolator distanceInterpolator;
 
     private float previousX;
     private float previousY;
-    private int state = STATE_IDLE;
-    private Rect slidableBound = new Rect(0, 0, 0, 0);
-    private boolean scrollBackWhenFinish = true;
-
-    private OnSlideListener onSlideListener;
-
 
     public SlidableLayout(Context context) {
         this(context, null, 0);
@@ -140,6 +140,88 @@ public class SlidableLayout extends RelativeLayout {
         this.slidableBound = new Rect(0, -offset, 0, offset);
     }
 
+    public void scrollToCenter() {
+        int scrolledX = getScrollX();
+        int scrolledY = getScrollY();
+        scroller.startScroll(scrolledX, scrolledY, -scrolledX, -scrolledY,
+                (int) (sqrt(pow(scrolledX, 2) + pow(scrolledY, 2)) * 10));
+        invalidate();
+    }
+
+    private void notifyIfSlideTo(Direction direction) {
+        if (canSlide(direction)) {
+
+            boolean shouldNotify = false;
+            switch (direction) {
+                case Left:
+                    if (getScrollX() > 0) {
+                        shouldNotify = abs(-slidableBound.left - getScrollX()) < 3;
+                    }
+                    break;
+                case Right:
+                    if (getScrollX() < 0) {
+                        shouldNotify = abs(slidableBound.right + getScrollX()) < 3;
+                    }
+                    break;
+                case Up:
+                    if (getScrollY() > 0) {
+                        shouldNotify = abs(-slidableBound.top - getScrollY()) < 3;
+                    }
+                    break;
+                case Down:
+                    if (getScrollY() < 0) {
+                        shouldNotify = abs(slidableBound.bottom + getScrollY()) < 3;
+                    }
+                    break;
+                default:
+                    //will never happen
+                    shouldNotify = false;
+            }
+            if (shouldNotify && state == STATE_SLIDING) {
+                if (null != onSlideListener) {
+                    onSlideListener.onSlideTo(this, direction);
+                }
+                finishSlide();
+            }
+
+        }
+    }
+
+    public void cancelSlide() {
+        state = STATE_CANCEL;
+        scrollToCenter();
+        if (null != onSlideListener) {
+            onSlideListener.onCancelSlide(this);
+        }
+    }
+
+
+    private void finishSlide() {
+        state = STATE_FINISH;
+        if (scrollBackWhenFinish) {
+            scrollToCenter();
+        } else {
+            scrollTo(0, 0);
+        }
+    }
+
+    public void setInterpolator(Interpolator interpolator) {
+        scroller = new Scroller(getContext(), interpolator);
+    }
+
+
+    public void setOnSlideListener(OnSlideListener onSlideListener) {
+        this.onSlideListener = onSlideListener;
+    }
+
+    public DistanceInterpolator getDistanceInterpolator() {
+        return distanceInterpolator;
+    }
+
+    public void setDistanceInterpolator(DistanceInterpolator distanceInterpolator) {
+        this.distanceInterpolator = distanceInterpolator;
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if (!slidable) {
@@ -201,6 +283,11 @@ public class SlidableLayout extends RelativeLayout {
                     float deltaX = event.getX() - previousX;
                     float deltaY = event.getY() - previousY;
 
+                    if (null != distanceInterpolator) {
+                        deltaX = distanceInterpolator.interpolate(deltaX);
+                        deltaY = distanceInterpolator.interpolate(deltaY);
+                    }
+
                     previousX = event.getX();
                     previousY = event.getY();
 
@@ -208,7 +295,9 @@ public class SlidableLayout extends RelativeLayout {
                     float newScrollY = deltaY - getScrollY();
 
                     if (slidableBound.contains((int) newScrollX, (int) newScrollY)) {
+
                         scrollTo((int) -newScrollX, (int) -newScrollY);
+
                     } else if (canSlide(Direction.Left) && newScrollX < slidableBound.left) {
                         notifyIfSlideTo(Direction.Left);
                     } else if (canSlide(Direction.Right) && newScrollX > slidableBound.right) {
@@ -219,70 +308,21 @@ public class SlidableLayout extends RelativeLayout {
                         notifyIfSlideTo(Direction.Down);
                     } else {
                         Float[] adjustedPoint = adjustToSlidableBound(newScrollX, newScrollY);
+
                         scrollTo((int) -adjustedPoint[0], (int) -adjustedPoint[1]);
+
                     }
 
                 }
                 return consumeMotion;
 
             case MotionEvent.ACTION_UP:
-                if (null != onSlideListener) {
-                    onSlideListener.onFinishSlide(this);
-                }
-                state = STATE_CANCEL;
-                scrollToCenter();
+                cancelSlide();
                 break;
         }
         return super.onTouchEvent(event);
     }
 
-
-    public void scrollToCenter() {
-        int scrolledX = getScrollX();
-        int scrolledY = getScrollY();
-        scroller.startScroll(scrolledX, scrolledY, -scrolledX, -scrolledY,
-                (int) (sqrt(pow(scrolledX, 2) + pow(scrolledY, 2)) * 4));
-        invalidate();
-    }
-
-    private void notifyIfSlideTo(Direction direction) {
-        if (canSlide(direction)) {
-
-            boolean shouldNotify = false;
-            switch (direction) {
-                case Left:
-                    if (getScrollX() > 0) {
-                        shouldNotify = abs(-slidableBound.left - getScrollX()) < 3;
-                    }
-                    break;
-                case Right:
-                    if (getScrollX() < 0) {
-                        shouldNotify = abs(slidableBound.right + getScrollX()) < 3;
-                    }
-                    break;
-                case Up:
-                    if (getScrollY() > 0) {
-                        shouldNotify = abs(-slidableBound.top - getScrollY()) < 3;
-                    }
-                    break;
-                case Down:
-                    if (getScrollY() < 0) {
-                        shouldNotify = abs(slidableBound.bottom + getScrollY()) < 3;
-                    }
-                    break;
-                default:
-                    //will never happen
-                    shouldNotify = false;
-            }
-            if (shouldNotify && state == STATE_SLIDING) {
-                if (null != onSlideListener) {
-                    onSlideListener.onSlideTo(this, direction);
-                }
-                finishSlide();
-            }
-
-        }
-    }
 
     @Override
     public void computeScroll() {
@@ -293,7 +333,7 @@ public class SlidableLayout extends RelativeLayout {
 
         if (state == STATE_CANCEL && abs(getScrollX()) == 0 && abs(getScrollY()) == 0) {
             if (null != onSlideListener) {
-                onSlideListener.onSlideCancel(this);
+                onSlideListener.onSlideCanceled(this);
             }
             state = STATE_FINISH;
         }
@@ -323,42 +363,20 @@ public class SlidableLayout extends RelativeLayout {
     }
 
 
-    public void cancelSlide() {
-        state = STATE_CANCEL;
-        scrollToCenter();
-    }
-
-
-    private void finishSlide() {
-        state = STATE_FINISH;
-        if (scrollBackWhenFinish) {
-            scrollToCenter();
-        } else {
-            scrollTo(0, 0);
-        }
-    }
-
-    public void setInterpolator(Interpolator interpolator) {
-        scroller = new Scroller(getContext(), interpolator);
-    }
-
-
-    public void setOnSlideListener(OnSlideListener onSlideListener) {
-        this.onSlideListener = onSlideListener;
-    }
-
-
     public interface OnSlideListener {
         void onSlide(SlidableLayout layout, float rateLeftRight, float rateUpDown);
 
         void onSlideTo(SlidableLayout layout, Direction direction);
 
-        void onSlideCancel(SlidableLayout layout);
+        void onSlideCanceled(SlidableLayout layout);
 
         void onStartSlide(SlidableLayout layout);
 
-        void onFinishSlide(SlidableLayout layout);
+        void onCancelSlide(SlidableLayout layout);
     }
 
+    public interface DistanceInterpolator {
+        float interpolate(float offset);
+    }
 
 }
