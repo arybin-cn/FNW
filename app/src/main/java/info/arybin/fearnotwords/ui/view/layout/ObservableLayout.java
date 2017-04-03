@@ -34,9 +34,6 @@ public class ObservableLayout extends RelativeLayout {
     private Stack<View> currentHoveredStack = new Stack<>();
     private int state = STATE_IDLE;
 
-    private float previousX;
-    private float previousY;
-
 
     public ObservableLayout(Context context) {
         this(context, null);
@@ -53,11 +50,7 @@ public class ObservableLayout extends RelativeLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        System.out.println("I" + event);
-        if (locked) {
-            return true;
-        }
-        if (null != listener) {
+        if (null != listener & !locked) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if (STATE_IDLE == state) {
@@ -74,7 +67,6 @@ public class ObservableLayout extends RelativeLayout {
                     if (STATE_PRESSED == state) {
                         notifyHoverIn(event);
                         notifyHoverOut(event);
-                        recordPosition(event);
                         listener.onPressMove(currentPressedView, event);
                         return false;
                     }
@@ -93,12 +85,7 @@ public class ObservableLayout extends RelativeLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        System.out.println(event);
-        if (locked) {
-            return consumeMotion;
-        }
-
-        if (null != listener) {
+        if (null != listener & !locked) {
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -108,7 +95,6 @@ public class ObservableLayout extends RelativeLayout {
                     if (STATE_PRESSED == state) {
                         notifyHoverIn(event);
                         notifyHoverOut(event);
-                        recordPosition(event);
                         listener.onPressMove(currentPressedView, event);
                         return consumeMotion;
                     }
@@ -148,7 +134,6 @@ public class ObservableLayout extends RelativeLayout {
     private void notifyOnPress(MotionEvent event) {
         for (View observer : onPressObservers) {
             if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
-                recordPosition(event);
                 switchToStatePressed(observer);
                 listener.onPressDown(observer, event);
             }
@@ -176,10 +161,7 @@ public class ObservableLayout extends RelativeLayout {
     }
 
 
-    private void recordPosition(MotionEvent event) {
-        previousX = event.getX();
-        previousY = event.getY();
-    }
+
 
     private void switchToStatePressed(View view) {
         state = STATE_PRESSED;

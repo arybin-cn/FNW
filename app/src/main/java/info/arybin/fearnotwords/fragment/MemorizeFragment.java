@@ -25,6 +25,7 @@ import info.arybin.fearnotwords.core.SimpleOperableQueue;
 import info.arybin.fearnotwords.model.Memorable;
 import info.arybin.fearnotwords.model.Translatable;
 import info.arybin.fearnotwords.ui.view.layout.ObservableLayout;
+import info.arybin.fearnotwords.ui.view.layout.SlidableLayout;
 
 public class MemorizeFragment extends BaseFragment implements ObservableLayout.EventListener {
 
@@ -45,17 +46,26 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     @BindView(R.id.textViewExampleTranslation)
     public TextView textViewExampleTranslation;
 
+    @BindView(R.id.layoutSkip)
+    protected SlidableLayout layoutSkip;
     @BindView(R.id.imageSkip)
     protected ImageView imageSkip;
-    @BindView(R.id.imagePass)
-    protected ImageView imagePass;
+
+    @BindView(R.id.layoutPronounce)
+    protected SlidableLayout layoutPronounce;
     @BindView(R.id.imagePronounce)
     protected ImageView imagePronounce;
+
+    @BindView(R.id.layoutPass)
+    protected SlidableLayout layoutPass;
+    @BindView(R.id.imagePass)
+    protected ImageView imagePass;
+
 
     private OperableQueue<? extends Memorable> memorableQueue;
 
 
-    private static final int LOCK_SLOP = 50;
+    private static final int LOCK_SLOP = 60;
 
     private static final int PRI_STATE_IDLE = 0;
     private static final int PRI_STATE_CONTROL_LOCKED = 1;
@@ -114,9 +124,40 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
         layoutMain.setEventListener(this);
 
-        layoutMain.addOnPressObserver(imageSkip, imagePronounce, imagePass);
-        layoutMain.addOnHoverObserver(imageSkip, imagePronounce, imagePass
+        layoutMain.addOnPressObserver(layoutSkip, layoutPronounce, layoutPass);
+        layoutMain.addOnHoverObserver(layoutSkip, layoutPronounce, layoutPass
                 , textViewTranslation, layoutExample);
+
+        layoutSkip.setSlidableOffset(0, 0, 0, LOCK_SLOP);
+        layoutPronounce.setSlidableOffset(0, 0, 0, LOCK_SLOP);
+        layoutPass.setSlidableOffset(0, 0, 0, LOCK_SLOP);
+
+        layoutSkip.setOnSlideListener(new SlidableLayout.OnSlideListener() {
+            @Override
+            public void onSlide(SlidableLayout layout, float rateLeftRight, float rateUpDown) {
+                System.out.println(rateLeftRight+"-"+rateUpDown);
+            }
+
+            @Override
+            public void onSlideTo(SlidableLayout layout, SlidableLayout.Direction direction) {
+
+            }
+
+            @Override
+            public void onSlideCancel(SlidableLayout layout) {
+
+            }
+
+            @Override
+            public void onStartSlide(SlidableLayout layout) {
+
+            }
+
+            @Override
+            public void onFinishSlide(SlidableLayout layout) {
+
+            }
+        });
 
 
         updateView(memorableQueue.current());
@@ -205,13 +246,12 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onPressDown(View pressDownView, MotionEvent event) {
-        System.out.println("OnPressDown-" + pressDownView);
 
     }
 
     @Override
     public void onPressMove(View pressDownView, MotionEvent event) {
-        System.out.println("OnPressMove");
+//        System.out.println("OnPressMove");
 
     }
 
@@ -235,6 +275,10 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onHoverOut(View pressDownView, View viewOnHover, MotionEvent event) {
+        if (viewOnHover instanceof SlidableLayout) {
+            System.out.println("SetSlidable false");
+            ((SlidableLayout) viewOnHover).cancelSlide();
+        }
         System.out.println("HoverOut");
 
     }

@@ -124,7 +124,6 @@ public class EntryFragment extends BaseFragment implements
         layoutEntranceOld.setOnSlideListener(this);
         layoutEntranceOld.setSlidableOffsetLeftRight(350);
 
-
         layoutEntranceAll.setOnSlideListener(this);
         layoutEntranceAll.setSlidableOffsetLeftRight(350);
 
@@ -315,7 +314,7 @@ public class EntryFragment extends BaseFragment implements
         float conjugateRateAbs3 = conjugateRateAbs * conjugateRateAbs * conjugateRateAbs;
         mainActivity.imageViewBlurred.setAlpha(1 - conjugateRateAbs3);
         setTransitionMapPercentage(rateLeftRight);
-        loadingAnim.setPercent(rateAbs + 0.1f);
+        loadingAnim.setPercent(rateAbs);
         separatorBottom.setAlpha(conjugateRateAbs3);
     }
 

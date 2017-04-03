@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutMain"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="@dimen/default_padding_narrow">
 
     <RelativeLayout
         android:id="@+id/layoutExample"
@@ -12,8 +13,7 @@
         android:layout_marginTop="@dimen/default_margin_wide"
 
         android:clipChildren="false"
-        android:clipToPadding="false"
-        android:padding="@dimen/default_padding_narrow">
+        android:clipToPadding="false">
 
         <LinearLayout
 
@@ -76,44 +76,59 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/default_margin">
+        android:layout_centerHorizontal="true">
 
 
-        <ImageView
-
-            android:id="@+id/imagePronounce"
+        <info.arybin.fearnotwords.ui.view.layout.SlidableLayout
+            android:id="@+id/layoutPronounce"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/default_margin_wide"
+            android:paddingBottom="@dimen/default_margin_wide">
 
-            android:alpha="0.6"
-            android:padding="@dimen/default_padding_wide"
-            android:src="@drawable/ic_pronounce_white_36dp" />
+            <ImageView
+                android:id="@+id/imagePronounce"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:alpha="0.6"
+                android:padding="@dimen/default_padding_wide"
+                android:src="@drawable/ic_pronounce_white_36dp" />
+        </info.arybin.fearnotwords.ui.view.layout.SlidableLayout>
 
-
-        <ImageView
-            android:id="@+id/imageSkip"
+        <info.arybin.fearnotwords.ui.view.layout.SlidableLayout
+            android:id="@+id/layoutSkip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/default_margin_wide"
-            android:layout_toLeftOf="@id/imagePronounce"
-            android:alpha="0.6"
+            android:layout_toLeftOf="@id/layoutPronounce"
+            android:paddingBottom="@dimen/default_margin_wide">
 
-            android:padding="@dimen/default_padding_wide"
-            android:src="@drawable/ic_skip_white_36dp" />
+            <ImageView
+                android:id="@+id/imageSkip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.6"
+                android:padding="@dimen/default_padding_wide"
+                android:src="@drawable/ic_skip_white_36dp" />
+        </info.arybin.fearnotwords.ui.view.layout.SlidableLayout>
 
-        <ImageView
-            android:id="@+id/imagePass"
+
+        <info.arybin.fearnotwords.ui.view.layout.SlidableLayout
+            android:id="@+id/layoutPass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/default_margin_wide"
-            android:layout_toRightOf="@id/imagePronounce"
-            android:alpha="0.6"
-            android:padding="@dimen/default_padding_wide"
-            android:src="@drawable/ic_pass_white_36dp" />
+            android:layout_toRightOf="@id/layoutPronounce"
+
+            android:paddingBottom="@dimen/default_margin_wide">
+
+            <ImageView
+                android:id="@+id/imagePass"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.6"
+                android:padding="@dimen/default_padding_wide"
+                android:src="@drawable/ic_pass_white_36dp" />
+        </info.arybin.fearnotwords.ui.view.layout.SlidableLayout>
 
 
     </RelativeLayout>
