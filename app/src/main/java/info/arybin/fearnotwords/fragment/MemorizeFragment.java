@@ -172,92 +172,52 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     }
 
 
-    private Memorable next(boolean shouldPass) {
-        Memorable memorable = memorableQueue.next(shouldPass);
-        if (memorable == null) {
-            if (memorableQueue.getLoopType() != OperableQueue.LoopType.NoLoop) {
-                memorableQueue.setLoopType(OperableQueue.LoopType.NoLoop);
-                memorable = memorableQueue.next(shouldPass);
-                if (memorable == null) {
-                    //end of OperableQueue
-                    return null;
-                } else {
-                    return memorable;
-                }
-            } else {
-                //end of OperableQueue
-                return null;
-            }
-        }
-        return memorable;
-    }
+//    private Memorable next(boolean shouldPass) {
+//        Memorable memorable = memorableQueue.next(shouldPass);
+//        if (memorable == null) {
+//            if (memorableQueue.getLoopType() != OperableQueue.LoopType.NoLoop) {
+//                memorableQueue.setLoopType(OperableQueue.LoopType.NoLoop);
+//                memorable = memorableQueue.next(shouldPass);
+//                if (memorable == null) {
+//                    //end of OperableQueue
+//                    return null;
+//                } else {
+//                    return memorable;
+//                }
+//            } else {
+//                //end of OperableQueue
+//                return null;
+//            }
+//        }
+//        return memorable;
+//    }
 
 
     @Override
     public void onPressDown(View view, MotionEvent event) {
-        i = 0;
-        hoveredControlView = view;
-        if (controlViews.contains(view)) {
-            hoveredControlView.startAnimation(makeHoverInAnimation(true));
-            for (View other : controlViews) {
-                if (other != hoveredControlView) {
-                    other.startAnimation(makeHoverInAnimation(false));
-                }
-            }
-        }
 
-        switch (view.getId()) {
-            case R.id.imagePronounce:
-                //sound
-                break;
-            case R.id.imageSkip:
-
-                break;
-            case R.id.imagePass:
-                break;
-        }
     }
-
-    int i;
 
     @Override
     public void onPressMove(View view, double distance2LastPos, double distance2AnchorPos, MotionEvent event) {
-        System.out.println(++i);
+
     }
 
     @Override
     public void onPressUp(View pressDownView, MotionEvent event) {
-
-        if (controlViews.contains(pressDownView)) {
-            hoveredControlView.startAnimation(makeHoverOutAnimation(true));
-            for (View other : controlViews) {
-                if (other != hoveredControlView) {
-                    other.startAnimation(makeHoverOutAnimation(false));
-                }
-
-            }
-        }
-
-
-        boolean shouldPass = false;
-        switch (pressDownView.getId()) {
-            case R.id.imagePass:
-                shouldPass = true;
-            case R.id.imageSkip:
-                updateView(next(shouldPass));
-                break;
-        }
+//        boolean shouldPass = false;
+//        switch (pressDownView.getId()) {
+//            case R.id.imagePass:
+//                shouldPass = true;
+//            case R.id.imageSkip:
+//                updateView(next(shouldPass));
+//                break;
+//        }
     }
 
     @Override
     public void onHoverIn(View pressDownView, View viewOnHover, MotionEvent event) {
-        if (controlViews.contains(viewOnHover)) {
-            if (hoveredControlView != viewOnHover){
-                hoveredControlView.startAnimation(makeHoverOutAnimation(true));
-                viewOnHover.startAnimation(makeHoverInAnimation(true));
-                hoveredControlView = viewOnHover;
-            }
-        }
+
     }
 
     @Override

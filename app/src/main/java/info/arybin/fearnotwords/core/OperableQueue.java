@@ -1,6 +1,6 @@
 package info.arybin.fearnotwords.core;
 
-import java.util.Collection;
+import java.util.Deque;
 
 public interface OperableQueue<T> {
 
@@ -11,19 +11,20 @@ public interface OperableQueue<T> {
 
     T current();
 
-    T next(boolean passCurrent);
-
     T pass();
 
     T skip();
+
+    T loop();
+
 
     void setLoopType(LoopType loopType);
 
     LoopType getLoopType();
 
-    Collection<T> passed();
+    Deque<T> passedDeque();
 
-    Collection<T> skipped();
+    Deque<T> skippedDeque();
 
-    Collection<T> source();
+    Deque<T> defaultDeque();
 }

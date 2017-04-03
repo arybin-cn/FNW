@@ -263,21 +263,17 @@ public class EntryFragment extends BaseFragment implements
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    ArrayList<FakeEntity> list = new ArrayList<>(300);
-                    for (int i = 0; i < 300; i++) {
-                        list.add(new FakeEntity(i));
-                    }
-                    Thread.sleep(5000);
-                    Message msg = new Message();
-                    Bundle data = new Bundle();
-                    data.putParcelableArrayList(KEY_LOADED_MEMORABLE, list);
-                    msg.setData(data);
-                    msg.what = MSG_LOADED;
-                    handler.sendMessage(msg);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                ArrayList<FakeEntity> list = new ArrayList<>(300);
+                for (int i = 0; i < 300; i++) {
+                    list.add(new FakeEntity(i));
                 }
+                Message msg = new Message();
+                Bundle data = new Bundle();
+                data.putParcelableArrayList(KEY_LOADED_MEMORABLE, list);
+                msg.setData(data);
+                msg.what = MSG_LOADED;
+                handler.sendMessage(msg);
+
             }
         }).start();
     }

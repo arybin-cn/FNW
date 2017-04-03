@@ -8,7 +8,7 @@
     <RelativeLayout
         android:id="@+id/layoutExample"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="120dp"
         android:layout_marginTop="@dimen/default_margin_wide"
 
         android:clipChildren="false"
@@ -27,10 +27,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:maxLines="2"
+                android:maxLines="3"
                 android:textSize="22sp"
 
-                 />
+                />
 
             <info.arybin.fearnotwords.ui.view.textview.TextViewNonAscii
                 android:id="@+id/textViewExampleTranslation"
@@ -40,8 +40,7 @@
                 android:gravity="center"
 
                 android:maxLines="2"
-                android:textSize="16sp"
-                 />
+                android:textSize="16sp" />
         </LinearLayout>
 
 
@@ -80,99 +79,41 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/default_margin">
 
-        <RelativeLayout
-            android:id="@+id/layoutPronounce"
+
+        <ImageView
+
+            android:id="@+id/imagePronounce"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true">
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/default_margin_wide"
 
-            <ImageView
-                android:id="@+id/imagePronounce"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:alpha="0.6"
-                android:padding="@dimen/default_padding_wide"
-                android:src="@drawable/ic_pronounce_white_36dp" />
+            android:alpha="0.6"
+            android:padding="@dimen/default_padding_wide"
+            android:src="@drawable/ic_pronounce_white_36dp" />
 
-            <ImageView
-                android:id="@+id/lockerPronounce"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/imagePronounce"
-                android:layout_centerHorizontal="true"
-                android:paddingBottom="@dimen/default_padding"
-                android:paddingLeft="@dimen/default_padding_wide"
-                android:paddingRight="@dimen/default_padding_wide"
-                android:paddingTop="@dimen/default_padding"
-                android:src="@drawable/ic_unlock_white_24dp"
-                 />
 
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/layoutSkip"
+        <ImageView
+            android:id="@+id/imageSkip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/layoutPronounce">
+            android:layout_marginBottom="@dimen/default_margin_wide"
+            android:layout_toLeftOf="@id/imagePronounce"
+            android:alpha="0.6"
 
-            <ImageView
-                android:id="@+id/imageSkip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:alpha="0.6"
+            android:padding="@dimen/default_padding_wide"
+            android:src="@drawable/ic_skip_white_36dp" />
 
-                android:padding="@dimen/default_padding_wide"
-                android:src="@drawable/ic_skip_white_36dp" />
-
-            <ImageView
-                android:id="@+id/lockerSkip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/imageSkip"
-                android:layout_centerHorizontal="true"
-                android:paddingBottom="@dimen/default_padding"
-
-                android:paddingLeft="@dimen/default_padding_wide"
-                android:paddingRight="@dimen/default_padding_wide"
-                android:paddingTop="@dimen/default_padding"
-                android:src="@drawable/ic_unlock_white_24dp"
-                 />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/layoutPass"
+        <ImageView
+            android:id="@+id/imagePass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/layoutPronounce">
-
-            <ImageView
-                android:id="@+id/imagePass"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:alpha="0.6"
-                android:padding="@dimen/default_padding_wide"
-                android:src="@drawable/ic_pass_white_36dp" />
-
-            <ImageView
-                android:id="@+id/lockerPass"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/imagePass"
-                android:layout_centerHorizontal="true"
-                android:paddingBottom="@dimen/default_padding"
-
-                android:paddingLeft="@dimen/default_padding_wide"
-                android:paddingRight="@dimen/default_padding_wide"
-                android:paddingTop="@dimen/default_padding"
-                android:src="@drawable/ic_unlock_white_24dp"
-                 />
-
-        </RelativeLayout>
+            android:layout_marginBottom="@dimen/default_margin_wide"
+            android:layout_toRightOf="@id/imagePronounce"
+            android:alpha="0.6"
+            android:padding="@dimen/default_padding_wide"
+            android:src="@drawable/ic_pass_white_36dp" />
 
 
     </RelativeLayout>
@@ -193,13 +134,12 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:paddingBottom="@dimen/default_padding"
-
-
             android:paddingLeft="@dimen/default_padding_wide"
+
             android:paddingRight="@dimen/default_padding_wide"
             android:paddingTop="@dimen/default_padding"
             android:src="@drawable/ic_unlock_white_24dp"
-             />
+            android:visibility="invisible" />
 
         <info.arybin.fearnotwords.ui.view.textview.TextViewNonAscii
             android:id="@+id/textViewTranslation"
@@ -210,7 +150,7 @@
             android:gravity="center"
             android:maxLines="5"
             android:textSize="20sp"
-            
+
             app:minTextSize="18sp" />
     </RelativeLayout>
 

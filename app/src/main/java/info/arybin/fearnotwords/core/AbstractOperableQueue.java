@@ -1,32 +1,33 @@
 package info.arybin.fearnotwords.core;
 
 
+import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Deque;
 
 public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
-    public enum LastElementType {
-        Source, Passed, Skipped
+    public enum DataSource {
+        Default, Passed, Skipped
     }
 
     private LoopType currentLoopType = LoopType.NoLoop;
-    private LastElementType lastElementType = LastElementType.Source;
+    private DataSource lastDataSource = DataSource.Default;
 
-    private ConcurrentLinkedQueue<T> mSkipped;
-    private ConcurrentLinkedQueue<T> mPassed;
-    private ConcurrentLinkedQueue<T> mSource;
+    private ArrayDeque<T> mSkipped;
+    private ArrayDeque<T> mPassed;
+    private ArrayDeque<T> mDefault;
 
     private int mIntervalToLastReview = 0;
     private T mCurrent;
 
     protected abstract boolean shouldReview(int intervalToLastReview);
 
-    protected AbstractOperableQueue(Collection<T> dataSource, Collection<T> skipped) {
-        mSource = new ConcurrentLinkedQueue<>(dataSource);
-        mSkipped = new ConcurrentLinkedQueue<>(skipped);
-        mPassed = new ConcurrentLinkedQueue<>();
-        mCurrent = mSource.poll();
+    protected AbstractOperableQueue(Collection<T> lastDataSource, Collection<T> skipped) {
+        mDefault = new ArrayDeque<>(lastDataSource);
+        mSkipped = new ArrayDeque<>(skipped);
+        mPassed = new ArrayDeque<>();
+        mCurrent = mDefault.poll();
     }
 
 
@@ -35,40 +36,26 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
         return mCurrent;
     }
 
-    @Override
-    public T pass() {
-        return next(true);
-    }
-
-    @Override
-    public T skip() {
-        return next(false);
-    }
-
-    @Override
-    public T next(boolean passCurrent) {
-        if (mCurrent != null) {
-            (passCurrent ? mPassed : mSkipped).add(mCurrent);
-        }
+    private T next() {
         switch (currentLoopType) {
             case NoLoop:
-                if (mSource.size() == 0 && mSkipped.size() == 0) {
+                if (mDefault.size() == 0 && mSkipped.size() == 0) {
                     mCurrent = null;
                     break;
                 }
-                if (mSource.size() == 0) {
+                if (mDefault.size() == 0) {
                     mCurrent = pollFromSkipped();
                     break;
                 }
                 if (mSkipped.size() == 0) {
-                    mCurrent = pollFromSource();
+                    mCurrent = pollFromDefault();
                     break;
                 }
                 if (shouldReview(mIntervalToLastReview++)) {
                     mCurrent = pollFromSkipped();
                     mIntervalToLastReview = 0;
                 } else {
-                    mCurrent = pollFromSource();
+                    mCurrent = pollFromDefault();
                 }
                 break;
             case LoopInSkipped:
@@ -81,18 +68,47 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
         return mCurrent;
     }
 
+    @Override
+    public T pass() {
+        if (mCurrent != null) {
+            mPassed.add(mCurrent);
+        }
+        return next();
+    }
+
+    @Override
+    public T skip() {
+        if (mCurrent != null) {
+            mSkipped.add(mCurrent);
+        }
+        return next();
+    }
+
+    @Override
+    public T loop() {
+        switch (lastDataSource) {
+            case Skipped:
+                return skip();
+            case Passed:
+                return pass();
+        }
+        // lastDataSource is Default
+        mDefault.addFirst(mCurrent);
+        return next();
+    }
+
     private T pollFromSkipped() {
-        lastElementType = LastElementType.Skipped;
+        lastDataSource = DataSource.Skipped;
         return mSkipped.poll();
     }
 
-    private T pollFromSource() {
-        lastElementType = LastElementType.Source;
-        return mSource.poll();
+    private T pollFromDefault() {
+        lastDataSource = DataSource.Default;
+        return mDefault.poll();
     }
 
     private T pollFromPassed() {
-        lastElementType = LastElementType.Passed;
+        lastDataSource = DataSource.Passed;
         return mPassed.poll();
     }
 
@@ -107,30 +123,30 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
         return currentLoopType;
     }
 
-    public LastElementType getLastElementType() {
-        return lastElementType;
+    public DataSource getLastDataSource() {
+        return lastDataSource;
     }
 
     @Override
-    public Collection<T> passed() {
+    public Deque<T> passedDeque() {
         return mPassed;
     }
 
     @Override
-    public Collection<T> skipped() {
+    public Deque<T> skippedDeque() {
         return mSkipped;
     }
 
     @Override
-    public Collection<T> source() {
-        return mSource;
+    public Deque<T> defaultDeque() {
+        return mDefault;
     }
 
 
     @Override
     public String toString() {
-        return String.format("current: %s\npassed: %s\nskipped: %s\nsource: %s\n",
-                mCurrent, mPassed, mSkipped, mSource);
+        return String.format("current: %s\npassedDeque: %s\nskippedDeque: %s\ndefaultDeque: %s\n",
+                mCurrent, mPassed, mSkipped, mDefault);
     }
 
 }
