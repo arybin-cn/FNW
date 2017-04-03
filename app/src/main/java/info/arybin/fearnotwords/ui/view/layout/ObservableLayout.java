@@ -74,9 +74,7 @@ public class ObservableLayout extends RelativeLayout {
                             return true;
                         }
                     }
-
                     break;
-
                 case MotionEvent.ACTION_UP:
                     onTouchEvent(event);
                     break;
@@ -105,13 +103,8 @@ public class ObservableLayout extends RelativeLayout {
                     if (STATE_PRESSED == state) {
                         notifyHoverIn(event);
                         notifyHoverOut(event);
-                        float currentX = event.getX();
-                        float currentY = event.getY();
-                        listener.onPressMove(currentPressedView,
-                                Math.sqrt(Math.pow(currentX - previousX, 2) + Math.pow(currentY - previousY, 2)),
-                                Math.sqrt(Math.pow(currentX - anchorX, 2) + Math.pow(currentY - anchorY, 2)), event);
-                        previousX = currentX;
-                        previousY = currentY;
+                        recordPosition(event);
+                        listener.onPressMove(currentPressedView, event);
                         return true;
                     }
 
@@ -231,7 +224,7 @@ public class ObservableLayout extends RelativeLayout {
 
         void onPressDown(View view, MotionEvent event);
 
-        void onPressMove(View view, double distance2LastPos, double distance2AnchorPos, MotionEvent event);
+        void onPressMove(View view, MotionEvent event);
 
         void onPressUp(View pressDownView, MotionEvent event);
 

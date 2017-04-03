@@ -98,7 +98,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
         layoutMain.setEventListener(this);
 
-        layoutMain.addOnPressObserver(layoutMain, imagePronounce, imageSkip, imagePass);
+        layoutMain.addOnPressObserver(imagePronounce, imageSkip, imagePass);
         layoutMain.addOnHoverObserver(imagePronounce, imageSkip, imagePass
                 , textViewTranslation, layoutExample);
 
