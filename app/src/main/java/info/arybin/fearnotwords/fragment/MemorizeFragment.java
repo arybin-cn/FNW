@@ -65,7 +65,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     private OperableQueue<? extends Memorable> memorableQueue;
 
 
-    private static final int LOCK_SLOP = 80;
+    private static final int LOCK_SLOP = 100;
 
     private static final int PRI_STATE_NORMAL = 0x1;
     private static final int PRI_STATE_LOOP = 0x2;
@@ -107,7 +107,6 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     }
 
     private void initializedViews() {
-
 
         layoutMain.setEventListener(this);
 
@@ -231,29 +230,31 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     public void onHoverIn(View pressDownView, View viewOnHover, MotionEvent event) {
         switch (viewOnHover.getId()) {
             case R.id.layoutTranslation:
-                System.out.println("set locker visible");
-                lockerTranslation.setVisibility(View.VISIBLE);
+                if (!(pressDownView instanceof SlidableLayout)) {
+                    lockerTranslation.setVisibility(View.VISIBLE);
+                }
                 break;
             case R.id.lockerTranslation:
-                if (hasMinorState(MIN_STATE_TRANSLATION_LOCKED)) {
-                    removeMinorState(MIN_STATE_TRANSLATION_LOCKED);
-                    lockerTranslation.setImageResource(R.drawable.ic_unlock_white_24dp);
-                } else {
-                    addMinorState(MIN_STATE_TRANSLATION_LOCKED);
-                    lockerTranslation.setImageResource(R.drawable.ic_lock_white_24dp);
+                if (!(pressDownView instanceof SlidableLayout)) {
+                    if (hasMinorState(MIN_STATE_TRANSLATION_LOCKED)) {
+                        removeMinorState(MIN_STATE_TRANSLATION_LOCKED);
+                        lockerTranslation.setImageResource(R.drawable.ic_unlock_white_24dp);
+                    } else {
+                        addMinorState(MIN_STATE_TRANSLATION_LOCKED);
+                        lockerTranslation.setImageResource(R.drawable.ic_lock_white_24dp);
+                    }
                 }
-
-
                 break;
         }
-        System.out.println("HoverIn");
     }
 
     @Override
     public void onHoverOut(View pressDownView, View viewOnHover, MotionEvent event) {
         switch (viewOnHover.getId()) {
             case R.id.layoutTranslation:
-                lockerTranslation.setVisibility(View.INVISIBLE);
+                if (!(pressDownView instanceof SlidableLayout)) {
+                    lockerTranslation.setVisibility(View.INVISIBLE);
+                }
                 break;
         }
 

@@ -1,6 +1,5 @@
 package info.arybin.fearnotwords.fragment;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -266,6 +265,11 @@ public class EntryFragment extends BaseFragment implements
                 ArrayList<FakeEntity> list = new ArrayList<>(300);
                 for (int i = 0; i < 300; i++) {
                     list.add(new FakeEntity(i));
+                }
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 Message msg = new Message();
                 Bundle data = new Bundle();

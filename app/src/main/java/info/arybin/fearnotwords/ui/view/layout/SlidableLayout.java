@@ -145,7 +145,7 @@ public class SlidableLayout extends RelativeLayout {
 
     /**
      * @param speed pixels per second(default 150)
-     * */
+     */
     public boolean setSpeed(float speed) {
         if (speed > 0) {
             this.speed = speed;
@@ -206,10 +206,12 @@ public class SlidableLayout extends RelativeLayout {
     }
 
     public void cancelSlide() {
-        state = STATE_CANCEL;
-        scrollToCenter();
-        if (null != onSlideListener) {
-            onSlideListener.onCancelSlide(this);
+        if (STATE_CANCEL != state) {
+            state = STATE_CANCEL;
+            scrollToCenter();
+            if (null != onSlideListener) {
+                onSlideListener.onCancelSlide(this);
+            }
         }
     }
 

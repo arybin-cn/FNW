@@ -48,6 +48,98 @@ public class ObservableLayout extends RelativeLayout {
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
+
+    private boolean anyPressObserversIn(MotionEvent event) {
+        for (View observer : onPressObservers) {
+            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private void notifyOnPress(MotionEvent event) {
+        for (View observer : onPressObservers) {
+            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
+                switchToStatePressed(observer);
+                listener.onPressDown(observer, event);
+            }
+        }
+    }
+
+    private void notifyHoverIn(MotionEvent event) {
+        for (View observer : onHoverObservers) {
+            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
+                if (!currentHoveredStack.contains(observer)) {
+                    currentHoveredStack.push(observer);
+                    this.listener.onHoverIn(currentPressedView, observer, event);
+                }
+            }
+        }
+    }
+
+    private void notifyHoverOut(MotionEvent event) {
+        for (View hoveredView : currentHoveredStack) {
+            if (!isPointInsideView(event.getRawX(), event.getRawY(), hoveredView)) {
+                currentHoveredStack.remove(hoveredView);
+                this.listener.onHoverOut(currentPressedView, hoveredView, event);
+            }
+        }
+    }
+
+
+    private void switchToStatePressed(View view) {
+        state = STATE_PRESSED;
+        currentPressedView = view;
+    }
+
+    public void lock() {
+        this.locked = true;
+    }
+
+    public void unlock() {
+        this.locked = false;
+    }
+
+
+    public boolean willConsumeMotion() {
+        return consumeMotion;
+    }
+
+    public void setConsumeMotion(boolean consumeMotion) {
+        this.consumeMotion = consumeMotion;
+    }
+
+    public void addOnPressObserver(View... views) {
+        this.onPressObservers.addAll(Arrays.asList(views));
+    }
+
+    public void removeOnPressObserver(View view) {
+        this.onPressObservers.remove(view);
+    }
+
+    public ArrayList<View> getOnPressObservers() {
+        return onPressObservers;
+    }
+
+    public void addOnHoverObserver(View... views) {
+        this.onHoverObservers.addAll(Arrays.asList(views));
+    }
+
+    public void removeOnHoverObserver(View view) {
+        this.onHoverObservers.remove(view);
+    }
+
+    public ArrayList<View> getOnHoverObservers() {
+        return onHoverObservers;
+    }
+
+
+    public void setEventListener(EventListener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if (null != listener & !locked) {
@@ -121,92 +213,6 @@ public class ObservableLayout extends RelativeLayout {
         }
         return super.onTouchEvent(event);
     }
-
-    private boolean anyPressObserversIn(MotionEvent event) {
-        for (View observer : onPressObservers) {
-            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    private void notifyOnPress(MotionEvent event) {
-        for (View observer : onPressObservers) {
-            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
-                switchToStatePressed(observer);
-                listener.onPressDown(observer, event);
-            }
-        }
-    }
-
-    private void notifyHoverIn(MotionEvent event) {
-        for (View observer : onHoverObservers) {
-            if (isPointInsideView(event.getRawX(), event.getRawY(), observer)) {
-                if (!currentHoveredStack.contains(observer)) {
-                    currentHoveredStack.push(observer);
-                    this.listener.onHoverIn(currentPressedView, observer, event);
-                }
-            }
-        }
-    }
-
-    private void notifyHoverOut(MotionEvent event) {
-        for (View hoveredView : currentHoveredStack) {
-            if (!isPointInsideView(event.getRawX(), event.getRawY(), hoveredView)) {
-                currentHoveredStack.remove(hoveredView);
-                this.listener.onHoverOut(currentPressedView, hoveredView, event);
-            }
-        }
-    }
-
-
-
-
-    private void switchToStatePressed(View view) {
-        state = STATE_PRESSED;
-        currentPressedView = view;
-    }
-
-    public void lock() {
-        this.locked = true;
-    }
-
-    public void unlock() {
-        this.locked = false;
-    }
-
-
-    public void addOnPressObserver(View... views) {
-        this.onPressObservers.addAll(Arrays.asList(views));
-    }
-
-    public void removeOnPressObserver(View view) {
-        this.onPressObservers.remove(view);
-    }
-
-    public ArrayList<View> getOnPressObservers() {
-        return onPressObservers;
-    }
-
-    public void addOnHoverObserver(View... views) {
-        this.onHoverObservers.addAll(Arrays.asList(views));
-    }
-
-    public void removeOnHoverObserver(View view) {
-        this.onHoverObservers.remove(view);
-    }
-
-    public ArrayList<View> getOnHoverObservers() {
-        return onHoverObservers;
-    }
-
-
-    public void setEventListener(EventListener listener) {
-        this.listener = listener;
-    }
-
 
     public interface EventListener {
 
