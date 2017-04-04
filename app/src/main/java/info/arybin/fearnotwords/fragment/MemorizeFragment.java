@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,11 +20,16 @@ import info.arybin.fearnotwords.core.OperableQueue;
 import info.arybin.fearnotwords.core.SimpleOperableQueue;
 import info.arybin.fearnotwords.model.Memorable;
 import info.arybin.fearnotwords.model.Translatable;
+import info.arybin.fearnotwords.ui.view.layout.TripleLayout;
 import info.arybin.fearnotwords.ui.view.layout.ObservableLayout;
 import info.arybin.fearnotwords.ui.view.layout.SlidableLayout;
 
+import static java.lang.Math.abs;
+
 public class MemorizeFragment extends BaseFragment implements ObservableLayout.EventListener, SlidableLayout.OnSlideListener {
 
+    @BindView(R.id.tripleView)
+    protected TripleLayout tripleLayout;
     @BindView(R.id.layoutMain)
     protected ObservableLayout layoutMain;
 
@@ -92,7 +98,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     private int primaryState = PRI_STATE_NORMAL;
     private int minorState = MIN_STATE_TRANSLATION_HIDE;
-    private SlidableLayout pressedView;
+    private ArrayList<SlidableLayout> functionViews = new ArrayList<>(2);
     private float pressDownX;
     private float pressDownY;
     private float previousX;
@@ -107,15 +113,16 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     }
 
     private void initializedViews() {
-
+        tripleLayout.lock();
         layoutMain.setEventListener(this);
 
         layoutMain.addOnPressObserver(layoutSkip, layoutPronounce, layoutPass);
         layoutMain.addOnHoverObserver(
                 layoutSkip, layoutPronounce, layoutPass,
                 layoutTranslation, lockerTranslation, layoutExample);
+        functionViews.addAll(Arrays.asList(layoutSkip, layoutPass));
 
-        layoutSkip.setSlidableOffset(0, 0, 0, LOCK_SLOP);
+        layoutSkip.setSlidableOffset(0, LOCK_SLOP, 0, LOCK_SLOP);
         layoutPronounce.setSlidableOffset(0, 0, 0, LOCK_SLOP);
         layoutPass.setSlidableOffset(0, 0, 0, LOCK_SLOP);
 
@@ -200,12 +207,18 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     public void onPressMove(View pressDownView, MotionEvent event) {
         float currentX = event.getX();
         float currentY = event.getY();
+        float deltaX = currentX - previousX;
+        float deltaY = currentY - previousY;
+
         if (pressDownView instanceof SlidableLayout) {
             //layoutSkip or layoutPronounce or layoutPass
-            pressedView = (SlidableLayout) pressDownView;
-            if (currentY - previousY < 0) {
-                ((SlidableLayout) pressDownView).cancelSlide();
+            SlidableLayout slidableLayout = (SlidableLayout) pressDownView;
+            if (deltaY < 0) {
+                slidableLayout.cancelSlide();
             }
+
+
+
         }
 
 
@@ -216,26 +229,18 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     @Override
     public void onPressUp(final View pressDownView, MotionEvent event) {
         tryToHideTranslation();
-//        boolean shouldPass = false;
-//        switch (pressDownView.getId()) {
-//            case R.id.imagePass:
-//                shouldPass = true;
-//            case R.id.imageSkip:
-//                updateView(next(shouldPass));
-//                break;
-//        }
     }
 
     @Override
     public void onHoverIn(View pressDownView, View viewOnHover, MotionEvent event) {
         switch (viewOnHover.getId()) {
             case R.id.layoutTranslation:
-                if (!(pressDownView instanceof SlidableLayout)) {
+                if (!functionViews.contains(pressDownView)) {
                     lockerTranslation.setVisibility(View.VISIBLE);
                 }
                 break;
             case R.id.lockerTranslation:
-                if (!(pressDownView instanceof SlidableLayout)) {
+                if (!functionViews.contains(pressDownView)) {
                     if (hasMinorState(MIN_STATE_TRANSLATION_LOCKED)) {
                         removeMinorState(MIN_STATE_TRANSLATION_LOCKED);
                         lockerTranslation.setImageResource(R.drawable.ic_unlock_white_24dp);
@@ -252,7 +257,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     public void onHoverOut(View pressDownView, View viewOnHover, MotionEvent event) {
         switch (viewOnHover.getId()) {
             case R.id.layoutTranslation:
-                if (!(pressDownView instanceof SlidableLayout)) {
+                if (!(functionViews.contains(pressDownView))) {
                     lockerTranslation.setVisibility(View.INVISIBLE);
                 }
                 break;
@@ -265,7 +270,6 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         System.out.println("OnHoverCancel-" + viewOnHover);
         switch (viewOnHover.getId()) {
             case R.id.layoutTranslation:
-                System.out.println("Set Invisible");
                 lockerTranslation.setVisibility(View.INVISIBLE);
                 break;
         }
@@ -274,7 +278,6 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onSlide(SlidableLayout layout, float rateLeftRight, float rateUpDown) {
-        System.out.println("OnSlide-" + rateLeftRight + ":" + rateUpDown);
     }
 
     @Override

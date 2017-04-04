@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.Scroller;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.floor;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
@@ -29,8 +30,10 @@ public class SlidableLayout extends RelativeLayout {
     public final int STATE_FINISH = 3;
     private int state = STATE_IDLE;
 
+    private boolean strict = true;
     private boolean slidable = true;
     private boolean consumeMotion = true;
+    private boolean cancelWhenSlideBack = false;
     private boolean scrollBackWhenFinish = true;
 
     private float speed;
@@ -58,6 +61,21 @@ public class SlidableLayout extends RelativeLayout {
         speed = 150;
     }
 
+    public boolean isCancelWhenSlideBack() {
+        return cancelWhenSlideBack;
+    }
+
+    public void setCancelWhenSlideBack(boolean cancelWhenSlideBack) {
+        this.cancelWhenSlideBack = cancelWhenSlideBack;
+    }
+
+    public boolean isStrict() {
+        return strict;
+    }
+
+    public void setStrict(boolean strict) {
+        this.strict = strict;
+    }
 
     public void setScrollBackWhenFinish(boolean scrollBackWhenFinish) {
         this.scrollBackWhenFinish = scrollBackWhenFinish;
@@ -288,7 +306,6 @@ public class SlidableLayout extends RelativeLayout {
                 }
                 return consumeMotion;
             case MotionEvent.ACTION_MOVE:
-
                 if (state == STATE_IDLE && shouldStartSlide(event.getX(), event.getY())) {
                     if (null != onSlideListener) {
                         onSlideListener.onStartSlide(this);
@@ -298,6 +315,7 @@ public class SlidableLayout extends RelativeLayout {
                     previousY = event.getY();
                     break;
                 }
+
                 if (state == STATE_SLIDING) {
 
                     float deltaX = event.getX() - previousX;
@@ -311,13 +329,22 @@ public class SlidableLayout extends RelativeLayout {
                     previousX = event.getX();
                     previousY = event.getY();
 
-                    float newScrollX = deltaX - getScrollX();
-                    float newScrollY = deltaY - getScrollY();
+                    float oldScrollX = -getScrollX();
+                    float oldScrollY = -getScrollY();
+
+                    float newScrollX = deltaX + oldScrollX;
+                    float newScrollY = deltaY + oldScrollY;
 
                     if (slidableBound.contains((int) newScrollX, (int) newScrollY)) {
-
-                        scrollTo((int) -newScrollX, (int) -newScrollY);
-
+                        if (strict) {
+                            if (abs(newScrollX) > abs(newScrollY)) {
+                                scrollTo((int) -newScrollX, (int) -oldScrollY);
+                            } else {
+                                scrollTo((int) -oldScrollX, (int) -newScrollY);
+                            }
+                        } else {
+                            scrollTo((int) -newScrollX, (int) -newScrollY);
+                        }
                     } else if (canSlide(Direction.Left) && newScrollX < slidableBound.left) {
                         notifyIfSlideTo(Direction.Left);
                     } else if (canSlide(Direction.Right) && newScrollX > slidableBound.right) {
@@ -328,9 +355,15 @@ public class SlidableLayout extends RelativeLayout {
                         notifyIfSlideTo(Direction.Down);
                     } else {
                         Float[] adjustedPoint = adjustToSlidableBound(newScrollX, newScrollY);
-
-                        scrollTo((int) -adjustedPoint[0], (int) -adjustedPoint[1]);
-
+                        if (strict) {
+                            if (abs(adjustedPoint[0]) > abs(adjustedPoint[1])) {
+                                scrollTo((int) -adjustedPoint[0], (int) -oldScrollY);
+                            } else {
+                                scrollTo((int) -oldScrollX, (int) -adjustedPoint[1]);
+                            }
+                        } else {
+                            scrollTo((int) -adjustedPoint[0], (int) -adjustedPoint[1]);
+                        }
                     }
 
                 }

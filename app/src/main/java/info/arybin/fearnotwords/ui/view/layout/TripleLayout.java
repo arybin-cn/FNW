@@ -1,4 +1,4 @@
-package info.arybin.fearnotwords.ui.view;
+package info.arybin.fearnotwords.ui.view.layout;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,7 +9,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Scroller;
 
-public class TripleView extends ViewGroup {
+public class TripleLayout extends ViewGroup {
 
     private ActionListener actionListener;
 
@@ -44,15 +44,15 @@ public class TripleView extends ViewGroup {
     private Scroller mScroller;
     private int mTouchSlop;
 
-    public TripleView(Context context) {
+    public TripleLayout(Context context) {
         this(context, null, 0);
     }
 
-    public TripleView(Context context, AttributeSet attrs) {
+    public TripleLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TripleView(Context context, AttributeSet attrs, int defStyle) {
+    public TripleLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mScroller = new Scroller(context);
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
@@ -102,9 +102,6 @@ public class TripleView extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-
-        System.out.println("I-"+event);
-
         if (mLock) {
             return false;
         }
@@ -139,7 +136,6 @@ public class TripleView extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        System.out.println("N-"+event);
         if (mLock) {
             return true;
         }

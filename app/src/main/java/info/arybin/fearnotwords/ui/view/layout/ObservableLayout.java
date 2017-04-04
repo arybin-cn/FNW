@@ -178,7 +178,7 @@ public class ObservableLayout extends RelativeLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (null != listener & !locked) {
-
+            System.out.println(event);
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     return consumeMotion;
