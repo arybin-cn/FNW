@@ -89,7 +89,7 @@
             android:layout_centerHorizontal="true">
 
 
-            <info.arybin.fearnotwords.ui.view.layout.SlidableLayout
+            <info.arybin.fearnotwords.ui.view.layout.ElasticLayout
                 android:id="@+id/layoutPronounce"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -104,9 +104,9 @@
                     android:alpha="0.6"
                     android:padding="@dimen/default_padding_wide"
                     android:src="@drawable/ic_pronounce_white_36dp" />
-            </info.arybin.fearnotwords.ui.view.layout.SlidableLayout>
+            </info.arybin.fearnotwords.ui.view.layout.ElasticLayout>
 
-            <info.arybin.fearnotwords.ui.view.layout.SlidableLayout
+            <info.arybin.fearnotwords.ui.view.layout.ElasticLayout
                 android:id="@+id/layoutSkip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -120,10 +120,10 @@
                     android:alpha="0.6"
                     android:padding="@dimen/default_padding_wide"
                     android:src="@drawable/ic_skip_white_36dp" />
-            </info.arybin.fearnotwords.ui.view.layout.SlidableLayout>
+            </info.arybin.fearnotwords.ui.view.layout.ElasticLayout>
 
 
-            <info.arybin.fearnotwords.ui.view.layout.SlidableLayout
+            <info.arybin.fearnotwords.ui.view.layout.ElasticLayout
                 android:id="@+id/layoutPass"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -138,7 +138,7 @@
                     android:alpha="0.6"
                     android:padding="@dimen/default_padding_wide"
                     android:src="@drawable/ic_pass_white_36dp" />
-            </info.arybin.fearnotwords.ui.view.layout.SlidableLayout>
+            </info.arybin.fearnotwords.ui.view.layout.ElasticLayout>
 
 
         </RelativeLayout>

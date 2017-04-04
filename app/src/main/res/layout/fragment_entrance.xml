@@ -70,7 +70,7 @@
                 android:paddingLeft="@dimen/default_padding_wide"
                 android:paddingRight="@dimen/default_padding_wide">
 
-                <info.arybin.fearnotwords.ui.view.layout.SlidableLayout
+                <info.arybin.fearnotwords.ui.view.layout.ElasticLayout
                     android:id="@+id/layoutEntranceNew"
                     android:layout_width="match_parent"
 
@@ -126,14 +126,14 @@
 
                     </RelativeLayout>
 
-                </info.arybin.fearnotwords.ui.view.layout.SlidableLayout>
+                </info.arybin.fearnotwords.ui.view.layout.ElasticLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:background="?attr/colorTextTranslucent" />
 
-                <info.arybin.fearnotwords.ui.view.layout.SlidableLayout
+                <info.arybin.fearnotwords.ui.view.layout.ElasticLayout
                     android:id="@+id/layoutEntranceOld"
                     android:layout_width="match_parent"
 
@@ -189,14 +189,14 @@
 
                     </RelativeLayout>
 
-                </info.arybin.fearnotwords.ui.view.layout.SlidableLayout>
+                </info.arybin.fearnotwords.ui.view.layout.ElasticLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:background="?attr/colorTextTranslucent" />
 
-                <info.arybin.fearnotwords.ui.view.layout.SlidableLayout
+                <info.arybin.fearnotwords.ui.view.layout.ElasticLayout
                     android:id="@+id/layoutEntranceAll"
                     android:layout_width="match_parent"
 
@@ -254,7 +254,7 @@
 
                     </RelativeLayout>
 
-                </info.arybin.fearnotwords.ui.view.layout.SlidableLayout>
+                </info.arybin.fearnotwords.ui.view.layout.ElasticLayout>
 
 
             </LinearLayout>

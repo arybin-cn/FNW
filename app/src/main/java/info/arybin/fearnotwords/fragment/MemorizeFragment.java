@@ -22,11 +22,11 @@ import info.arybin.fearnotwords.model.Memorable;
 import info.arybin.fearnotwords.model.Translatable;
 import info.arybin.fearnotwords.ui.view.layout.TripleLayout;
 import info.arybin.fearnotwords.ui.view.layout.ObservableLayout;
-import info.arybin.fearnotwords.ui.view.layout.SlidableLayout;
+import info.arybin.fearnotwords.ui.view.layout.ElasticLayout;
 
 import static java.lang.Math.abs;
 
-public class MemorizeFragment extends BaseFragment implements ObservableLayout.EventListener, SlidableLayout.OnSlideListener {
+public class MemorizeFragment extends BaseFragment implements ObservableLayout.EventListener, ElasticLayout.OnSlideListener {
 
     @BindView(R.id.tripleView)
     protected TripleLayout tripleLayout;
@@ -53,17 +53,17 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     public TextView textViewExampleTranslation;
 
     @BindView(R.id.layoutSkip)
-    protected SlidableLayout layoutSkip;
+    protected ElasticLayout layoutSkip;
     @BindView(R.id.imageSkip)
     protected ImageView imageSkip;
 
     @BindView(R.id.layoutPronounce)
-    protected SlidableLayout layoutPronounce;
+    protected ElasticLayout layoutPronounce;
     @BindView(R.id.imagePronounce)
     protected ImageView imagePronounce;
 
     @BindView(R.id.layoutPass)
-    protected SlidableLayout layoutPass;
+    protected ElasticLayout layoutPass;
     @BindView(R.id.imagePass)
     protected ImageView imagePass;
 
@@ -98,7 +98,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     private int primaryState = PRI_STATE_NORMAL;
     private int minorState = MIN_STATE_TRANSLATION_HIDE;
-    private ArrayList<SlidableLayout> functionViews = new ArrayList<>(2);
+    private ArrayList<ElasticLayout> functionViews = new ArrayList<>(2);
     private float pressDownX;
     private float pressDownY;
     private float previousX;
@@ -123,8 +123,12 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         functionViews.addAll(Arrays.asList(layoutSkip, layoutPass));
 
         layoutSkip.setSlidableOffset(0, LOCK_SLOP, 0, LOCK_SLOP);
+        layoutSkip.setCancelWhenSlideBack(true);
         layoutPronounce.setSlidableOffset(0, 0, 0, LOCK_SLOP);
+        layoutPronounce.setCancelWhenSlideBack(true);
         layoutPass.setSlidableOffset(0, 0, 0, LOCK_SLOP);
+        layoutPass.setCancelWhenSlideBack(true);
+
 
         layoutSkip.setOnSlideListener(this);
         layoutPronounce.setOnSlideListener(this);
@@ -210,14 +214,8 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         float deltaX = currentX - previousX;
         float deltaY = currentY - previousY;
 
-        if (pressDownView instanceof SlidableLayout) {
+        if (pressDownView instanceof ElasticLayout) {
             //layoutSkip or layoutPronounce or layoutPass
-            SlidableLayout slidableLayout = (SlidableLayout) pressDownView;
-            if (deltaY < 0) {
-                slidableLayout.cancelSlide();
-            }
-
-
 
         }
 
@@ -277,26 +275,26 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     }
 
     @Override
-    public void onSlide(SlidableLayout layout, float rateLeftRight, float rateUpDown) {
+    public void onSlide(ElasticLayout layout, float rateLeftRight, float rateUpDown) {
     }
 
     @Override
-    public void onSlideTo(SlidableLayout layout, SlidableLayout.Direction direction) {
-
-    }
-
-    @Override
-    public void onSlideCanceled(SlidableLayout layout) {
+    public void onSlideTo(ElasticLayout layout, ElasticLayout.Direction direction) {
 
     }
 
     @Override
-    public void onStartSlide(SlidableLayout layout) {
+    public void onSlideCanceled(ElasticLayout layout) {
 
     }
 
     @Override
-    public void onCancelSlide(SlidableLayout layout) {
+    public void onStartSlide(ElasticLayout layout) {
+
+    }
+
+    @Override
+    public void onCancelSlide(ElasticLayout layout) {
     }
 
 }

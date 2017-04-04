@@ -28,7 +28,7 @@ import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.activity.MainActivity;
 import info.arybin.fearnotwords.model.FakeEntity;
-import info.arybin.fearnotwords.ui.view.layout.SlidableLayout;
+import info.arybin.fearnotwords.ui.view.layout.ElasticLayout;
 
 import static com.github.florent37.expectanim.core.Expectations.aboveOf;
 import static com.github.florent37.expectanim.core.Expectations.alpha;
@@ -39,7 +39,7 @@ import static com.github.florent37.expectanim.core.Expectations.visible;
 import static info.arybin.fearnotwords.Utils.retrieveAllChildViews;
 
 public class EntryFragment extends BaseFragment implements
-        SlidableLayout.OnSlideListener, View.OnClickListener, Handler.Callback {
+        ElasticLayout.OnSlideListener, View.OnClickListener, Handler.Callback {
 
     public static final int STATE_IDLE = 0;
     public static final int STATE_LOADING = 1;
@@ -66,21 +66,21 @@ public class EntryFragment extends BaseFragment implements
     public LinearLayout layoutEntrance;
 
     @BindView(R.id.layoutEntranceNew)
-    public SlidableLayout layoutEntranceNew;
+    public ElasticLayout layoutEntranceNew;
     @BindView(R.id.textViewNewCount)
     public TextView textViewNewCount;
     @BindView(R.id.textViewEntranceNew)
     public TextView textViewEntranceNew;
 
     @BindView(R.id.layoutEntranceOld)
-    public SlidableLayout layoutEntranceOld;
+    public ElasticLayout layoutEntranceOld;
     @BindView(R.id.textViewOldCount)
     public TextView textViewOldCount;
     @BindView(R.id.textViewEntranceOld)
     public TextView textViewEntranceOld;
 
     @BindView(R.id.layoutEntranceAll)
-    public SlidableLayout layoutEntranceAll;
+    public ElasticLayout layoutEntranceAll;
     @BindView(R.id.textViewAllCount)
     public TextView textViewAllCount;
     @BindView(R.id.textViewEntranceAll)
@@ -130,12 +130,12 @@ public class EntryFragment extends BaseFragment implements
 
     }
 
-    private void initTransitionMap(SlidableLayout originLayout) {
+    private void initTransitionMap(ElasticLayout originLayout) {
         initTransitionMap(originLayout, 1);
 
     }
 
-    private void initTransitionMap(SlidableLayout originLayout, int hierarchy) {
+    private void initTransitionMap(ElasticLayout originLayout, int hierarchy) {
         try {
             tryToInitTransitionMap(originLayout, hierarchy);
         } catch (Exception e) {
@@ -144,7 +144,7 @@ public class EntryFragment extends BaseFragment implements
 
     }
 
-    private void tryToPrepareTransitionMap(SlidableLayout originLayout, int hierarchy) throws Exception {
+    private void tryToPrepareTransitionMap(ElasticLayout originLayout, int hierarchy) throws Exception {
         transitionMap.clear();
         currentSlidingChildViews = retrieveAllChildViews(originLayout);
         ViewGroup parent = (ViewGroup) originLayout.getParent();
@@ -158,7 +158,7 @@ public class EntryFragment extends BaseFragment implements
 
     }
 
-    private void tryToInitTransitionMap(SlidableLayout originLayout, int hierarchy) throws Exception {
+    private void tryToInitTransitionMap(ElasticLayout originLayout, int hierarchy) throws Exception {
         if (hierarchy < 1) {
             throw new IllegalArgumentException("hierarchy must >= 1");
         }
@@ -243,7 +243,7 @@ public class EntryFragment extends BaseFragment implements
     }
 
 
-    private void setSlidable(boolean slidable, SlidableLayout exception) {
+    private void setSlidable(boolean slidable, ElasticLayout exception) {
         if (layoutEntranceNew != exception) {
             layoutEntranceNew.setSlidable(slidable);
         }
@@ -312,7 +312,7 @@ public class EntryFragment extends BaseFragment implements
 
 
     @Override
-    public void onSlide(SlidableLayout layout, float rateLeftRight, float rateUpDown) {
+    public void onSlide(ElasticLayout layout, float rateLeftRight, float rateUpDown) {
         float rateAbs = Math.abs(rateLeftRight);
         float conjugateRateAbs = 1 - rateAbs;
         float conjugateRateAbs3 = conjugateRateAbs * conjugateRateAbs * conjugateRateAbs;
@@ -323,7 +323,7 @@ public class EntryFragment extends BaseFragment implements
     }
 
     @Override
-    public void onSlideTo(SlidableLayout layout, SlidableLayout.Direction direction) {
+    public void onSlideTo(ElasticLayout layout, ElasticLayout.Direction direction) {
         System.out.println("OnSlideTo-" + direction);
         switch (direction) {
             case Left:
@@ -334,7 +334,7 @@ public class EntryFragment extends BaseFragment implements
 
 
     @Override
-    public void onSlideCanceled(SlidableLayout layout) {
+    public void onSlideCanceled(ElasticLayout layout) {
         System.out.println("Center");
         mainActivity.imageView.resume();
         blurView.setBlurAutoUpdate(true);
@@ -344,7 +344,7 @@ public class EntryFragment extends BaseFragment implements
 
 
     @Override
-    public void onStartSlide(SlidableLayout layout) {
+    public void onStartSlide(ElasticLayout layout) {
         if (canSwitchSlide.compareAndSet(true, false)) {
             initTransitionMap(layout);
             setSlidable(false, layout);
@@ -355,7 +355,7 @@ public class EntryFragment extends BaseFragment implements
     }
 
     @Override
-    public void onCancelSlide(SlidableLayout layout) {
+    public void onCancelSlide(ElasticLayout layout) {
 
     }
 
