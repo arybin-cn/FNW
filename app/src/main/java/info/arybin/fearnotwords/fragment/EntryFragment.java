@@ -1,5 +1,6 @@
 package info.arybin.fearnotwords.fragment;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -112,7 +113,6 @@ public class EntryFragment extends BaseFragment implements
 
     private void initializedViews() {
 
-//        blurView.setOverlayColor(Color.argb(64, 0, 0, 0));
 
         blurView.setupWith((ViewGroup) mainActivity.imageView.getParent()).blurRadius(BLUR_RADIUS);
         loadingAnimPre.setNow();

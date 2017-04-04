@@ -6,22 +6,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Scroller;
 import android.widget.TextView;
 
-import com.github.florent37.expectanim.ExpectAnim;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import info.arybin.fearnotwords.R;
-import info.arybin.fearnotwords.Utils;
 import info.arybin.fearnotwords.core.OperableQueue;
 import info.arybin.fearnotwords.core.SimpleOperableQueue;
 import info.arybin.fearnotwords.model.Memorable;
@@ -29,10 +22,7 @@ import info.arybin.fearnotwords.model.Translatable;
 import info.arybin.fearnotwords.ui.view.layout.ObservableLayout;
 import info.arybin.fearnotwords.ui.view.layout.SlidableLayout;
 
-import static com.github.florent37.expectanim.core.Expectations.scale;
-import static java.lang.Math.abs;
-
-public class MemorizeFragment extends BaseFragment implements ObservableLayout.EventListener, SlidableLayout.OnSlideListener, SlidableLayout.DistanceInterpolator {
+public class MemorizeFragment extends BaseFragment implements ObservableLayout.EventListener, SlidableLayout.OnSlideListener {
 
     @BindView(R.id.layoutMain)
     protected ObservableLayout layoutMain;
@@ -41,8 +31,13 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     public TextView textViewBody;
     @BindView(R.id.textViewPronounce)
     public TextView textViewPronounce;
+
+    @BindView(R.id.layoutTranslation)
+    public RelativeLayout layoutTranslation;
     @BindView(R.id.textViewTranslation)
     public TextView textViewTranslation;
+    @BindView(R.id.lockerTranslation)
+    public ImageView lockerTranslation;
 
     @BindView(R.id.layoutExample)
     public RelativeLayout layoutExample;
@@ -70,7 +65,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     private OperableQueue<? extends Memorable> memorableQueue;
 
 
-    private static final int LOCK_SLOP = 50;
+    private static final int LOCK_SLOP = 80;
 
     private static final int PRI_STATE_NORMAL = 0x1;
     private static final int PRI_STATE_LOOP = 0x2;
@@ -117,15 +112,13 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         layoutMain.setEventListener(this);
 
         layoutMain.addOnPressObserver(layoutSkip, layoutPronounce, layoutPass);
-        layoutMain.addOnHoverObserver(layoutSkip, layoutPronounce, layoutPass
-                , textViewTranslation, layoutExample);
+        layoutMain.addOnHoverObserver(
+                layoutSkip, layoutPronounce, layoutPass,
+                layoutTranslation, lockerTranslation, layoutExample);
 
         layoutSkip.setSlidableOffset(0, 0, 0, LOCK_SLOP);
-        layoutSkip.setDistanceInterpolator(this);
         layoutPronounce.setSlidableOffset(0, 0, 0, LOCK_SLOP);
-        layoutPronounce.setDistanceInterpolator(this);
         layoutPass.setSlidableOffset(0, 0, 0, LOCK_SLOP);
-        layoutPass.setDistanceInterpolator(this);
 
         layoutSkip.setOnSlideListener(this);
         layoutPronounce.setOnSlideListener(this);
@@ -148,50 +141,15 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         textViewExampleTranslation.setText(example.getTranslation());
     }
 
-    private Animation makeHoverInAnimation(boolean reverse) {
-        if (reverse) {
-            return AnimationUtils.loadAnimation(getContext(), R.anim.in_hover_reverse);
-        }
-        return AnimationUtils.loadAnimation(getContext(), R.anim.in_hover);
-    }
-
-    private Animation makeHoverOutAnimation(boolean reverse) {
-        if (reverse) {
-            return AnimationUtils.loadAnimation(getContext(), R.anim.out_hover_reverse);
-        }
-        return AnimationUtils.loadAnimation(getContext(), R.anim.out_hover);
-    }
-
-    private Animation makeFadeInAnimation(final View view) {
-        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.in_fade);
-        animation.setAnimationListener(new Utils.AnimationListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                view.setVisibility(View.VISIBLE);
-            }
-        });
-        return animation;
-    }
-
-    private Animation makeFadeOutAnimation(final View view) {
-        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.out_fade);
-        animation.setAnimationListener(new Utils.AnimationListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                view.setVisibility(View.INVISIBLE);
-            }
-        });
-        return animation;
-    }
-
 
     private void showTranslation() {
-
-
+        layoutTranslation.setVisibility(View.VISIBLE);
     }
 
-    private void hideTranslation() {
-
+    private void tryToHideTranslation() {
+        if (!hasMinorState(MIN_STATE_TRANSLATION_LOCKED)) {
+            layoutTranslation.setVisibility(View.INVISIBLE);
+        }
     }
 
 
@@ -233,9 +191,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         pressDownY = event.getY();
         previousX = pressDownX;
         previousY = pressDownY;
-
-        switch (pressDownView.getId()) {
-        }
+        showTranslation();
 
 
         System.out.println("OnPressDown");
@@ -248,7 +204,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         if (pressDownView instanceof SlidableLayout) {
             //layoutSkip or layoutPronounce or layoutPass
             pressedView = (SlidableLayout) pressDownView;
-            if (currentY - previousY < -1) {
+            if (currentY - previousY < 0) {
                 ((SlidableLayout) pressDownView).cancelSlide();
             }
         }
@@ -260,7 +216,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onPressUp(final View pressDownView, MotionEvent event) {
-        System.out.println("OnPressUp");
+        tryToHideTranslation();
 //        boolean shouldPass = false;
 //        switch (pressDownView.getId()) {
 //            case R.id.imagePass:
@@ -273,33 +229,53 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onHoverIn(View pressDownView, View viewOnHover, MotionEvent event) {
+        switch (viewOnHover.getId()) {
+            case R.id.layoutTranslation:
+                System.out.println("set locker visible");
+                lockerTranslation.setVisibility(View.VISIBLE);
+                break;
+            case R.id.lockerTranslation:
+                if (hasMinorState(MIN_STATE_TRANSLATION_LOCKED)) {
+                    removeMinorState(MIN_STATE_TRANSLATION_LOCKED);
+                    lockerTranslation.setImageResource(R.drawable.ic_unlock_white_24dp);
+                } else {
+                    addMinorState(MIN_STATE_TRANSLATION_LOCKED);
+                    lockerTranslation.setImageResource(R.drawable.ic_lock_white_24dp);
+                }
+
+
+                break;
+        }
         System.out.println("HoverIn");
     }
 
     @Override
     public void onHoverOut(View pressDownView, View viewOnHover, MotionEvent event) {
-
-        System.out.println("HoverOut");
+        switch (viewOnHover.getId()) {
+            case R.id.layoutTranslation:
+                lockerTranslation.setVisibility(View.INVISIBLE);
+                break;
+        }
 
     }
 
     @Override
     public boolean onHoverCancel(View pressDownView, View viewOnHover, MotionEvent event) {
-        System.out.println("HoverCancel");
-
+        switch (viewOnHover.getId()) {
+            case R.id.layoutTranslation:
+                lockerTranslation.setVisibility(View.INVISIBLE);
+                break;
+        }
         return true;
     }
 
     @Override
     public void onSlide(SlidableLayout layout, float rateLeftRight, float rateUpDown) {
         System.out.println("OnSlide-" + rateLeftRight + ":" + rateUpDown);
-        layout.setScaleX(1 + 0.5f * abs(rateUpDown));
-        layout.setScaleY(1 + 0.5f * abs(rateUpDown));
     }
 
     @Override
     public void onSlideTo(SlidableLayout layout, SlidableLayout.Direction direction) {
-
 
     }
 
@@ -317,8 +293,4 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     public void onCancelSlide(SlidableLayout layout) {
     }
 
-    @Override
-    public float interpolate(float offset) {
-        return offset * 0.8f;
-    }
 }

@@ -16,6 +16,7 @@ import static java.lang.Math.sqrt;
 
 public class SlidableLayout extends RelativeLayout {
 
+
     public enum Direction {
         Up, Down, Left, Right
     }
@@ -32,6 +33,7 @@ public class SlidableLayout extends RelativeLayout {
     private boolean consumeMotion = true;
     private boolean scrollBackWhenFinish = true;
 
+    private float speed;
     private Scroller scroller;
     private Rect slidableBound = new Rect(0, 0, 0, 0);
 
@@ -53,6 +55,7 @@ public class SlidableLayout extends RelativeLayout {
         super(context, attrs, defStyleAttr);
         scroller = new Scroller(context);
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        speed = 150;
     }
 
 
@@ -140,11 +143,26 @@ public class SlidableLayout extends RelativeLayout {
         this.slidableBound = new Rect(0, -offset, 0, offset);
     }
 
+    /**
+     * @param speed pixels per second(default 150)
+     * */
+    public boolean setSpeed(float speed) {
+        if (speed > 0) {
+            this.speed = speed;
+            return true;
+        }
+        return false;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
     public void scrollToCenter() {
         int scrolledX = getScrollX();
         int scrolledY = getScrollY();
         scroller.startScroll(scrolledX, scrolledY, -scrolledX, -scrolledY,
-                (int) (sqrt(pow(scrolledX, 2) + pow(scrolledY, 2)) * 10));
+                (int) (sqrt(pow(scrolledX, 2) + pow(scrolledY, 2)) * 1000 / speed));
         invalidate();
     }
 

@@ -11,9 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_marginTop="@dimen/default_margin_wide"
-
         android:clipChildren="false"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:visibility="invisible">
 
         <LinearLayout
 
@@ -100,8 +100,8 @@
             android:id="@+id/layoutSkip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/layoutPronounce"
-            android:layout_marginBottom="@dimen/default_margin_wide">
+            android:layout_marginBottom="@dimen/default_margin_wide"
+            android:layout_toLeftOf="@id/layoutPronounce">
 
             <ImageView
                 android:id="@+id/imageSkip"
@@ -117,9 +117,9 @@
             android:id="@+id/layoutPass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/layoutPronounce"
+            android:layout_marginBottom="@dimen/default_margin_wide"
 
-            android:layout_marginBottom="@dimen/default_margin_wide">
+            android:layout_toRightOf="@id/layoutPronounce">
 
             <ImageView
                 android:id="@+id/imagePass"
@@ -140,33 +140,31 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/layoutControl"
         android:layout_below="@id/textViewPronounce"
-        android:padding="@dimen/default_padding_narrow">
+        android:visibility="invisible">
+
+        <info.arybin.fearnotwords.ui.view.textview.TextViewNonAscii
+            android:id="@+id/textViewTranslation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:maxLines="5"
+            android:paddingTop="@dimen/default_padding"
+            android:textSize="20sp"
+            app:minTextSize="18sp" />
 
         <ImageView
             android:id="@+id/lockerTranslation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
+            android:alpha="0.6"
+            android:visibility="invisible"
             android:paddingBottom="@dimen/default_padding"
             android:paddingLeft="@dimen/default_padding_wide"
-
             android:paddingRight="@dimen/default_padding_wide"
             android:paddingTop="@dimen/default_padding"
-            android:src="@drawable/ic_unlock_white_24dp"
-            android:visibility="invisible" />
-
-        <info.arybin.fearnotwords.ui.view.textview.TextViewNonAscii
-            android:id="@+id/textViewTranslation"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_above="@id/lockerTranslation"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:maxLines="5"
-            android:textSize="20sp"
-
-            app:minTextSize="18sp" />
+            android:src="@drawable/ic_unlock_white_24dp" />
     </RelativeLayout>
 
 
