@@ -261,8 +261,10 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public boolean onHoverCancel(View pressDownView, View viewOnHover, MotionEvent event) {
+        System.out.println("OnHoverCancel-" + viewOnHover);
         switch (viewOnHover.getId()) {
             case R.id.layoutTranslation:
+                System.out.println("Set Invisible");
                 lockerTranslation.setVisibility(View.INVISIBLE);
                 break;
         }

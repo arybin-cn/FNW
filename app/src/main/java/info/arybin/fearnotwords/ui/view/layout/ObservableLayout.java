@@ -104,7 +104,8 @@ public class ObservableLayout extends RelativeLayout {
                         View hoveredView;
                         while (currentHoveredStack.size() > 0) {
                             hoveredView = currentHoveredStack.pop();
-                            if (null == hoveredView || listener.onHoverCancel(currentPressedView, hoveredView, event)) {
+                            if (null == hoveredView || !listener.onHoverCancel(currentPressedView, hoveredView, event)) {
+                                currentHoveredStack.clear();
                                 break;
                             }
                         }
