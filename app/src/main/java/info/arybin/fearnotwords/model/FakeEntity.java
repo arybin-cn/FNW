@@ -35,7 +35,7 @@ public class FakeEntity implements Memorable, Parcelable {
             pronounce = null;
         }
 
-        translation = "vt. 钦佩；赞美\n" +
+        translation = salt+"\n"+"vt. 钦佩；赞美\n" +
                 "vi. 钦佩；称赞；爱慕";
 
         int exampleCount = 1 + random.nextInt(3);

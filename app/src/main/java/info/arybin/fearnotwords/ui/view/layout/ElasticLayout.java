@@ -95,11 +95,11 @@ public class ElasticLayout extends RelativeLayout {
     }
 
     public void setSlidableOffsetLeftRight(int offset) {
-        setSlidableOffset(offset, 0, offset, 0);
+        setSlidableOffset(offset, offset, 0, 0);
     }
 
     public void setSlidableOffsetUpDown(int offset) {
-        setSlidableOffset(0, offset, 0, offset);
+        setSlidableOffset(0, 0, offset, offset);
     }
 
     public void setSlidableOffsetLeft(int offset) {
@@ -107,7 +107,7 @@ public class ElasticLayout extends RelativeLayout {
     }
 
     public void setSlidableOffsetRight(int offset) {
-        setSlidableOffset(offset, 0, 0, 0);
+        setSlidableOffset(0, offset, 0, 0);
     }
 
     public void setSlidableOffsetUp(int offset) {

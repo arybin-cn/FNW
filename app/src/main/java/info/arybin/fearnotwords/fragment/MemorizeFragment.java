@@ -71,7 +71,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     private OperableQueue<? extends Memorable> memorableQueue;
 
 
-    private static final int LOCK_SLOP = 100;
+    private static final int LOCK_SLOP = 70;
 
     private static final int PRI_STATE_NORMAL = 0x1;
     private static final int PRI_STATE_LOOP = 0x2;
@@ -99,6 +99,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     private int primaryState = PRI_STATE_NORMAL;
     private int minorState = MIN_STATE_TRANSLATION_HIDE;
     private ArrayList<ElasticLayout> functionViews = new ArrayList<>(2);
+    private String loopSound;
     private float pressDownX;
     private float pressDownY;
     private float previousX;
@@ -122,7 +123,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
                 layoutTranslation, lockerTranslation, layoutExample);
         functionViews.addAll(Arrays.asList(layoutSkip, layoutPass));
 
-        layoutSkip.setSlidableOffset(0, LOCK_SLOP, 0, LOCK_SLOP);
+        layoutSkip.setSlidableOffset(0, 0, 0, LOCK_SLOP);
         layoutSkip.setCancelWhenSlideBack(true);
         layoutPronounce.setSlidableOffset(0, 0, 0, LOCK_SLOP);
         layoutPronounce.setCancelWhenSlideBack(true);
@@ -214,19 +215,38 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         float deltaX = currentX - previousX;
         float deltaY = currentY - previousY;
 
+        if (abs(deltaX) + abs(deltaY) > 30) {
+            if (PRI_STATE_LOOP == primaryState) {
+                playSound(loopSound);
+                updateView(memorableQueue.loop());
+            }
+            previousX = currentX;
+            previousY = currentY;
+        }
+
         if (pressDownView instanceof ElasticLayout) {
             //layoutSkip or layoutPronounce or layoutPass
 
         }
 
 
-        previousX = currentX;
-        previousY = currentY;
     }
 
     @Override
-    public void onPressUp(final View pressDownView, MotionEvent event) {
+    public void onPressUp(View pressDownView, MotionEvent event) {
         tryToHideTranslation();
+        primaryState = PRI_STATE_NORMAL;
+        memorableQueue.setLoopType(OperableQueue.LoopType.NoLoop);
+        switch (pressDownView.getId()) {
+            case R.id.layoutSkip:
+                playSound(SOUND_SKIP);
+                updateView(memorableQueue.skip());
+                break;
+            case R.id.layoutPass:
+                playSound(SOUND_PASS);
+                updateView(memorableQueue.pass());
+                break;
+        }
     }
 
     @Override
@@ -276,10 +296,25 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onSlide(ElasticLayout layout, float rateLeftRight, float rateUpDown) {
+
     }
 
     @Override
     public void onSlideTo(ElasticLayout layout, ElasticLayout.Direction direction) {
+        switch (layout.getId()) {
+            case R.id.layoutSkip:
+                playSound(SOUND_TICK);
+                loopSound = SOUND_SKIP;
+                primaryState = PRI_STATE_LOOP;
+                memorableQueue.setLoopType(OperableQueue.LoopType.LoopInSkipped);
+                break;
+            case R.id.layoutPass:
+                playSound(SOUND_TICK);
+                loopSound = SOUND_PASS;
+                primaryState = PRI_STATE_LOOP;
+                memorableQueue.setLoopType(OperableQueue.LoopType.LoopInPassed);
+                break;
+        }
 
     }
 

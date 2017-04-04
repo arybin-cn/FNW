@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,13 +19,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 
 import info.arybin.fearnotwords.Config;
 import info.arybin.fearnotwords.Constants;
+import info.arybin.fearnotwords.R;
 import info.arybin.fearnotwords.fragment.BaseFragment;
 import info.arybin.fearnotwords.ui.view.textview.TextViewAscii;
 import info.arybin.fearnotwords.ui.view.textview.TextViewNonAscii;
 import info.arybin.fearnotwords.ui.view.textview.TextViewPhonetic;
+
+import static android.media.AudioManager.STREAM_MUSIC;
 
 public abstract class BaseActivity extends FragmentActivity implements Constants, Handler.Callback {
 
@@ -36,8 +42,9 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
     protected AssetManager assetManager;
     protected FragmentManager fragmentManager;
 
+    protected SoundPool soundPool;
+    protected HashMap<String, Integer> soundMap = new HashMap<>();
     private SharedPreferences configs;
-
     protected boolean initializedDatabase = false;
 
     @Override
@@ -83,6 +90,35 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
         configs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         initializeViews();
         initializeDatabase();
+        initializeSounds();
+    }
+
+
+    private void initializeSounds() {
+        try {
+            tryToInitializeSounds();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void tryToInitializeSounds() throws Exception {
+        soundPool = new SoundPool.Builder()
+                .setMaxStreams(10)
+                .setAudioAttributes(new AudioAttributes.Builder().setLegacyStreamType(STREAM_MUSIC).build())
+                .build();
+        Class<R.raw> rawClass = R.raw.class;
+        for (Field field : rawClass.getDeclaredFields()) {
+            if (field.getName().startsWith(PREFIX_SOUND)) {
+                soundMap.put(field.getName().substring(PREFIX_SOUND.length()),
+                        soundPool.load(this, field.getInt(null), 1));
+            }
+        }
+    }
+
+    public boolean playSound(String name) {
+        Integer soundID = soundMap.get(name);
+        return null != soundID && 0 != soundPool.play(soundID, 1, 1, 1, 0, 1);
     }
 
 
@@ -199,4 +235,6 @@ public abstract class BaseActivity extends FragmentActivity implements Constants
             super.onBackPressed();
         }
     }
+
+
 }

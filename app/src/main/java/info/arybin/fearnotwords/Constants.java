@@ -10,5 +10,11 @@ public interface Constants {
 
     String KEY_LOADED_MEMORABLE = "1";
 
+    String PREFIX_SOUND = "sound_";
+
+    String SOUND_PASS = "pass";
+    String SOUND_SKIP = "skip";
+    String SOUND_TICK = "ticktock";
+
     Integer BLUR_RADIUS = 25;
 }

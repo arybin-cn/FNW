@@ -41,5 +41,12 @@ public abstract class BaseFragment extends Fragment implements Constants {
         return null;
     }
 
+    public boolean playSound(String name) {
+        if (null != activity) {
+            return activity.playSound(name);
+        }
+        return false;
+    }
+
 
 }
