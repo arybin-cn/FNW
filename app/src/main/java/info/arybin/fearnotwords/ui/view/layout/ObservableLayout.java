@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Stack;
 
 import static info.arybin.fearnotwords.Utils.isPointInsideView;
@@ -80,12 +81,16 @@ public class ObservableLayout extends RelativeLayout {
     }
 
     private void notifyHoverOut(MotionEvent event) {
-        for (View hoveredView : currentHoveredStack) {
+        Iterator<View> iterator = currentHoveredStack.iterator();
+        View hoveredView;
+        while (iterator.hasNext()) {
+            hoveredView = iterator.next();
             if (!isPointInsideView(event.getRawX(), event.getRawY(), hoveredView)) {
-                currentHoveredStack.remove(hoveredView);
+                iterator.remove();
                 this.listener.onHoverOut(currentPressedView, hoveredView, event);
             }
         }
+
     }
 
 
@@ -178,7 +183,6 @@ public class ObservableLayout extends RelativeLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (null != listener & !locked) {
-            System.out.println(event);
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     return consumeMotion;

@@ -234,6 +234,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onPressUp(View pressDownView, MotionEvent event) {
+        System.out.println("OnPressUp-" + pressDownView);
         tryToHideTranslation();
         primaryState = PRI_STATE_NORMAL;
         memorableQueue.setLoopType(OperableQueue.LoopType.NoLoop);
@@ -251,21 +252,18 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onHoverIn(View pressDownView, View viewOnHover, MotionEvent event) {
+        System.out.println("OnHoverIn-" + viewOnHover);
         switch (viewOnHover.getId()) {
             case R.id.layoutTranslation:
-                if (!functionViews.contains(pressDownView)) {
-                    lockerTranslation.setVisibility(View.VISIBLE);
-                }
+                lockerTranslation.setVisibility(View.VISIBLE);
                 break;
             case R.id.lockerTranslation:
-                if (!functionViews.contains(pressDownView)) {
-                    if (hasMinorState(MIN_STATE_TRANSLATION_LOCKED)) {
-                        removeMinorState(MIN_STATE_TRANSLATION_LOCKED);
-                        lockerTranslation.setImageResource(R.drawable.ic_unlock_white_24dp);
-                    } else {
-                        addMinorState(MIN_STATE_TRANSLATION_LOCKED);
-                        lockerTranslation.setImageResource(R.drawable.ic_lock_white_24dp);
-                    }
+                if (hasMinorState(MIN_STATE_TRANSLATION_LOCKED)) {
+                    removeMinorState(MIN_STATE_TRANSLATION_LOCKED);
+                    lockerTranslation.setImageResource(R.drawable.ic_unlock_white_24dp);
+                } else {
+                    addMinorState(MIN_STATE_TRANSLATION_LOCKED);
+                    lockerTranslation.setImageResource(R.drawable.ic_lock_white_24dp);
                 }
                 break;
         }
@@ -273,11 +271,12 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
     @Override
     public void onHoverOut(View pressDownView, View viewOnHover, MotionEvent event) {
+        System.out.println("OnHoverOut-" + viewOnHover);
         switch (viewOnHover.getId()) {
             case R.id.layoutTranslation:
-                if (!(functionViews.contains(pressDownView))) {
-                    lockerTranslation.setVisibility(View.INVISIBLE);
-                }
+                lockerTranslation.setVisibility(View.INVISIBLE);
+                break;
+            case R.id.lockerTranslation:
                 break;
         }
 
