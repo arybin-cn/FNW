@@ -237,7 +237,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         System.out.println("OnPressUp-" + pressDownView);
         tryToHideTranslation();
         primaryState = PRI_STATE_NORMAL;
-        memorableQueue.setLoopType(OperableQueue.LoopType.NoLoop);
+        memorableQueue.startLoop(OperableQueue.LoopType.NoLoop);
         switch (pressDownView.getId()) {
             case R.id.layoutSkip:
                 playSound(SOUND_SKIP);
@@ -305,13 +305,13 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
                 playSound(SOUND_TICK);
                 loopSound = SOUND_SKIP;
                 primaryState = PRI_STATE_LOOP;
-                memorableQueue.setLoopType(OperableQueue.LoopType.LoopInSkipped);
+                memorableQueue.startLoop(OperableQueue.LoopType.LoopInSkipped);
                 break;
             case R.id.layoutPass:
                 playSound(SOUND_TICK);
                 loopSound = SOUND_PASS;
                 primaryState = PRI_STATE_LOOP;
-                memorableQueue.setLoopType(OperableQueue.LoopType.LoopInPassed);
+                memorableQueue.startLoop(OperableQueue.LoopType.LoopInPassed);
                 break;
         }
 

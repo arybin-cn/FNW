@@ -4,6 +4,7 @@ package info.arybin.fearnotwords.core;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
@@ -11,142 +12,145 @@ public abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
         Default, Passed, Skipped
     }
 
-    private LoopType currentLoopType = LoopType.NoLoop;
+    private AtomicBoolean inLoop = new AtomicBoolean(false);
+    private LoopType currentLoopType;
     private DataSource lastDataSource = DataSource.Default;
 
-    private ArrayDeque<T> mSkipped;
-    private ArrayDeque<T> mPassed;
-    private ArrayDeque<T> mDefault;
+    private ArrayDeque<T> skippedQueue;
+    private ArrayDeque<T> passedQueue;
+    private ArrayDeque<T> defaultQueue;
 
-    private int mIntervalToLastReview = 0;
-    private T mCurrent;
+    private int intervalToLastReview = 0;
+    private T current;
 
     protected abstract boolean shouldReview(int intervalToLastReview);
 
-    protected AbstractOperableQueue(Collection<T> lastDataSource, Collection<T> skipped) {
-        mDefault = new ArrayDeque<>(lastDataSource);
-        mSkipped = new ArrayDeque<>(skipped);
-        mPassed = new ArrayDeque<>();
-        mCurrent = mDefault.poll();
-    }
-
-
-    @Override
-    public T current() {
-        return mCurrent;
+    protected AbstractOperableQueue(Collection<T> source, Collection<T> skipped) {
+        defaultQueue = new ArrayDeque<>(source);
+        skippedQueue = new ArrayDeque<>(skipped);
+        passedQueue = new ArrayDeque<>();
+        current = defaultQueue.poll();
     }
 
     private T next() {
-        switch (currentLoopType) {
-            case NoLoop:
-                if (mDefault.size() == 0 && mSkipped.size() == 0) {
-                    mCurrent = null;
-                    break;
-                }
-                if (mDefault.size() == 0) {
-                    mCurrent = pollFromSkipped();
-                    break;
-                }
-                if (mSkipped.size() == 0) {
-                    mCurrent = pollFromDefault();
-                    break;
-                }
-                if (shouldReview(mIntervalToLastReview++)) {
-                    mCurrent = pollFromSkipped();
-                    mIntervalToLastReview = 0;
-                } else {
-                    mCurrent = pollFromDefault();
-                }
-                break;
-            case LoopInSkipped:
-                mCurrent = pollFromSkipped();
-                break;
-            case LoopInPassed:
-                mCurrent = pollFromPassed();
-                break;
+        if (inLoop.get()) {
+            switch (currentLoopType) {
+                case LoopInSkipped:
+                    return pollFromSkipped();
+                case LoopInPassed:
+                    return pollFromPassed();
+            }
+        } else {
+            if (defaultQueue.size() == 0 && skippedQueue.size() == 0) {
+                //end of queue
+                current = null;
+            }
+            if (defaultQueue.size() == 0) {
+                return pollFromSkipped();
+            }
+            if (skippedQueue.size() == 0) {
+                return pollFromDefault();
+            }
+            if (shouldReview(intervalToLastReview++)) {
+                intervalToLastReview = 0;
+                return pollFromSkipped();
+            } else {
+                return pollFromDefault();
+            }
         }
-        return mCurrent;
+        return current;
     }
 
-    @Override
-    public T pass() {
-        if (mCurrent != null) {
-            mPassed.add(mCurrent);
+    private void appendToSkipped() {
+        if (current != null) {
+            skippedQueue.add(current);
         }
-        return next();
-    }
-
-    @Override
-    public T skip() {
-        if (mCurrent != null) {
-            mSkipped.add(mCurrent);
-        }
-        return next();
-    }
-
-    @Override
-    public T loop() {
-        switch (lastDataSource) {
-            case Skipped:
-                return skip();
-            case Passed:
-                return pass();
-        }
-        // lastDataSource is Default
-        mDefault.addFirst(mCurrent);
-        return next();
     }
 
     private T pollFromSkipped() {
+        current = skippedQueue.poll();
         lastDataSource = DataSource.Skipped;
-        return mSkipped.poll();
+        return current;
     }
 
     private T pollFromDefault() {
+        current = defaultQueue.poll();
         lastDataSource = DataSource.Default;
-        return mDefault.poll();
+        return current;
+    }
+
+    private void appendToPassed() {
+        if (current != null) {
+            passedQueue.add(current);
+        }
     }
 
     private T pollFromPassed() {
+        current = passedQueue.poll();
         lastDataSource = DataSource.Passed;
-        return mPassed.poll();
+        return current;
     }
 
-
-    @Override
-    public void setLoopType(LoopType loopType) {
-        currentLoopType = loopType;
-    }
-
-    @Override
-    public LoopType getLoopType() {
-        return currentLoopType;
-    }
 
     public DataSource getLastDataSource() {
         return lastDataSource;
     }
 
+
+    @Override
+    public T current() {
+        return current;
+    }
+
+    @Override
+    public T pass() {
+        appendToPassed();
+        return next();
+    }
+
+    @Override
+    public T skip() {
+        appendToSkipped();
+        return next();
+    }
+
+
+    @Override
+    public T endLoop() {
+        return null;
+    }
+
+    @Override
+    public T startLoop(LoopType loopType) {
+        if (inLoop.compareAndSet(false,true)){
+            currentLoopType = loopType;
+            switch (lastDataSource){
+            }
+        }
+        return null;
+    }
+
+
     @Override
     public Deque<T> passedDeque() {
-        return mPassed;
+        return passedQueue;
     }
 
     @Override
     public Deque<T> skippedDeque() {
-        return mSkipped;
+        return skippedQueue;
     }
 
     @Override
     public Deque<T> defaultDeque() {
-        return mDefault;
+        return defaultQueue;
     }
 
 
     @Override
     public String toString() {
         return String.format("current: %s\npassedDeque: %s\nskippedDeque: %s\ndefaultDeque: %s\n",
-                mCurrent, mPassed, mSkipped, mDefault);
+                current, passedQueue, skippedQueue, defaultQueue);
     }
 
 }

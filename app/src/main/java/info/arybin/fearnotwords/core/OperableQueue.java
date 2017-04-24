@@ -5,7 +5,7 @@ import java.util.Deque;
 public interface OperableQueue<T> {
 
     public enum LoopType {
-        NoLoop, LoopInPassed, LoopInSkipped
+        LoopInPassed, LoopInSkipped
     }
 
 
@@ -15,12 +15,10 @@ public interface OperableQueue<T> {
 
     T skip();
 
-    T loop();
+    T startLoop(LoopType loopType);
 
+    T endLoop();
 
-    void setLoopType(LoopType loopType);
-
-    LoopType getLoopType();
 
     Deque<T> passedDeque();
 
