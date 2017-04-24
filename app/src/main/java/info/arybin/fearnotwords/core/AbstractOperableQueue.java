@@ -31,13 +31,32 @@ abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
         current = defaultQueue.poll();
     }
 
+
+    private void currentTo(ArrayDeque<T> queue) {
+        if (current != null) {
+            if (queue == defaultQueue) {
+                //only use in loop
+                defaultQueue.addFirst(current);
+            } else {
+                queue.add(current);
+            }
+        }
+
+    }
+
+    private T nextFrom(ArrayDeque<T> queue) {
+        current = queue.poll();
+        lastSource = queue2Source(queue);
+        return current;
+    }
+
     private T next() {
         if (inLoop.get()) {
             if (loopSource == DataSource.Passed) {
-                return pollFrom(DataSource.Passed);
+                return nextFrom(passedQueue);
             } else {
                 //LoopInSkipped or else
-                return pollFrom(DataSource.Skipped);
+                return nextFrom(skippedQueue);
             }
         } else {
             if (defaultQueue.size() == 0 && skippedQueue.size() == 0) {
@@ -46,40 +65,21 @@ abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
                 return null;
             }
             if (defaultQueue.size() == 0) {
-                return pollFrom(DataSource.Skipped);
+                return nextFrom(skippedQueue);
             }
             if (skippedQueue.size() == 0) {
-                return pollFrom(DataSource.Default);
+                return nextFrom(defaultQueue);
             }
             if (shouldReview(intervalToLastReview++)) {
                 intervalToLastReview = 0;
-                return pollFrom(DataSource.Skipped);
+                return nextFrom(skippedQueue);
             } else {
-                return pollFrom(DataSource.Default);
+                return nextFrom(defaultQueue);
             }
         }
     }
 
-
-    private void appendTo(ArrayDeque<T> queue) {
-        if (current != null) {
-            queue.add(current);
-        }
-    }
-
-    private void insertTo(ArrayDeque<T> queue) {
-        if (current != null) {
-            queue.addFirst(current);
-        }
-    }
-
-    private T pollFrom(DataSource source) {
-        current = dataSource2Queue(source).poll();
-        lastSource = source;
-        return current;
-    }
-
-    private ArrayDeque<T> dataSource2Queue(DataSource source) {
+    private ArrayDeque<T> source2Queue(DataSource source) {
         switch (source) {
             case Passed:
                 return passedQueue;
@@ -90,7 +90,17 @@ abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
                 return defaultQueue;
         }
     }
-    
+
+    private DataSource queue2Source(ArrayDeque<T> queue) {
+        if (queue == passedQueue) {
+            return DataSource.Passed;
+        } else if (queue == skippedQueue) {
+            return DataSource.Skipped;
+        } else {
+            return DataSource.Default;
+        }
+    }
+
     @Override
     public T current() {
         return current;
@@ -98,13 +108,13 @@ abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
     @Override
     public T pass() {
-        appendTo(passedQueue);
+        currentTo(passedQueue);
         return next();
     }
 
     @Override
     public T skip() {
-        appendTo(skippedQueue);
+        currentTo(skippedQueue);
         return next();
     }
 
@@ -120,21 +130,18 @@ abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
                 //not switching here
                 return current;
             } else {
-                if (lastSource == DataSource.Default) {
-                    insertTo(defaultQueue);
-                } else {
-                    appendTo(dataSource2Queue(lastSource));
-                }
+                currentTo(source2Queue(lastSource));
                 return next();
             }
         }
-        appendTo(skippedQueue);
+        //below should never get executed, maybe replace here with exception
+        currentTo(skippedQueue);
         return next();
     }
 
     @Override
     public T loop() {
-        appendTo(dataSource2Queue(loopSource));
+        currentTo(source2Queue(loopSource));
         return next();
     }
 
@@ -142,15 +149,23 @@ abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
     public T endLoop() {
         ArrayDeque<T> queueBeforeLoop;
         if (inLoop.compareAndSet(true, false)) {
-            queueBeforeLoop = dataSource2Queue(sourceBeforeLoop);
-            if (queueBeforeLoop.contains(beforeLoop)) {
-                queueBeforeLoop.remove(beforeLoop);
-                lastSource = sourceBeforeLoop;
-                current = beforeLoop;
+            if (current == beforeLoop) {
                 return current;
+            } else {
+                queueBeforeLoop = source2Queue(sourceBeforeLoop);
+                if (queueBeforeLoop.contains(beforeLoop)) {
+                    queueBeforeLoop.remove(beforeLoop);
+                    currentTo(source2Queue(loopSource));
+                    lastSource = sourceBeforeLoop;
+                    current = beforeLoop;
+                    return current;
+                }
             }
+
+
         }
-        appendTo(skippedQueue);
+        //below should never get executed, maybe replace here with exception
+        currentTo(skippedQueue);
         return next();
     }
 
