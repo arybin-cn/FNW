@@ -17,6 +17,8 @@ public interface OperableQueue<T> {
 
     T startLoop(LoopType loopType);
 
+    T loop();
+
     T endLoop();
 
 
