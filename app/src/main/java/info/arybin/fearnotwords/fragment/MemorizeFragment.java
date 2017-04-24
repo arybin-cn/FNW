@@ -262,12 +262,14 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
                 lockerTranslation.setVisibility(View.VISIBLE);
                 break;
             case R.id.lockerTranslation:
-                if (hasMinorState(MIN_STATE_TRANSLATION_LOCKED)) {
-                    removeMinorState(MIN_STATE_TRANSLATION_LOCKED);
-                    lockerTranslation.setImageResource(R.drawable.ic_unlock_white_24dp);
-                } else {
-                    addMinorState(MIN_STATE_TRANSLATION_LOCKED);
-                    lockerTranslation.setImageResource(R.drawable.ic_lock_white_24dp);
+                if (primaryState != PRI_STATE_LOOP) {
+                    if (hasMinorState(MIN_STATE_TRANSLATION_LOCKED)) {
+                        removeMinorState(MIN_STATE_TRANSLATION_LOCKED);
+                        lockerTranslation.setImageResource(R.drawable.ic_unlock_white_24dp);
+                    } else {
+                        addMinorState(MIN_STATE_TRANSLATION_LOCKED);
+                        lockerTranslation.setImageResource(R.drawable.ic_lock_white_24dp);
+                    }
                 }
                 break;
         }
