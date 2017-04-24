@@ -20,9 +20,9 @@ import info.arybin.fearnotwords.core.OperableQueue;
 import info.arybin.fearnotwords.core.SimpleOperableQueue;
 import info.arybin.fearnotwords.model.Memorable;
 import info.arybin.fearnotwords.model.Translatable;
-import info.arybin.fearnotwords.ui.view.layout.TripleLayout;
-import info.arybin.fearnotwords.ui.view.layout.ObservableLayout;
 import info.arybin.fearnotwords.ui.view.layout.ElasticLayout;
+import info.arybin.fearnotwords.ui.view.layout.ObservableLayout;
+import info.arybin.fearnotwords.ui.view.layout.TripleLayout;
 
 import static java.lang.Math.abs;
 
@@ -117,6 +117,24 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         tripleLayout.lock();
         layoutMain.setEventListener(this);
 
+//        new ExpectAnim()
+//                .expect(layoutPronounce)
+//                .toBe(Expectations.aboveOf(layoutPass), Expectations.alignLeft(layoutPass))
+//                .expect(layoutSkip)
+//                .toBe(Expectations.aboveOf(layoutPronounce), Expectations.alignLeft(layoutPass))
+//                .toAnimation()
+//                .setEndListener(new AnimationEndListener() {
+//                    @Override
+//                    public void onAnimationEnd(ExpectAnim expectAnim) {
+//                        textViewBody.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+//                        textViewPronounce.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+//                        textViewTranslation.setGravity(Gravity.LEFT);
+//                    }
+//                })
+//                .setDuration(5000)
+//                .start();
+
+
         layoutMain.addOnPressObserver(layoutSkip, layoutPronounce, layoutPass);
         layoutMain.addOnHoverObserver(
                 layoutSkip, layoutPronounce, layoutPass,
@@ -125,7 +143,7 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
 
         layoutSkip.setSlidableOffset(0, 0, 0, LOCK_SLOP);
         layoutSkip.setCancelWhenSlideBack(true);
-        layoutPronounce.setSlidableOffset(0, 0, 0, LOCK_SLOP);
+        layoutPronounce.setSlidableOffset(LOCK_SLOP, LOCK_SLOP, 0, LOCK_SLOP);
         layoutPronounce.setCancelWhenSlideBack(true);
         layoutPass.setSlidableOffset(0, 0, 0, LOCK_SLOP);
         layoutPass.setCancelWhenSlideBack(true);
@@ -259,7 +277,9 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         System.out.println("OnHoverIn-" + viewOnHover);
         switch (viewOnHover.getId()) {
             case R.id.layoutTranslation:
-                lockerTranslation.setVisibility(View.VISIBLE);
+                if (primaryState != PRI_STATE_LOOP) {
+                    lockerTranslation.setVisibility(View.VISIBLE);
+                }
                 break;
             case R.id.lockerTranslation:
                 if (primaryState != PRI_STATE_LOOP) {
