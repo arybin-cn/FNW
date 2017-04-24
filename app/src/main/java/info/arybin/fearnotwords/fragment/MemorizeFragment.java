@@ -236,17 +236,21 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     public void onPressUp(View pressDownView, MotionEvent event) {
         System.out.println("OnPressUp-" + pressDownView);
         tryToHideTranslation();
-        primaryState = PRI_STATE_NORMAL;
-        memorableQueue.startLoop(OperableQueue.LoopType.NoLoop);
-        switch (pressDownView.getId()) {
-            case R.id.layoutSkip:
-                playSound(SOUND_SKIP);
-                updateView(memorableQueue.skip());
-                break;
-            case R.id.layoutPass:
-                playSound(SOUND_PASS);
-                updateView(memorableQueue.pass());
-                break;
+
+        if (primaryState == PRI_STATE_LOOP) {
+            primaryState = PRI_STATE_NORMAL;
+            updateView(memorableQueue.endLoop());
+        } else {
+            switch (pressDownView.getId()) {
+                case R.id.layoutSkip:
+                    playSound(SOUND_SKIP);
+                    updateView(memorableQueue.skip());
+                    break;
+                case R.id.layoutPass:
+                    playSound(SOUND_PASS);
+                    updateView(memorableQueue.pass());
+                    break;
+            }
         }
     }
 
@@ -305,13 +309,13 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
                 playSound(SOUND_TICK);
                 loopSound = SOUND_SKIP;
                 primaryState = PRI_STATE_LOOP;
-                memorableQueue.startLoop(OperableQueue.LoopType.LoopInSkipped);
+                updateView(memorableQueue.startLoop(OperableQueue.DataSource.Skipped));
                 break;
             case R.id.layoutPass:
                 playSound(SOUND_TICK);
                 loopSound = SOUND_PASS;
                 primaryState = PRI_STATE_LOOP;
-                memorableQueue.startLoop(OperableQueue.LoopType.LoopInPassed);
+                updateView(memorableQueue.startLoop(OperableQueue.DataSource.Passed));
                 break;
         }
 

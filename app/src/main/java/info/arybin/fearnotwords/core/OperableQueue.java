@@ -4,8 +4,8 @@ import java.util.Deque;
 
 public interface OperableQueue<T> {
 
-    public enum LoopType {
-        LoopInPassed, LoopInSkipped
+    enum DataSource {
+        Default, Passed, Skipped
     }
 
 
@@ -15,7 +15,7 @@ public interface OperableQueue<T> {
 
     T skip();
 
-    T startLoop(LoopType loopType);
+    T startLoop(DataSource dataSource);
 
     T loop();
 

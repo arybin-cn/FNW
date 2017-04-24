@@ -8,13 +8,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
-    private enum DataSource {
-        Default, Passed, Skipped
-    }
 
     private AtomicBoolean inLoop = new AtomicBoolean(false);
-    private LoopType currentLoopType;
-    private DataSource lastDataSource = DataSource.Default;
+    private DataSource loopSource;
+    private DataSource lastSource = DataSource.Default;
 
     private ArrayDeque<T> skippedQueue;
     private ArrayDeque<T> passedQueue;
@@ -23,8 +20,7 @@ abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
     private int intervalToLastReview = 0;
     private T current;
     private T beforeLoop;
-    private ArrayDeque<T> queueBeforeLoop;
-    private DataSource dataSourceBeforeLoop;
+    private DataSource sourceBeforeLoop;
 
     protected abstract boolean shouldReview(int intervalToLastReview);
 
@@ -37,11 +33,11 @@ abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
     private T next() {
         if (inLoop.get()) {
-            if (currentLoopType == LoopType.LoopInPassed) {
-                return pollFromPassed();
+            if (loopSource == DataSource.Passed) {
+                return pollFrom(DataSource.Passed);
             } else {
                 //LoopInSkipped or else
-                return pollFromSkipped();
+                return pollFrom(DataSource.Skipped);
             }
         } else {
             if (defaultQueue.size() == 0 && skippedQueue.size() == 0) {
@@ -50,60 +46,51 @@ abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
                 return null;
             }
             if (defaultQueue.size() == 0) {
-                return pollFromSkipped();
+                return pollFrom(DataSource.Skipped);
             }
             if (skippedQueue.size() == 0) {
-                return pollFromDefault();
+                return pollFrom(DataSource.Default);
             }
             if (shouldReview(intervalToLastReview++)) {
                 intervalToLastReview = 0;
-                return pollFromSkipped();
+                return pollFrom(DataSource.Skipped);
             } else {
-                return pollFromDefault();
+                return pollFrom(DataSource.Default);
             }
         }
     }
 
-    private void insertToDefault() {
+
+    private void appendTo(ArrayDeque<T> queue) {
         if (current != null) {
-            defaultQueue.addFirst(current);
+            queue.add(current);
         }
     }
 
-    private void appendToPassed() {
+    private void insertTo(ArrayDeque<T> queue) {
         if (current != null) {
-            passedQueue.add(current);
+            queue.addFirst(current);
         }
     }
 
-    private void appendToSkipped() {
-        if (current != null) {
-            skippedQueue.add(current);
-        }
-    }
-
-
-    private T pollFromDefault() {
-        return poll(defaultQueue, DataSource.Default);
-    }
-
-
-    private T pollFromPassed() {
-        return poll(passedQueue, DataSource.Passed);
-    }
-
-    private T pollFromSkipped() {
-        return poll(skippedQueue, DataSource.Skipped);
-    }
-
-
-    private T poll(ArrayDeque<T> queue, DataSource source) {
-        current = queue.poll();
-        lastDataSource = source;
+    private T pollFrom(DataSource source) {
+        current = dataSource2Queue(source).poll();
+        lastSource = source;
         return current;
     }
 
-
+    private ArrayDeque<T> dataSource2Queue(DataSource source) {
+        switch (source) {
+            case Passed:
+                return passedQueue;
+            case Skipped:
+                return skippedQueue;
+            case Default:
+            default:
+                return defaultQueue;
+        }
+    }
+    
     @Override
     public T current() {
         return current;
@@ -111,68 +98,59 @@ abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
     @Override
     public T pass() {
-        appendToPassed();
+        appendTo(passedQueue);
         return next();
     }
 
     @Override
     public T skip() {
-        appendToSkipped();
+        appendTo(skippedQueue);
         return next();
     }
 
 
     @Override
-    public T startLoop(LoopType loopType) {
-        if (inLoop.compareAndSet(false, true)) {
-            currentLoopType = loopType;
+    public T startLoop(DataSource loopSource) {
+        //can not loop in default queue(meaningless)
+        if (inLoop.compareAndSet(false, true) && loopSource != DataSource.Default) {
+            this.loopSource = loopSource;
             beforeLoop = current;
-            dataSourceBeforeLoop = lastDataSource;
-            switch (lastDataSource) {
-                case Skipped:
-                    queueBeforeLoop = skippedQueue;
-                    if (loopType == LoopType.LoopInSkipped) {
-                        return current;
-                    } else {
-                        return skip();
-                    }
-                case Passed:
-                    queueBeforeLoop = passedQueue;
-                    if (loopType == LoopType.LoopInPassed) {
-                        return current;
-                    } else {
-                        return pass();
-                    }
-                case Default:
-                default:
-                    queueBeforeLoop = defaultQueue;
-                    insertToDefault();
-                    return next();
+            sourceBeforeLoop = lastSource;
+            if (loopSource == lastSource) {
+                //not switching here
+                return current;
+            } else {
+                if (lastSource == DataSource.Default) {
+                    insertTo(defaultQueue);
+                } else {
+                    appendTo(dataSource2Queue(lastSource));
+                }
+                return next();
             }
         }
+        appendTo(skippedQueue);
         return next();
     }
 
     @Override
     public T loop() {
-        if (currentLoopType == LoopType.LoopInPassed) {
-            appendToPassed();
-        } else {
-            appendToSkipped();
-        }
+        appendTo(dataSource2Queue(loopSource));
         return next();
     }
 
     @Override
     public T endLoop() {
+        ArrayDeque<T> queueBeforeLoop;
         if (inLoop.compareAndSet(true, false)) {
+            queueBeforeLoop = dataSource2Queue(sourceBeforeLoop);
             if (queueBeforeLoop.contains(beforeLoop)) {
                 queueBeforeLoop.remove(beforeLoop);
-                lastDataSource = dataSourceBeforeLoop;
+                lastSource = sourceBeforeLoop;
                 current = beforeLoop;
                 return current;
             }
         }
+        appendTo(skippedQueue);
         return next();
     }
 
