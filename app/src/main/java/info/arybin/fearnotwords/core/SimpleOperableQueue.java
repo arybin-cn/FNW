@@ -33,7 +33,7 @@ public class SimpleOperableQueue<T> extends AbstractOperableQueue<T> {
     @Override
     protected boolean shouldReview(int intervalToLastReview) {
         //Words' review strategy here
-        return skippedDeque().size() > 10 || intervalToLastReview > 3 || (random.nextInt(30) < 2);
+        return getRawDeque(DataSource.Skipped).size() > 10 || intervalToLastReview > 3 || (random.nextInt(30) < 2);
     }
 
 }

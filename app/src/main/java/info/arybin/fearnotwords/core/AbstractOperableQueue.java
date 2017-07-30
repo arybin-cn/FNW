@@ -159,22 +159,6 @@ abstract class AbstractOperableQueue<T> implements OperableQueue<T> {
 
 
     @Override
-    public Deque<T> passedDeque() {
-        return passedQueue;
-    }
-
-    @Override
-    public Deque<T> skippedDeque() {
-        return skippedQueue;
-    }
-
-    @Override
-    public Deque<T> defaultDeque() {
-        return defaultQueue;
-    }
-
-
-    @Override
     public String toString() {
         return String.format("current: %s\npassedDeque: %s\nskippedDeque: %s\ndefaultDeque: %s\n",
                 current, passedQueue, skippedQueue, defaultQueue);

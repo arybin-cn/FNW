@@ -26,8 +26,7 @@ public interface OperableQueue<T> {
 
     Deque<T> getRawDeque(DataSource dataSource);
 
-    //todo replace below to source2queue/getDeque
-    Deque<T> passedDeque();
-    Deque<T> skippedDeque();
-    Deque<T> defaultDeque();
+//    Deque<T> passedDeque();
+//    Deque<T> skippedDeque();
+//    Deque<T> defaultDeque();
 }
