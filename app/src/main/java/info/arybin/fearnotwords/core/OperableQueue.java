@@ -1,5 +1,7 @@
 package info.arybin.fearnotwords.core;
 
+import android.provider.ContactsContract;
+
 import java.util.Deque;
 
 public interface OperableQueue<T> {
@@ -22,9 +24,10 @@ public interface OperableQueue<T> {
     T endLoop();
 
 
+    Deque<T> getRawDeque(DataSource dataSource);
+
+    //todo replace below to source2queue/getDeque
     Deque<T> passedDeque();
-
     Deque<T> skippedDeque();
-
     Deque<T> defaultDeque();
 }

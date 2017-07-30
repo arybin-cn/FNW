@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -194,6 +195,15 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
         return (minorState & state) != 0;
     }
 
+    private void tryToLoopIn(OperableQueue.DataSource source){
+
+        playSound(SOUND_TICK);
+        loopSound = SOUND_SKIP;
+        primaryState = PRI_STATE_LOOP;
+        updateView(memorableQueue.startLoop(OperableQueue.DataSource.Skipped));
+
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -328,12 +338,16 @@ public class MemorizeFragment extends BaseFragment implements ObservableLayout.E
     public void onSlideTo(ElasticLayout layout, ElasticLayout.Direction direction) {
         switch (layout.getId()) {
             case R.id.layoutSkip:
+                tryToLoopIn(OperableQueue.DataSource.Skipped);
+
                 playSound(SOUND_TICK);
                 loopSound = SOUND_SKIP;
                 primaryState = PRI_STATE_LOOP;
                 updateView(memorableQueue.startLoop(OperableQueue.DataSource.Skipped));
                 break;
             case R.id.layoutPass:
+                tryToLoopIn(OperableQueue.DataSource.Passed);
+
                 playSound(SOUND_TICK);
                 loopSound = SOUND_PASS;
                 primaryState = PRI_STATE_LOOP;
