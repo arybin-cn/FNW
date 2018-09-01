@@ -2,15 +2,13 @@ package info.arybin.fearnotwords.activity;
 
 import android.os.Bundle;
 import android.view.ViewGroup;
-
-import com.flaviofaria.kenburnsview.KenBurnsView;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.flaviofaria.kenburnsview.KenBurnsView;
 import eightbitlab.com.blurview.BlurView;
 import info.arybin.fearnotwords.R;
-import info.arybin.fearnotwords.ui.anim.SimpleTransitionGenerator;
 import info.arybin.fearnotwords.fragment.EntryFragment;
+import info.arybin.fearnotwords.ui.anim.SimpleTransitionGenerator;
 
 public class MainActivity extends BaseActivity {
 
